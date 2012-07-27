@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSetCatalogEntryDirectory
+    xmlns="http://schema.omg.org/spec/CTS2/1.0/ValueSet"
+    xmlns:core="http://schema.omg.org/spec/CTS2/1.0/Core"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://schema.omg.org/spec/CTS2/1.0/ValueSet http://informatics.mayo.edu/svn/trunk/cts2/spec/psm/rest/schema/ValueSet.xsd"
+    complete="COMPLETE" numEntries="1">
+    <core:heading>
+        <core:resourceRoot>valuesets</core:resourceRoot>
+        <core:resourceURI>http://informatics.mayo.edu/cts2/rest/valuesets</core:resourceURI>
+        <core:parameter arg="matchvalue">
+            <core:val>Sequence</core:val>
+        </core:parameter>
+        <core:accessDate>2012-07-25T18:13:57.910Z</core:accessDate>
+    </core:heading>
+    <entry href="http://informatics.mayo.edu/cts2/rest/valueset/SOFA"
+        resourceName="SOFA"
+        about="http://purl.bioontology.org/view/SOFA"
+        formalName="Sequence Ontology Feature Annotation" valueSetName="SOFA">
+        <core:resourceSynopsis>
+            <core:value>A "lite" version of SO is also available called SOFA (Sequence Ontology Feature Annotation) which includes only locatable sequence features and is designed for use in such outputs as GFF3. It is for this reason that all SO terms are "unix friendly" (i.e. contain no white space, never begin with an integer and do not include characters such as "'" or hypens). SOFA is a subset of SO and all terms in SOFA that are also in SO are marked in SO with the category tag "SOFA". SOFA will be more stable than the full version of SO.</core:value>
+        </core:resourceSynopsis>
+    </entry>
+</ValueSetCatalogEntryDirectory>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='cts2Viewer'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <!-- inherits name='com.google.gwt.user.User'/-->
+
+  <inherits name="com.smartgwt.SmartGwtNoTheme"/>    
+  <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlue"/>
+  <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources"/>  
+	
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='edu.mayo.cts2Viewer.client.Cts2Viewer'/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+  <source path='shared'/>
+
+</module>

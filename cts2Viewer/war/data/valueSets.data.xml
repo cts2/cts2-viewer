@@ -1,0 +1,12 @@
+
+<ValueSetCatalogEntryDirectory>
+    <entry href="http://informatics.mayo.edu/cts2/rest/valueset/SOFA"
+        resourceName="SOFA"
+        about="http://purl.bioontology.org/view/SOFA"
+        formalName="Sequence Ontology Feature Annotation" valueSetName="SOFA">
+        <resourceSynopsis>
+            <value>A "lite" version of SO is also available called SOFA (Sequence Ontology Feature Annotation) which includes only locatable sequence features and is designed for use in such outputs as GFF3. It is for this reason that all SO terms are "unix friendly" (i.e. contain no white space, never begin with an integer and do not include characters such as "'" or hypens). SOFA is a subset of SO and all terms in SOFA that are also in SO are marked in SO with the category tag "SOFA". SOFA will be more stable than the full version of SO.</value>
+        </resourceSynopsis>
+    </entry>
+</ValueSetCatalogEntryDirectory>
+
