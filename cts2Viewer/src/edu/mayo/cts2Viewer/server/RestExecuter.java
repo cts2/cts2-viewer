@@ -20,6 +20,8 @@ public class RestExecuter extends BaseCts2Servlet {
 	private static final String VALUE_SETS = "valuesets";
 	private static final String MATCH_VALUE = "matchvalue";
 
+	// private static final String MATCH_RULE = "filtercomponent=resourceName";
+
 	// private
 	private RestExecuter() {
 	}
@@ -77,10 +79,16 @@ public class RestExecuter extends BaseCts2Servlet {
 	 */
 	private URL getSearchUrl(String searchString) throws MalformedURLException {
 		URL url;
+		String urlString;
+		new URLParamEncoder();
+
 		if (searchString != null && searchString.length() > 0) {
-			url = new URL(REST_URL_BASE + VALUE_SETS + "?" + MATCH_VALUE + "=" + searchString);
+			urlString = REST_URL_BASE + VALUE_SETS + "?" + MATCH_VALUE + "=" + URLParamEncoder.encode(searchString);
+			url = new URL(urlString);
 		} else {
-			url = new URL(REST_URL_BASE + VALUE_SETS);
+			urlString = REST_URL_BASE + VALUE_SETS;
+
+			url = new URL(urlString);
 		}
 
 		return url;

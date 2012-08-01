@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.data.Criteria;
+import com.smartgwt.client.data.DSCallback;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
@@ -36,17 +36,17 @@ public class ValueSetsXmlDS extends DataSource {
 	private final XmlNamespaces i_xmlNamespaces;
 	private final LinkedHashMap<String, String> i_nsMap;
 
-	public static ValueSetsXmlDS getInstance() {
-		if (instance == null) {
+	public static ValueSetsXmlDS getInstance(String id) {
+		if (instance == null || instance.getID().equals(id)) {
 			instance = new ValueSetsXmlDS("ValueSetsXmlDS");
 		}
+
 		return instance;
 	}
 
 	public ValueSetsXmlDS(String id) {
 
 		setID(id);
-
 		setDataFormat(DSDataFormat.XML);
 
 		i_nsMap = getNameSpaceHashMap();
@@ -127,17 +127,15 @@ public class ValueSetsXmlDS extends DataSource {
 				break;
 			}
 		}
-		super.transformResponse(response, request, data);
+		// super.transformResponse(response, request, data);
 	}
 
 	private void executeFetch(DSRequest request) {
 
-		// request.getCriteria();
-		System.out.println("StartRow: " + request.getStartRow());
-		System.out.println("EndRow:   " + request.getEndRow());
+		final String searchText = request.getCriteria().getAttribute("searchText");
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getValueSets(/* "Ontology" */null, new AsyncCallback<String>() {
+		service.getValueSets(/* "Ontology" */searchText, new AsyncCallback<String>() {
 
 			@Override
 			public void onSuccess(String result) {
@@ -145,12 +143,15 @@ public class ValueSetsXmlDS extends DataSource {
 				Object results = XMLTools.selectNodes(result, RECORD_X_PATH, i_nsMap);
 				Record[] fetchRecords = recordsFromXML(results);
 
-				if (fetchRecords != null) {
-					// add each record
-					for (Record record : fetchRecords) {
-						addData(record);
-					}
-				}
+				setTestData(fetchRecords);
+
+				// if (fetchRecords != null) {
+				// // add each record
+				// for (Record record : fetchRecords) {
+				//
+				// addData(record);
+				// }
+				// }
 			}
 
 			@Override
@@ -160,7 +161,8 @@ public class ValueSetsXmlDS extends DataSource {
 		});
 	}
 
-	public void fetchData(Criteria criteria) {
+	@Override
+	public void fetchData(Criteria criteria, final DSCallback callback) {
 
 		final String searchText = criteria.getAttribute("searchText");
 
@@ -170,18 +172,13 @@ public class ValueSetsXmlDS extends DataSource {
 			@Override
 			public void onSuccess(String result) {
 
-				// REMOVE all data before setting new
-				setTestData(new DataClass[] {});
-
 				Object results = XMLTools.selectNodes(result, RECORD_X_PATH, i_nsMap);
 				Record[] fetchRecords = recordsFromXML(results);
 
-				if (fetchRecords != null) {
-					// add each record
-					for (Record record : fetchRecords) {
-						addData(record);
-					}
-				}
+				setTestData(fetchRecords);
+
+				// use the callback to let the widget know we got the data...
+				callback.execute(null, null, null);
 			}
 
 			@Override
@@ -190,5 +187,7 @@ public class ValueSetsXmlDS extends DataSource {
 			}
 		});
 
+		// super.fetchData(criteria, callback);
 	}
+
 }

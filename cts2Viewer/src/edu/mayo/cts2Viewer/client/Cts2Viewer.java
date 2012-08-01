@@ -10,19 +10,15 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.VerticalAlignment;
-import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.events.ClickEvent;
-import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
-
-import edu.mayo.cts2Viewer.client.utils.ModalWindow;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -40,6 +36,7 @@ public class Cts2Viewer implements EntryPoint {
 	private VLayout i_mainLayout;
 	private ValueSetsListGrid i_valueSetsListGrid;
 	private SearchComboBoxItem i_searchComboBoxItem;
+	private SearchTextItem i_searchItem;
 
 	/**
 	 * This is the entry point method.
@@ -76,21 +73,14 @@ public class Cts2Viewer implements EntryPoint {
 		contentLayout.setMargin(10);
 		contentLayout.setMembersMargin(10);
 
-		IButton button = new IButton("test");
-		button.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				SC.say("button clicked.");
-				getValueSets();
-			}
-		});
-
 		HLayout searchLayout = createSearchComponents();
 		contentLayout.addMember(searchLayout);
 
 		i_valueSetsListGrid = new ValueSetsListGrid();
 		contentLayout.addMember(i_valueSetsListGrid);
+
+		// TODO CME make eventBus calls to update components.
+		linkWidgets();
 
 		// contentLayout.addMember(button);
 		i_mainLayout.addMember(contentLayout);
@@ -106,40 +96,48 @@ public class Cts2Viewer implements EntryPoint {
 		HLayout searchLayout = new HLayout();
 		searchLayout.setWidth100();
 		searchLayout.setHeight(50);
-		searchLayout.setBackgroundColor("white");
 
-		// SearchComboBoxItem i_searchComboBoxItem = new SearchComboBoxItem();
+		// i_searchComboBoxItem = new SearchComboBoxItem();
+		i_searchItem = new SearchTextItem();
 
-		// DynamicForm searchForm = new DynamicForm();
-		// searchForm.setItems(i_searchComboBoxItem);
-		// searchLayout.addMember(searchForm);
+		DynamicForm searchForm = new DynamicForm();
+		searchForm.setItems(i_searchItem);
+		searchLayout.addMember(searchForm);
 
 		return searchLayout;
 	}
 
-	private void getValueSets() {
-		logger.log(Level.INFO, "calling getValueSets()");
+	private void linkWidgets() {
 
-		// Set the busy indicator to show while retrieving data
-		final ModalWindow busyIndicator = new ModalWindow(i_mainLayout, 40, "#dedede");
-		busyIndicator.setLoadingIcon("loading_circle.gif");
-		busyIndicator.show("Retrieving Value Sets...", true);
-
-		// make RPC call
-		Cts2ServiceAsync cts2Service = GWT.create(Cts2Service.class);
-		cts2Service.getValueSets("some string", new AsyncCallback<String>() {
-			@Override
-			public void onSuccess(String result) {
-				busyIndicator.hide();
-				SC.say("Return from server - " + result);
-			}
+		i_searchItem.addKeyUpHandler(new KeyUpHandler() {
 
 			@Override
-			public void onFailure(Throwable caught) {
-				busyIndicator.hide();
-				SC.say("ERROR " + caught.toString());
+			public void onKeyUp(KeyUpEvent event) {
+
+				event.getKeyName();
+
+				// TODO CME - filter what characters are allowed. Don't allow
+				// up/down arrows.
+				// System.out.println(keyName);
+
+				// ignore the arrow keys
+				if (i_searchItem.isValidSearchText()) {
+					i_valueSetsListGrid.getData(i_searchItem.getValueAsString());
+				}
 			}
 		});
+
+		// i_searchComboBoxItem.addChangedHandler(new ChangedHandler() {
+		//
+		// @Override
+		// public void onChanged(ChangedEvent event) {
+		// System.out.println("value selected = " +
+		// i_searchComboBoxItem.getValueAsString());
+		//
+		// //
+		// i_valueSetsListGrid.getData(i_searchComboBoxItem.getValueAsString());
+		// }
+		// });
 	}
 
 	/**
