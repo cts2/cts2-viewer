@@ -24,7 +24,8 @@ public class SearchComboBoxItem extends ComboBoxItem {
 	public SearchComboBoxItem() {
 		super("search", "Search");
 
-		i_valueSetsXmlDS = ValueSetsXmlDS.getInstance(VALUE_SETS_DS_ID);
+		// i_valueSetsXmlDS = ValueSetsXmlDS.getInstance(VALUE_SETS_DS_ID);
+		i_valueSetsXmlDS = ValueSetsXmlDS.getInstance();
 
 		setAddUnknownValues(true);
 		setDefaultToFirstOption(true);

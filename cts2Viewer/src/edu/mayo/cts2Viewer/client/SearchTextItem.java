@@ -7,7 +7,7 @@ public class SearchTextItem extends TextItem {
 	private String i_previousText = "";
 
 	public SearchTextItem() {
-		super("search", "Search");
+		super("search", "<b>Search</b>");
 
 		init();
 	}
@@ -27,11 +27,12 @@ public class SearchTextItem extends TextItem {
 	public boolean isValidSearchText() {
 
 		String currentText = getValueAsString();
+		currentText = currentText == null ? "" : currentText;
 
-		boolean isValid = currentText != null && !i_previousText.equals(currentText);
+		boolean isValid = !i_previousText.equals(currentText);
 
 		if (isValid) {
-			i_previousText = getValueAsString();
+			i_previousText = currentText;
 		}
 
 		return isValid;

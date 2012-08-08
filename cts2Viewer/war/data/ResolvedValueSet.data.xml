@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ResolvedValueSetDirectory
+    xmlns="http://schema.omg.org/spec/CTS2/1.0/ValueSetDefinition"
+    xmlns:core="http://schema.omg.org/spec/CTS2/1.0/Core"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://schema.omg.org/spec/CTS2/1.0/ValueSetDefinition http://informatics.mayo.edu/svn/trunk/cts2/spec/psm/rest/schema/ValueSetDefinition.xsd"
+    complete="COMPLETE" numEntries="1">
+    <core:heading>
+        <core:resourceRoot>resolvedvaluesets</core:resourceRoot>
+        <core:resourceURI>http://informatics.mayo.edu/cts2/rest/resolvedvaluesets</core:resourceURI>
+        <core:parameter arg="valueset">
+            <core:val>ECGF</core:val>
+        </core:parameter>
+        <core:accessDate>2012-08-06T19:42:45.006Z</core:accessDate>
+    </core:heading>
+    <entry
+        resolvedValueSetURI="http://purl.bioontology.org/view/ECGF/resolution/43075" href="http://informatics.mayo.edu/cts2/rest/valueset/ECGF/definition/ECGF_1-0_OWL/resolution/43075">
+        <resolvedHeader>
+            <resolutionOf>
+                <core:valueSetDefinition>ECGF_1-0_OWL</core:valueSetDefinition>
+                <core:valueSet
+                    uri="http://purl.bioontology.org/view/ECGF" href="http://informatics.mayo.edu/cts2/rest/valueset/ECGF">ECGF</core:valueSet>
+            </resolutionOf>
+            <resolvedUsingCodeSystem>
+                <core:version href="http://informatics.mayo.edu/cts2/rest/codesystem/ECG/version/45835">ECG_45835_OWL</core:version>
+                <core:codeSystem
+                    uri="http://purl.bioontology.org/ontology/ECG" href="http://informatics.mayo.edu/cts2/rest/codesystem/ECG">ECG</core:codeSystem>
+            </resolvedUsingCodeSystem>
+        </resolvedHeader>
+    </entry>
+</ResolvedValueSetDirectory>

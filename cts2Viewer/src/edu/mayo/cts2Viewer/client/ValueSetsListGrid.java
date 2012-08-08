@@ -5,6 +5,8 @@ import com.smartgwt.client.data.DSCallback;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.data.SortSpecifier;
+import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -14,10 +16,10 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 import com.smartgwt.client.widgets.viewer.DetailViewerField;
 
 import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
+import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
 
 public class ValueSetsListGrid extends ListGrid {
 
-	private static final String VALUE_SETS_DS_ID = "ValueSetsListGrid_ID";
 	private final ValueSetsXmlDS i_valueSetsXmlDS;
 
 	private String i_searchString;
@@ -25,21 +27,25 @@ public class ValueSetsListGrid extends ListGrid {
 	public ValueSetsListGrid() {
 		super();
 
-		i_valueSetsXmlDS = ValueSetsXmlDS.getInstance(VALUE_SETS_DS_ID);
+		// i_valueSetsXmlDS = ValueSetsXmlDS.getInstance(VALUE_SETS_DS_ID);
+		i_valueSetsXmlDS = ValueSetsXmlDS.getInstance();
 
 		setWidth100();
-		setHeight(400);
+		setHeight(300);
 		setShowAllRecords(true);
 		setWrapCells(false);
 		setDataSource(i_valueSetsXmlDS);
+
+		// setSelectionType(SelectionStyle.SIMPLE);
+		// setSelectionAppearance(SelectionAppearance.CHECKBOX);
 
 		ListGridField resourceTypeField = new ListGridField("resourceRoot", "Resource Type");
 		resourceTypeField.setWidth(100);
 		resourceTypeField.setWrap(false);
 		resourceTypeField.setShowHover(false);
 
-		ListGridField resourceNamefField = new ListGridField("resourceName", "Resource Name");
-		resourceNamefField.setWidth(150);
+		ListGridField resourceNamefField = new ListGridField("valueSetName", "Value Set Name");
+		resourceNamefField.setWidth(250);
 		resourceNamefField.setWrap(false);
 		resourceNamefField.setShowHover(false);
 
@@ -47,7 +53,11 @@ public class ValueSetsListGrid extends ListGrid {
 
 			@Override
 			public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-				return addCellHighlights(value.toString());
+				if (value != null) {
+					return addCellHighlights(value.toString());
+				} else {
+					return null;
+				}
 			}
 		});
 
@@ -60,7 +70,11 @@ public class ValueSetsListGrid extends ListGrid {
 
 			@Override
 			public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-				return addCellHighlights(value.toString());
+				if (value != null) {
+					return addCellHighlights(value.toString());
+				} else {
+					return null;
+				}
 			}
 		});
 
@@ -73,14 +87,13 @@ public class ValueSetsListGrid extends ListGrid {
 
 			@Override
 			public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-				return addCellHighlights(value.toString());
+				if (value != null) {
+					return addCellHighlights(value.toString());
+				} else {
+					return null;
+				}
 			}
 		});
-
-		// ListGridField hrefField = new ListGridField("href", "HREF");
-		// ListGridField aboutField = new ListGridField("about", "About");
-		// ListGridField resourceSynopsisField = new ListGridField("value",
-		// "Resource Synopsis");
 
 		setFields(resourceTypeField, resourceNamefField, formalNameField, descriptionField);
 
@@ -91,8 +104,10 @@ public class ValueSetsListGrid extends ListGrid {
 		setShowHover(true);
 		setShowHoverComponents(true);
 
-		// request the initial data
-		getData("");
+		// set the initial sort
+		SortSpecifier[] sortspec = new SortSpecifier[1];
+		sortspec[0] = new SortSpecifier("formalName", SortDirection.ASCENDING);
+		setInitialSort(sortspec);
 	}
 
 	@Override
@@ -120,12 +135,13 @@ public class ValueSetsListGrid extends ListGrid {
 	 * 
 	 * @param searchText
 	 */
-	public void getData(String searchText) {
+	public void getData(String serverUrl, String searchText) {
 
 		i_searchString = searchText;
 
 		Criteria criteria = new Criteria();
 		criteria.addCriteria("searchText", searchText);
+		criteria.addCriteria("serverUrl", serverUrl);
 
 		i_valueSetsXmlDS.fetchData(criteria, new DSCallback() {
 
@@ -136,6 +152,9 @@ public class ValueSetsListGrid extends ListGrid {
 
 				fetchData();
 				redraw();
+
+				// let others know that the data has been retrieved.
+				Cts2Viewer.EVENT_BUS.fireEvent(new ValueSetsReceivedEvent());
 			}
 		});
 
@@ -149,7 +168,7 @@ public class ValueSetsListGrid extends ListGrid {
 	 */
 	private String addCellHighlights(String cellText) {
 
-		if (i_searchString.length() == 0) {
+		if (i_searchString == null || i_searchString.length() == 0) {
 			return cellText;
 		}
 
@@ -158,14 +177,11 @@ public class ValueSetsListGrid extends ListGrid {
 
 		if (startIndex >= 0) {
 
-			int first = startIndex == 0 ? 1 : startIndex;
+			int first = startIndex;
 
-			cellText = cellText.substring(0, first - 1) + " <b>"
+			cellText = cellText.substring(0, first) + "<b style=\"color:#e33b74\">"
 			        + cellText.substring(startIndex, startIndex + i_searchString.length()) + "</b>"
 			        + cellText.substring(startIndex + i_searchString.length());
-
-			// cellText = cellText.replace(i_searchString, "<b>" +
-			// i_searchString + "</b>");
 		}
 
 		return cellText;

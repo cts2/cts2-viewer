@@ -8,8 +8,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSCallback;
-import com.smartgwt.client.data.DSRequest;
-import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.XMLTools;
@@ -29,6 +27,9 @@ public class ValueSetsXmlDS extends DataSource {
 
 	private static final String RECORD_X_PATH = "/cts2:ValueSetCatalogEntryDirectory/cts2:entry";
 
+	private static final String X_PATH_NUMBER_OF_ENTRIES = "/cts2:ValueSetCatalogEntryDirectory/@numEntries";
+	private static final String X_PATH_COMPLETE = "/cts2:ValueSetCatalogEntryDirectory/@complete";
+
 	private static final String X_PATH_RESOURCE_ROOT = "/cts2:ValueSetCatalogEntryDirectory/core:heading/core:resourceRoot";
 	private static final String X_PATH_RESOURCE_SYNOPSIS = "core:resourceSynopsis/core:value";
 
@@ -36,8 +37,8 @@ public class ValueSetsXmlDS extends DataSource {
 	private final XmlNamespaces i_xmlNamespaces;
 	private final LinkedHashMap<String, String> i_nsMap;
 
-	public static ValueSetsXmlDS getInstance(String id) {
-		if (instance == null || instance.getID().equals(id)) {
+	public static ValueSetsXmlDS getInstance() {
+		if (instance == null) {
 			instance = new ValueSetsXmlDS("ValueSetsXmlDS");
 		}
 
@@ -61,6 +62,12 @@ public class ValueSetsXmlDS extends DataSource {
 		// set the XPath
 		setRecordXPath(RECORD_X_PATH);
 
+		DataSourceTextField nbrOfEntriesField = new DataSourceTextField("numEntries", "Entries");
+		nbrOfEntriesField.setValueXPath(X_PATH_NUMBER_OF_ENTRIES);
+
+		DataSourceTextField completeField = new DataSourceTextField("complete", "Complete");
+		completeField.setValueXPath(X_PATH_COMPLETE);
+
 		DataSourceTextField hrefField = new DataSourceTextField("href", "HREF");
 		hrefField.setPrimaryKey(true);
 
@@ -72,14 +79,14 @@ public class ValueSetsXmlDS extends DataSource {
 		resourceTypeMap.put("valuesets", "Value Sets");
 		resourceTypefField.setValueMap(resourceTypeMap);
 
-		DataSourceTextField resourceNamefField = new DataSourceTextField("resourceName", "ResourceName");
+		DataSourceTextField valueSetNamefField = new DataSourceTextField("valueSetName", "Value Set Name");
 		DataSourceTextField aboutField = new DataSourceTextField("about", "About");
 		DataSourceTextField formalNameField = new DataSourceTextField("formalName", "Formal Name");
 		DataSourceTextField resourceSynopsisValueField = new DataSourceTextField("value", "Resource Synopsis");
 		resourceSynopsisValueField.setValueXPath(X_PATH_RESOURCE_SYNOPSIS);
 
-		setFields(hrefField, resourceTypefField, resourceNamefField, aboutField, formalNameField,
-		        resourceSynopsisValueField);
+		setFields(hrefField, resourceTypefField, valueSetNamefField, aboutField, formalNameField,
+		        resourceSynopsisValueField, nbrOfEntriesField, completeField);
 
 		// setDataURL("data/valueSetsReal.data.xml");
 		// namespace doesn't work when setClientOnly(true)
@@ -103,71 +110,13 @@ public class ValueSetsXmlDS extends DataSource {
 	}
 
 	@Override
-	protected void transformResponse(DSResponse response, DSRequest request, Object data) {
-
-		if (request.getOperationType() != null) {
-
-			switch (request.getOperationType()) {
-
-			case ADD: {
-			}
-				break;
-			case FETCH: {
-				executeFetch(request);
-			}
-				break;
-			case REMOVE: {
-			}
-				break;
-			case UPDATE: {
-			}
-				break;
-
-			default:
-				break;
-			}
-		}
-		// super.transformResponse(response, request, data);
-	}
-
-	private void executeFetch(DSRequest request) {
-
-		final String searchText = request.getCriteria().getAttribute("searchText");
-
-		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getValueSets(/* "Ontology" */searchText, new AsyncCallback<String>() {
-
-			@Override
-			public void onSuccess(String result) {
-
-				Object results = XMLTools.selectNodes(result, RECORD_X_PATH, i_nsMap);
-				Record[] fetchRecords = recordsFromXML(results);
-
-				setTestData(fetchRecords);
-
-				// if (fetchRecords != null) {
-				// // add each record
-				// for (Record record : fetchRecords) {
-				//
-				// addData(record);
-				// }
-				// }
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				logger.log(Level.SEVERE, "Error fetching Value Sets: " + caught);
-			}
-		});
-	}
-
-	@Override
 	public void fetchData(Criteria criteria, final DSCallback callback) {
 
 		final String searchText = criteria.getAttribute("searchText");
+		final String serverUrl = criteria.getAttribute("serverUrl");
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getValueSets(searchText, new AsyncCallback<String>() {
+		service.getValueSets(serverUrl, searchText, new AsyncCallback<String>() {
 
 			@Override
 			public void onSuccess(String result) {
