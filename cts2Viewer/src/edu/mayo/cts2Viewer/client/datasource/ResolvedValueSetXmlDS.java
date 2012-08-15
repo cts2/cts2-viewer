@@ -134,11 +134,11 @@ public class ResolvedValueSetXmlDS extends DataSource {
 	@Override
 	public void fetchData(Criteria criteria, final DSCallback callback) {
 
-		final String valueSetUrl = criteria.getAttribute("resolvedValueSet");
-		final String serverUrl = criteria.getAttribute("serverUrl");
+		final String valueSetName = criteria.getAttribute("valueSetName");
+		final String serviceName = criteria.getAttribute("serviceName");
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getResolvedValueSetInfo(serverUrl, valueSetUrl, new AsyncCallback<ResolvedValueSetInfo>() {
+		service.getResolvedValueSetInfo(serviceName, valueSetName, new AsyncCallback<ResolvedValueSetInfo>() {
 
 			@Override
 			public void onSuccess(ResolvedValueSetInfo rvsi) {

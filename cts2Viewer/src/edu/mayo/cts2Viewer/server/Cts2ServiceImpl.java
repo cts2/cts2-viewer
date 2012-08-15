@@ -1,11 +1,7 @@
 package edu.mayo.cts2Viewer.server;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +18,9 @@ import org.w3c.dom.Document;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.VocabularyId;
 import edu.mayo.cts2Viewer.client.Cts2Service;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
@@ -30,24 +29,35 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
-public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service {
-
+public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service 
+{
 	private static Logger logger = Logger.getLogger(Cts2ServiceImpl.class.getName());
 
-	private static final String SERVER_PROPERTIES_FILE = "cts2_servers.properties";
+	private static final String SERVER_PROPERTIES_FILE = "CTS2Profiles.properties";
+	
+	private ConvenienceMethods cm = null;
 
 	/**
 	 * Get ValueSets that match the criteria
 	 */
 	@Override
-	public String getValueSets(String serverUrl, String searchText) throws IllegalArgumentException {
-
+	public String getValueSets(String serviceName, String searchText) throws IllegalArgumentException 
+	{
 		String results = "";
-		RestExecuter restExecuter = RestExecuter.getInstance();
+		//RestExecuter restExecuter = RestExecuter.getInstance();
 
-		try {
-			results = restExecuter.getValueSets(serverUrl, searchText);
-		} catch (Exception e) {
+		try 
+		{
+			initCM(serviceName);
+			
+			cm.getCurrentContext().resultLimit = 100;
+			if (CTS2Utils.isNull(searchText))
+				results = cm.getAvailableValueSetsAsXML(false,  false, false);
+			else
+				results = cm.getMatchingValueSetsAsXML(searchText, false, false, false);
+		} 
+		catch (Exception e) 
+		{
 			logger.log(Level.SEVERE, "Error retrieving ValueSets" + e);
 		}
 
@@ -58,14 +68,19 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	 * Get information on a specific ValueSet
 	 */
 	@Override
-	public ValueSetInfo getValueSetInfo(String valueSet) throws IllegalArgumentException {
+	public ValueSetInfo getValueSetInfo(String serviceName, String valueSetName) throws IllegalArgumentException {
 
 		String results = "";
-		RestExecuter restExecuter = RestExecuter.getInstance();
+		//RestExecuter restExecuter = RestExecuter.getInstance();
 		ValueSetInfo vsi = new ValueSetInfo();
 
-		try {
-			results = restExecuter.getValueSetInfo(valueSet);
+		try 
+		{
+			initCM(serviceName);
+			//results = restExecuter.getValueSetInfo(valueSet);
+			VocabularyId valueSetId = new VocabularyId();
+			valueSetId.name = valueSetName;
+			results = cm.getValueSetInformationAsXML(valueSetId);
 			vsi = getValueSetGeneralInfo(results);
 
 		} catch (Exception e) {
@@ -79,17 +94,21 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	 * Get resolved ValueSet information
 	 */
 	@Override
-	public ResolvedValueSetInfo getResolvedValueSetInfo(String serverUrl, String valueSet)
+	public ResolvedValueSetInfo getResolvedValueSetInfo(String serviceName, String valueSetName)
 	        throws IllegalArgumentException {
 
 		String results = "";
-		RestExecuter restExecuter = RestExecuter.getInstance();
+		//RestExecuter restExecuter = RestExecuter.getInstance();
 		ResolvedValueSetInfo rvsi = new ResolvedValueSetInfo();
 
-		try {
-
-			results = restExecuter.getResolvedValueSetInfo(serverUrl, valueSet);
-			if (results != null && results.length() > 0) {
+		try 
+		{
+			initCM(serviceName);
+			results = cm.getValueSetMembersAsXML(valueSetName);
+			//results = restExecuter.getResolvedValueSetInfo(serverUrl, valueSet);
+			
+			if (results != null && results.length() > 0) 
+			{
 				rvsi = getResolvedValueSetGeneralInfo(results);
 			}
 			// TODO CME this is the way for bioportal, but phinvads is different
@@ -302,39 +321,49 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		return result;
 	}
 
-	@Override
-	public LinkedHashMap<String, String> getServerOptions() throws IllegalArgumentException {
-
-		LinkedHashMap<String, String> serverOptions = new LinkedHashMap<String, String>();
-		FileInputStream in = null;
-
-		Properties cts2ServerProps = new Properties();
-
-		try {
-
-			in = new FileInputStream(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
-			cts2ServerProps.load(in);
-
-		} catch (FileNotFoundException ex) {
-			logger.log(Level.SEVERE, ex.getMessage(), ex);
-		} catch (IOException ex) {
-			logger.log(Level.SEVERE, ex.getMessage(), ex);
-
-		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException ex) {
-				logger.log(Level.SEVERE, ex.getMessage(), ex);
+	private void initCM(String serviceName)
+	{
+			try 
+			{
+				if (this.cm == null)
+					this.cm = ConvenienceMethods.instance(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
+				
+				if ((!CTS2Utils.isNull(serviceName))&&(!(cm.getCurrentProfileName().equals(serviceName))))
+					cm.setCurrentProfileName(serviceName);
+			} 
+			catch (Exception ex) 
+			{
+					logger.log(Level.SEVERE, ex.getMessage(), ex);
 			}
+	}
+	
+	@Override
+	public LinkedHashMap<String, String> getAvailableServices() throws IllegalArgumentException 
+	{
+		LinkedHashMap<String, String> serverOptions = new LinkedHashMap<String, String>();
+		Set<String> services = null;
+		String selectedService = null;
+
+		try 
+		{
+			initCM(null);
+			services = cm.getAvailableProfiles();
+			selectedService = cm.getCurrentProfileName();
+		} 
+		catch (Exception ex) 
+		{
+				logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 
-		Set<Object> keys = cts2ServerProps.keySet();
-		for (Object key : keys) {
-			serverOptions.put((String) cts2ServerProps.get(key), key.toString());
-		}
 
+		for (String service : services)
+		{
+			if (selectedService.endsWith(service))
+				serverOptions.put(service, service + CTS2Utils.SELECTED_TAG);
+			else
+				serverOptions.put(service, service);
+		}
+		
 		return serverOptions;
 	}
 

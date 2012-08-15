@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
@@ -175,6 +177,7 @@ public class Cts2Viewer implements EntryPoint {
 		i_serverCombo.setType("comboBox");
 		i_serverCombo.setWidth(250);
 		i_serverCombo.setWrapTitle(false);
+		i_serverCombo.setAttribute("browserSpellCheck", false);
 
 		i_serverCombo.addChangedHandler(new ChangedHandler() {
 
@@ -199,7 +202,7 @@ public class Cts2Viewer implements EntryPoint {
 	private void retrieveServerOptions() {
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 		try {
-			service.getServerOptions(new AsyncCallback<LinkedHashMap<String, String>>() {
+			service.getAvailableServices(new AsyncCallback<LinkedHashMap<String, String>>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -207,12 +210,30 @@ public class Cts2Viewer implements EntryPoint {
 				}
 
 				@Override
-				public void onSuccess(LinkedHashMap<String, String> result) {
+				public void onSuccess(LinkedHashMap<String, String> result) 
+				{
+					String selected = null;
+					
+					for (String key : result.keySet())
+					{
+						if (selected == null)
+						{
+							selected = UiHelper.getSelected(result.get(key));
+							if (selected != null)
+								result.put(key, selected);
+						}
+					}
+					
 					i_serverCombo.setValueMap(result);
-					i_serverCombo.setValue(SELECT_SERVER_MSG);
-
-					// TODO: call search ("") to retrieve the value sets.
-					// getValueSets("");
+					
+					if (selected != null)
+					{
+						i_serverCombo.setValue(selected);
+						i_valueSetInfoPanel.clearPanels();
+						getValueSets(null);
+					}
+					else
+						i_serverCombo.setValue(SELECT_SERVER_MSG);
 				}
 
 			});

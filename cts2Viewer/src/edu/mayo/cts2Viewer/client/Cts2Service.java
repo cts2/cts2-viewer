@@ -13,11 +13,13 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
  */
 @RemoteServiceRelativePath("cts2")
 public interface Cts2Service extends RemoteService {
-	LinkedHashMap<String, String> getServerOptions() throws IllegalArgumentException;
+	LinkedHashMap<String, String> getAvailableServices() throws IllegalArgumentException;
 
-	String getValueSets(String serverUrl, String searchText) throws IllegalArgumentException;
+	String getValueSets(String serviceName, String searchText) throws IllegalArgumentException;
 
-	ValueSetInfo getValueSetInfo(String url) throws IllegalArgumentException;
+	ValueSetInfo getValueSetInfo(String serviceName, String valueSetName) throws IllegalArgumentException;
 
-	ResolvedValueSetInfo getResolvedValueSetInfo(String serverUrl, String valueSet) throws IllegalArgumentException;
+	ResolvedValueSetInfo getResolvedValueSetInfo(String serviceName, String valueSetName) throws IllegalArgumentException;
+	
+	//Set<String> getAvailableServices() throws IllegalArgumentException;
 }

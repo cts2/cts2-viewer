@@ -135,13 +135,13 @@ public class ValueSetsListGrid extends ListGrid {
 	 * 
 	 * @param searchText
 	 */
-	public void getData(String serverUrl, String searchText) {
+	public void getData(String serviceName, String searchText) {
 
 		i_searchString = searchText;
 
 		Criteria criteria = new Criteria();
 		criteria.addCriteria("searchText", searchText);
-		criteria.addCriteria("serverUrl", serverUrl);
+		criteria.addCriteria("serviceName", serviceName);
 
 		i_valueSetsXmlDS.fetchData(criteria, new DSCallback() {
 

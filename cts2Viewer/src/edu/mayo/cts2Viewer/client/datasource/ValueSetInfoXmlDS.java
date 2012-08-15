@@ -139,10 +139,11 @@ public class ValueSetInfoXmlDS extends DataSource {
 	@Override
 	public void fetchData(Criteria criteria, final DSCallback callback) {
 
-		final String valueSetUrl = criteria.getAttribute("valueSetLink");
+		final String valueSetName = criteria.getAttribute("valueSetName");
+		final String serviceName = criteria.getAttribute("serviceName");
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getValueSetInfo(valueSetUrl, new AsyncCallback<ValueSetInfo>() {
+		service.getValueSetInfo(serviceName, valueSetName, new AsyncCallback<ValueSetInfo>() {
 
 			@Override
 			public void onSuccess(ValueSetInfo vsi) {

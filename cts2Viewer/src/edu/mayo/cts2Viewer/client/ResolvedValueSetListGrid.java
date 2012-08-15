@@ -62,12 +62,12 @@ public class ResolvedValueSetListGrid extends ListGrid {
 		setCanEdit(false);
 	}
 
-	public void getData(String serverUrl, String resolvedValueSet) {
-		i_resolvedValueSet = resolvedValueSet;
+	public void getData(String serviceName, String valueSetName) {
+		i_resolvedValueSet = valueSetName;
 
 		Criteria criteria = new Criteria();
-		criteria.addCriteria("resolvedValueSet", i_resolvedValueSet);
-		criteria.addCriteria("serverUrl", serverUrl);
+		criteria.addCriteria("valueSetName", i_resolvedValueSet);
+		criteria.addCriteria("serviceName", serviceName);
 
 		i_resolvedValueSetXmlDS.fetchData(criteria, new DSCallback() {
 

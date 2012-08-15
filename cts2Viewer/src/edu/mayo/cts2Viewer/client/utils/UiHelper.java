@@ -6,7 +6,8 @@ import com.smartgwt.client.widgets.Label;
 public class UiHelper {
 
 	private static final String BACKGROUND_COLOR_TITLE = "#dedad5";
-
+	public static final String SELECTED_TAG = "_SELECTED";
+	
 	// return a link that will open a page in a new window/tab.
 	public static String getLink(String url, String label) {
 		return "<a href=\"" + url + " \" target='_blank'>" + label + "</a>";
@@ -26,5 +27,15 @@ public class UiHelper {
 
 		return titleLabel;
 	}
-
+	
+	public static String getSelected(String serviceName)
+	{
+		if (serviceName == null)
+			return null;
+		
+		if (serviceName.endsWith(SELECTED_TAG))
+				return serviceName.split(SELECTED_TAG)[0];
+		
+		return null;
+	}
 }

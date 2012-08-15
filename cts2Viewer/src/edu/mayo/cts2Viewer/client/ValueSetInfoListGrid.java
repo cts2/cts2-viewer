@@ -18,7 +18,7 @@ public class ValueSetInfoListGrid extends ListGrid {
 
 	private final ValueSetInfoXmlDS i_valueSetInfoXmlDS;
 
-	private String i_valueSetLink;
+	private String i_valueSetName;
 
 	public ValueSetInfoListGrid() {
 		super();
@@ -59,11 +59,12 @@ public class ValueSetInfoListGrid extends ListGrid {
 		setCanEdit(false);
 	}
 
-	public void getData(String link) {
-		i_valueSetLink = link;
+	public void getData(String serviceName, String name) {
+		i_valueSetName = name;
 
 		Criteria criteria = new Criteria();
-		criteria.addCriteria("valueSetLink", i_valueSetLink);
+		criteria.addCriteria("valueSetName", i_valueSetName);
+		criteria.addCriteria("serviceName", serviceName);
 
 		i_valueSetInfoXmlDS.fetchData(criteria, new DSCallback() {
 

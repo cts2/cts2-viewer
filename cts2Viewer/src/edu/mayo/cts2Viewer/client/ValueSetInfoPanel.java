@@ -212,14 +212,14 @@ public class ValueSetInfoPanel extends HLayout {
 		return layout;
 	}
 
-	public void updatePanel(String serverUrl, String valueSet, String link) {
-		i_valueSetInfoListGrid.getData(link);
+	public void updatePanel(String serviceName, String valueSet, String link) {
+		i_valueSetInfoListGrid.getData(serviceName, valueSet);
 
 		// clear the Resolved Value Set info as the call to update this
 		// information takes a few seconds.
 		clearResolvedValueSetInfo();
 
-		i_resolvedValueSetListGrid.getData(serverUrl, valueSet);
+		i_resolvedValueSetListGrid.getData(serviceName, valueSet);
 	}
 
 	private void clearResolvedValueSetInfo() {
