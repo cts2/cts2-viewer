@@ -6,8 +6,6 @@ import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
@@ -16,15 +14,22 @@ import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.core.DataClass;
+import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.types.ExportDisplay;
+import com.smartgwt.client.types.ExportFormat;
 import com.smartgwt.client.types.VerticalAlignment;
+import com.smartgwt.client.util.EnumUtil;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.BooleanItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
+import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
@@ -146,7 +151,72 @@ public class Cts2Viewer implements EntryPoint {
 			}
 		});
 
+        final DynamicForm exportForm = new DynamicForm();  
+        exportForm.setWidth(300);  
+  
+        SelectItem exportTypeItem = new SelectItem("exportType", "Export Type");  
+        exportTypeItem.setWidth("*");  
+        exportTypeItem.setDefaultToFirstOption(true);  
+  
+        LinkedHashMap valueMap = new LinkedHashMap();  
+        valueMap.put("csv", "CSV (Excel)");  
+        valueMap.put("xml", "XML");  
+        valueMap.put("json", "JSON");  
+  
+        exportTypeItem.setValueMap(valueMap);  
+  
+        BooleanItem showInWindowItem = new BooleanItem();  
+        showInWindowItem.setName("showInWindow");  
+        showInWindowItem.setTitle("Show in Window");  
+        showInWindowItem.setAlign(Alignment.LEFT);  
+  
+        exportForm.setItems(exportTypeItem, showInWindowItem);  
+        
+		// add a button to clear the search form.
+		IButton dlButton = new IButton("DownLoad");
+		dlButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) 
+			{
+	            DSRequest requestProperties = new DSRequest();
+	            String exportAs = (String) exportForm.getField("exportType").getValue();
+	            
+	            try
+	            {
+	            	requestProperties.setExportAs((ExportFormat) EnumUtil.getEnum(
+	            	      ExportFormat.values(), exportAs));
+	            }
+	            catch(Exception e)
+	            {
+	            	e.printStackTrace();
+	            }
+	            
+	            //boolean showInWindow = true;
+	            requestProperties.setExportDisplay(ExportDisplay.DOWNLOAD);
+	            
+               FormItem item = exportForm.getField("showInWindow");  
+                boolean showInWindow =  item.getValue() == null ? false : (Boolean) item.getValue();  
+
+	            requestProperties.setExportDisplay(showInWindow ? ExportDisplay.WINDOW : ExportDisplay.DOWNLOAD);
+	            requestProperties.setExportResults(true);
+	            
+	            /*
+	            requestProperties.setOperationId("fetchData");
+	    		Criteria criteria = new Criteria();
+	    		criteria.addCriteria("valueSetName", "PHVS_ActionCode_IIS");
+	    		criteria.addCriteria("serviceName", "PHINVADS");
+
+	    		ResolvedValueSetXmlDS i_resolvedValueSetXmlDS = ResolvedValueSetXmlDS.getInstance();
+	    		*/
+	            
+	    		i_valueSetsListGrid.exportData(requestProperties);
+			}
+		});
+		
 		searchLayout.addMember(clearButton);
+		searchLayout.addMember(exportForm);
+		searchLayout.addMember(dlButton);
 
 		// fill up all of the extra space to push the search combo to the
 		// right.
