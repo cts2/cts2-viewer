@@ -12,28 +12,36 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.core.DataClass;
-import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.ExportDisplay;
-import com.smartgwt.client.types.ExportFormat;
+import com.smartgwt.client.types.Encoding;
 import com.smartgwt.client.types.VerticalAlignment;
-import com.smartgwt.client.util.EnumUtil;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.MouseDownEvent;
+import com.smartgwt.client.widgets.events.MouseDownHandler;
+import com.smartgwt.client.widgets.events.MouseOutEvent;
+import com.smartgwt.client.widgets.events.MouseOutHandler;
+import com.smartgwt.client.widgets.events.MouseOverEvent;
+import com.smartgwt.client.widgets.events.MouseOverHandler;
+import com.smartgwt.client.widgets.events.MouseUpEvent;
+import com.smartgwt.client.widgets.events.MouseUpHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.BooleanItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.HiddenItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -123,6 +131,10 @@ public class Cts2Viewer implements EntryPoint {
 		initWindowClosingConfirmationDialog();
 	}
 
+    private DynamicForm i_downloadForm = null;
+    private Label i_downloadLabel = null;
+    private SelectItem i_exportTypeItem = null;
+    
 	private HLayout createSearchComponentLayout() {
 
 		HLayout searchLayout = new HLayout();
@@ -154,70 +166,49 @@ public class Cts2Viewer implements EntryPoint {
         final DynamicForm exportForm = new DynamicForm();  
         exportForm.setWidth(300);  
   
-        SelectItem exportTypeItem = new SelectItem("exportType", "Export Type");  
-        exportTypeItem.setWidth("*");  
-        exportTypeItem.setDefaultToFirstOption(true);  
+        i_exportTypeItem = new SelectItem("exportType", "Export Type");  
+        i_exportTypeItem.setWidth("*");  
+        i_exportTypeItem.setDefaultToFirstOption(true);  
   
         LinkedHashMap valueMap = new LinkedHashMap();  
         valueMap.put("csv", "CSV (Excel)");  
         valueMap.put("xml", "XML");  
         valueMap.put("json", "JSON");  
   
-        exportTypeItem.setValueMap(valueMap);  
+        i_exportTypeItem.setValueMap(valueMap);  
   
         BooleanItem showInWindowItem = new BooleanItem();  
         showInWindowItem.setName("showInWindow");  
         showInWindowItem.setTitle("Show in Window");  
         showInWindowItem.setAlign(Alignment.LEFT);  
   
-        exportForm.setItems(exportTypeItem, showInWindowItem);  
+        exportForm.setItems(i_exportTypeItem, showInWindowItem);  
         
-		// add a button to clear the search form.
-		IButton dlButton = new IButton("DownLoad");
-		dlButton.addClickHandler(new ClickHandler() {
+        /* Hidden frame for callback */
+        NamedFrame callbackFrame = new NamedFrame("downloadCallbackFrame");
+        callbackFrame.setHeight("1px");
+        callbackFrame.setWidth("1px");
+        callbackFrame.setVisible(false);
+        searchLayout.addMember(callbackFrame);
 
-			@Override
-			public void onClick(ClickEvent event) 
-			{
-	            DSRequest requestProperties = new DSRequest();
-	            String exportAs = (String) exportForm.getField("exportType").getValue();
-	            
-	            try
-	            {
-	            	requestProperties.setExportAs((ExportFormat) EnumUtil.getEnum(
-	            	      ExportFormat.values(), exportAs));
-	            }
-	            catch(Exception e)
-	            {
-	            	e.printStackTrace();
-	            }
-	            
-	            //boolean showInWindow = true;
-	            requestProperties.setExportDisplay(ExportDisplay.DOWNLOAD);
-	            
-               FormItem item = exportForm.getField("showInWindow");  
-                boolean showInWindow =  item.getValue() == null ? false : (Boolean) item.getValue();  
+        
+        i_downloadForm = new DynamicForm();
+        i_downloadForm.setTarget("downloadCallbackFrame");
+        i_downloadForm.setAction(GWT.getModuleBaseURL() + "cts2download");
+        i_downloadForm.setEncoding(Encoding.NORMAL);
+        i_downloadForm.setCanSubmit(true);
 
-	            requestProperties.setExportDisplay(showInWindow ? ExportDisplay.WINDOW : ExportDisplay.DOWNLOAD);
-	            requestProperties.setExportResults(true);
-	            
-	            /*
-	            requestProperties.setOperationId("fetchData");
-	    		Criteria criteria = new Criteria();
-	    		criteria.addCriteria("valueSetName", "PHVS_ActionCode_IIS");
-	    		criteria.addCriteria("serviceName", "PHINVADS");
-
-	    		ResolvedValueSetXmlDS i_resolvedValueSetXmlDS = ResolvedValueSetXmlDS.getInstance();
-	    		*/
-	            
-	    		i_valueSetsListGrid.exportData(requestProperties);
-			}
-		});
-		
-		searchLayout.addMember(clearButton);
+ 		searchLayout.addMember(clearButton);
 		searchLayout.addMember(exportForm);
-		searchLayout.addMember(dlButton);
+		//searchLayout.addMember(dlButton);
 
+        i_downloadLabel = createDownload();
+        //i_fileInfoPanel.addMember(i_downloadLabel);
+
+		searchLayout.addMember(i_downloadForm);
+		searchLayout.addMember(i_downloadLabel);
+		
+		
 		// fill up all of the extra space to push the search combo to the
 		// right.
 		HLayout spacerLayout = new HLayout();
@@ -230,6 +221,119 @@ public class Cts2Viewer implements EntryPoint {
 		return searchLayout;
 	}
 
+    /**
+     * create a download "button".
+     * 
+     * @return
+     */
+    private Label createDownload() {
+
+        final Label label = new Label();
+        label.setHeight(36);
+        label.setWidth(210);
+        label.setPadding(3);
+        label.setAlign(Alignment.CENTER);
+        label.setValign(VerticalAlignment.CENTER);
+        label.setWrap(false);
+        //label.setIcon("download.png");
+        label.setIconHeight(32);
+        label.setIconWidth(32);
+        label.setShowEdges(true);
+        label.setEdgeSize(1);
+        label.setEdgeBackgroundColor("#6056b7");
+        label.setContents("Download");
+        label.setBackgroundColor("#f5f4fa");
+
+        label.addMouseOverHandler(new MouseOverHandler() {
+
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                label.setBackgroundColor("#d7d5ec");
+                label.setContents("<i>Download</i>");
+            }
+        });
+
+        label.addMouseOutHandler(new MouseOutHandler() {
+
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                label.setBackgroundColor("#f5f4fa");
+                label.setContents("Download");
+            }
+        });
+
+        label.addMouseDownHandler(new MouseDownHandler() {
+
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                label.setContents("<b><i>Download</i><b>");
+            }
+        });
+
+        label.addMouseUpHandler(new MouseUpHandler() {
+
+            @Override
+            public void onMouseUp(MouseUpEvent event) {
+                label.setContents("<i>Download</i>");
+            }
+        });
+        label.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+
+            @Override
+            public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) 
+            {
+            	FormItem[] allItems = new FormItem[3];
+            	
+            	ListGridRecord selectedTypeRecord = i_exportTypeItem.getSelectedRecord();
+            	String downloadType = selectedTypeRecord.getAttributeAsString("exportType");
+            	
+                HiddenItem downloadTypeItem = new HiddenItem("downloadType");
+                downloadTypeItem.setValue(downloadType);
+
+            	
+                HiddenItem zipFileName = new HiddenItem("ZipFileName");
+                zipFileName.setValue("CTS2ValueSetdownload");
+
+            	ListGridRecord[] selected = i_valueSetsListGrid.getSelectedRecords();
+            	if ((selected == null) || (selected.length == 0))
+            	{
+            		logger.log(Level.WARNING, "No ValueSet Selected!!");
+            		return;
+            	}
+            	
+            	String valueSets = "";
+            	
+            	for (ListGridRecord record : selected)
+            	{
+            		String value = record.getAttributeAsString("valueSetName");
+            		if ("".equals(valueSets))
+            			valueSets = value;
+            		else
+            			valueSets += "," + value;
+            	}
+
+            	if ("".equals(valueSets.trim()))
+            	{
+            		logger.log(Level.WARNING, "No ValueSet Names found in selected records!!");
+            		return;
+            	}
+            	
+                HiddenItem vsNames = new HiddenItem("valueSetNames");
+                vsNames.setValue(valueSets);
+                
+                allItems[0] = zipFileName;
+                allItems[1] = vsNames;
+                allItems[2] = downloadTypeItem;
+                
+                i_downloadForm.setFields(allItems);
+
+                i_downloadForm.submit();
+            }
+        });
+
+        return label;
+    }
+    
 	/**
 	 * Create the server ComboBoxItem to select the server to connect to.
 	 * 
