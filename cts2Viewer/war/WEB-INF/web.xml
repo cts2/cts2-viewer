@@ -16,6 +16,16 @@
     <url-pattern>/cts2Viewer/cts2</url-pattern>
   </servlet-mapping>
   
+    <servlet>
+    <servlet-name>CTS2DownloadServlet</servlet-name>
+    <servlet-class>edu.mayo.cts2Viewer.server.CTS2DownloadServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>CTS2DownloadServlet</servlet-name>
+    <url-pattern>/cts2Viewer/cts2download</url-pattern>
+  </servlet-mapping>
+  
   
   
   <!-- Default page to serve -->
