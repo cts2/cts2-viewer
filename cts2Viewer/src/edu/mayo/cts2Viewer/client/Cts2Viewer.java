@@ -282,17 +282,13 @@ public class Cts2Viewer implements EntryPoint {
             @Override
             public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) 
             {
-            	FormItem[] allItems = new FormItem[3];
+            	
             	
             	ListGridRecord selectedTypeRecord = i_exportTypeItem.getSelectedRecord();
+            	
             	String downloadType = selectedTypeRecord.getAttributeAsString("exportType");
+            	String serviceNameValue = i_serverCombo.getValueAsString();
             	
-                HiddenItem downloadTypeItem = new HiddenItem("downloadType");
-                downloadTypeItem.setValue(downloadType);
-
-            	
-                HiddenItem zipFileName = new HiddenItem("ZipFileName");
-                zipFileName.setValue("CTS2ValueSetdownload");
 
             	ListGridRecord[] selected = i_valueSetsListGrid.getSelectedRecords();
             	if ((selected == null) || (selected.length == 0))
@@ -318,16 +314,21 @@ public class Cts2Viewer implements EntryPoint {
             		return;
             	}
             	
-                HiddenItem vsNames = new HiddenItem("valueSetNames");
-                vsNames.setValue(valueSets);
-                
-                allItems[0] = zipFileName;
-                allItems[1] = vsNames;
-                allItems[2] = downloadTypeItem;
-                
-                i_downloadForm.setFields(allItems);
+            	HiddenItem zipFileNameItem = new HiddenItem("ZipFileName");
+            	HiddenItem serviceNameItem = new HiddenItem("serviceName");
+                HiddenItem downloadTypeItem = new HiddenItem("downloadType");
+                HiddenItem vsNamesItem = new HiddenItem("valueSetNames");
 
-                i_downloadForm.submit();
+                serviceNameItem.setValue(serviceNameValue);
+                downloadTypeItem.setValue(downloadType);
+                zipFileNameItem.setValue("CTS2ValueSetdownload");
+                vsNamesItem.setValue(valueSets);
+
+                FormItem[] allItems = new FormItem[] {zipFileNameItem, serviceNameItem, downloadTypeItem, vsNamesItem};
+    
+                i_downloadForm.setFields(allItems);
+                
+                i_downloadForm.submitForm();
             }
         });
 

@@ -1,12 +1,6 @@
 package edu.mayo.cts2Viewer.server;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -17,7 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gwt.thirdparty.guava.common.io.Files;
+import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
 
 public class CTS2DownloadServlet extends HttpServlet {
 
@@ -41,13 +37,13 @@ public class CTS2DownloadServlet extends HttpServlet {
     private void processDownloadAlgorithm(HttpServletRequest request, HttpServletResponse response) 
     {
         String zipFileName = request.getParameter("ZipFileName");
-        
-        String downloadType = request.getParameter("downloadType");
+        String serviceName = request.getParameter("serviceName");
+        String downloadType = request.getParameter("downloadType"); 
         
         String ext = ".xls";
-        if ("json".equalsIgnoreCase(downloadType))
+        if ("json".equalsIgnoreCase(downloadType)) 
         {
-        	ext = "_json.txt";
+        	ext = "_json.json";
         	zipFileName += "_JSON.zip";
         }
         else if ("xml".equalsIgnoreCase(downloadType))
@@ -55,10 +51,13 @@ public class CTS2DownloadServlet extends HttpServlet {
         	ext = ".xml";
         	zipFileName += "_XML.zip";
         }
-        else
+        else 
         	zipFileName += "_CSV.zip";
         
         String vsNamesStr = request.getParameter("valueSetNames");
+         
+        if (CTS2Utils.isNull(vsNamesStr))
+        	return;
         
         String[] valueSets = vsNamesStr.split(",");
 
@@ -71,6 +70,7 @@ public class CTS2DownloadServlet extends HttpServlet {
         response.setHeader("Content-Disposition",
                "attachment; filename=\"" + zipFileName + "\"");
 
+        initCM(serviceName);
         
         try 
         {
@@ -100,6 +100,41 @@ public class CTS2DownloadServlet extends HttpServlet {
     
     private String createValueSetContent(String type, String valueSetName)
     {
+    	String msg = null;
+    	try
+    	{
+    		return cm.getValueSetMembers(valueSetName, getFormatFromString(type));
+    	}
+    	catch(Exception e)
+    	{
+    		msg = e.getMessage();
+    		e.printStackTrace();
+    	}
+    	
+    	return "Failed to get content for value set '" + valueSetName + "'\n" + msg;
+    }
+    
+    private ServiceResultFormat getFormatFromString(String formatType)
+    {
+    	if (CTS2Utils.isNull(formatType))
+    		return ServiceResultFormat.XML;
+    	
+    	if (formatType.toLowerCase().indexOf("json") != -1)
+    		return ServiceResultFormat.JSON;
+    	
+    	if (formatType.toLowerCase().indexOf("csv") != -1)
+    		return ServiceResultFormat.CSV;
+
+    	return ServiceResultFormat.XML;
+    }
+    
+    /*
+    
+        private String createValueSetContent(String type, String valueSetName)
+    {
+    	String msg = null;
+    	
+    	
     	if (valueSetName == null)
     		return "ValueSet Name is null!!";
     	
@@ -119,7 +154,7 @@ public class CTS2DownloadServlet extends HttpServlet {
         			valueSetName + "/resolution";
         }
 
-    	String msg = null;
+    	
     	try 
     	{
 			return getContentResult(new URL(urlStr));
@@ -132,10 +167,10 @@ public class CTS2DownloadServlet extends HttpServlet {
 			e.printStackTrace();
 			msg = e.getMessage();
 		}
-    	
-    	return "Failed to get content for value set '" + valueSetName + "'\n" + msg;
-    }
-    
+		
+		return "Failed to get content for value set '" + valueSetName + "'\n" + msg;
+	}
+	
     private static String getContentResult(URL url) throws IOException
     {
         InputStream in = url.openStream();
@@ -153,5 +188,25 @@ public class CTS2DownloadServlet extends HttpServlet {
         }
         return sb.toString();
     }
+   */
+    
+	private static final String SERVER_PROPERTIES_FILE = "CTS2Profiles.properties";
+	
+	private ConvenienceMethods cm = null;
 
+	private void initCM(String serviceName)
+	{
+			try 
+			{
+				if (this.cm == null)
+					this.cm = ConvenienceMethods.instance(this.getServletContext().getContextPath() + "data/" + SERVER_PROPERTIES_FILE);
+				
+				if ((!CTS2Utils.isNull(serviceName))&&(!(cm.getCurrentProfileName().equals(serviceName))))
+					cm.setCurrentProfileName(serviceName);
+			} 
+			catch (Exception ex) 
+			{
+					logger.log(Level.SEVERE, ex.getMessage(), ex);
+			}
+	}
 }

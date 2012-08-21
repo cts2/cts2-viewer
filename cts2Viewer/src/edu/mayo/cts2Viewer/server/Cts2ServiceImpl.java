@@ -20,6 +20,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.VocabularyId;
 import edu.mayo.cts2Viewer.client.Cts2Service;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
@@ -52,9 +53,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			
 			cm.getCurrentContext().resultLimit = 100;
 			if (CTS2Utils.isNull(searchText))
-				results = cm.getAvailableValueSetsAsXML(false,  false, false);
+				results = cm.getAvailableValueSets(false,  false, false, ServiceResultFormat.XML);
 			else
-				results = cm.getMatchingValueSetsAsXML(searchText, false, false, false);
+				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
 		} 
 		catch (Exception e) 
 		{
@@ -80,7 +81,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			//results = restExecuter.getValueSetInfo(valueSet);
 			VocabularyId valueSetId = new VocabularyId();
 			valueSetId.name = valueSetName;
-			results = cm.getValueSetInformationAsXML(valueSetId);
+			results = cm.getValueSetInformation(valueSetId, ServiceResultFormat.XML);
 			vsi = getValueSetGeneralInfo(results);
 
 		} catch (Exception e) {
@@ -104,7 +105,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		try 
 		{
 			initCM(serviceName);
-			results = cm.getValueSetMembersAsXML(valueSetName);
+			results = cm.getValueSetMembers(valueSetName, ServiceResultFormat.XML);
 			//results = restExecuter.getResolvedValueSetInfo(serverUrl, valueSet);
 			
 			if (results != null && results.length() > 0) 
