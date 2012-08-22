@@ -36,30 +36,31 @@ public class CTS2DownloadServlet extends HttpServlet {
 
     private void processDownloadAlgorithm(HttpServletRequest request, HttpServletResponse response) 
     {
-        String zipFileName = request.getParameter("ZipFileName");
-        String serviceName = request.getParameter("serviceName");
-        String downloadType = request.getParameter("downloadType"); 
+        String zipFileName = null;
+        //request.getParameter("ZipFileName");
+        //String serviceName = request.getParameter("serviceName");
+        //String downloadType = request.getParameter("downloadType"); 
         
         String ext = ".xls";
-        if ("json".equalsIgnoreCase(downloadType)) 
+        if ("json".equalsIgnoreCase(request.getParameter("downloadType"))) 
         {
         	ext = "_json.json";
-        	zipFileName += "_JSON.zip";
+        	zipFileName = request.getParameter("ZipFileName") + "_JSON.zip";
         }
-        else if ("xml".equalsIgnoreCase(downloadType))
+        else if ("xml".equalsIgnoreCase(request.getParameter("downloadType")))   
         {
-        	ext = ".xml";
-        	zipFileName += "_XML.zip";
+        	ext = ".xml"; 
+        	zipFileName = request.getParameter("ZipFileName") + "_XML.zip";
         }
         else 
-        	zipFileName += "_CSV.zip";
+        	zipFileName = request.getParameter("ZipFileName") +  "_CSV.zip";
         
-        String vsNamesStr = request.getParameter("valueSetNames");
+        //String vsNamesStr = request.getParameter("valueSetNames");
          
-        if (CTS2Utils.isNull(vsNamesStr))
-        	return;
+        if (CTS2Utils.isNull(request.getParameter("valueSetNames")))
+        	return; 
         
-        String[] valueSets = vsNamesStr.split(",");
+        String[] valueSets = request.getParameter("valueSetNames").split(",");
 
         //File algorithmFile = new File(zipPath);
         logger.info("Download requested: " + zipFileName);
@@ -68,9 +69,9 @@ public class CTS2DownloadServlet extends HttpServlet {
         response.setContentType("application/zip");
         //response.setContentLength((int) algorithmFile.length());
         response.setHeader("Content-Disposition",
-               "attachment; filename=\"" + zipFileName + "\"");
+               "attachment; filename=\"" + zipFileName + "\""); 
 
-        initCM(serviceName);
+        initCM(request.getParameter("serviceName"));
         
         try 
         {
@@ -80,7 +81,7 @@ public class CTS2DownloadServlet extends HttpServlet {
         	for (String vs : valueSets)
         	{
         		zipout.putNextEntry(new ZipEntry(vs + ext));
-        		zipout.write(createValueSetContent(downloadType, vs).getBytes());
+        		zipout.write(createValueSetContent(request.getParameter("downloadType"), vs).getBytes());
         		zipout.closeEntry();
         	}
         	

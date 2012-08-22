@@ -326,6 +326,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	{
 			try 
 			{
+				logger.log(Level.SEVERE, "PRINTING BASE PATH...");
+				logger.log(Level.SEVERE, getBasePath());
+				
 				if (this.cm == null)
 					this.cm = ConvenienceMethods.instance(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
 				

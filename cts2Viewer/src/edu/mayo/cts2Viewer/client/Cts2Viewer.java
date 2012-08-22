@@ -342,7 +342,7 @@ public class Cts2Viewer implements EntryPoint {
 	 */
 	private DynamicForm createServerCombo() {
 
-		final DynamicForm serverForm = new DynamicForm();
+		final DynamicForm serverForm = new DynamicForm(); 
 		serverForm.setWidth(300);
 		serverForm.setAlign(Alignment.RIGHT);
 
