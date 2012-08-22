@@ -135,6 +135,11 @@ public class Cts2Viewer implements EntryPoint {
     private Label i_downloadLabel = null;
     private SelectItem i_exportTypeItem = null;
     
+	private HiddenItem zipFileNameItem = null;
+	private HiddenItem serviceNameItem = null;
+    private HiddenItem downloadTypeItem = null;
+    private HiddenItem vsNamesItem = null;
+
 	private HLayout createSearchComponentLayout() {
 
 		HLayout searchLayout = new HLayout();
@@ -198,6 +203,15 @@ public class Cts2Viewer implements EntryPoint {
         i_downloadForm.setEncoding(Encoding.NORMAL);
         i_downloadForm.setCanSubmit(true);
 
+    	zipFileNameItem = new HiddenItem("ZipFileName");
+    	serviceNameItem = new HiddenItem("serviceName");
+        downloadTypeItem = new HiddenItem("downloadType");
+        vsNamesItem = new HiddenItem("valueSetNames");
+        
+        FormItem[] allItems = new FormItem[] {zipFileNameItem, serviceNameItem, downloadTypeItem, vsNamesItem};
+        
+        i_downloadForm.setFields(allItems); 
+       
  		searchLayout.addMember(clearButton);
 		searchLayout.addMember(exportForm);
 		//searchLayout.addMember(dlButton);
@@ -277,13 +291,12 @@ public class Cts2Viewer implements EntryPoint {
                 label.setContents("<i>Download</i>");
             }
         });
+        
         label.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
             @Override
             public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) 
             {
-            	
-            	
             	ListGridRecord selectedTypeRecord = i_exportTypeItem.getSelectedRecord();
             	
             	String downloadType = selectedTypeRecord.getAttributeAsString("exportType");
@@ -314,21 +327,12 @@ public class Cts2Viewer implements EntryPoint {
             		return;
             	}
             	
-            	HiddenItem zipFileNameItem = new HiddenItem("ZipFileName");
-            	HiddenItem serviceNameItem = new HiddenItem("serviceName");
-                HiddenItem downloadTypeItem = new HiddenItem("downloadType");
-                HiddenItem vsNamesItem = new HiddenItem("valueSetNames");
-
                 serviceNameItem.setValue(serviceNameValue);
                 downloadTypeItem.setValue(downloadType);
-                zipFileNameItem.setValue("CTS2ValueSetdownload");
+                zipFileNameItem.setValue("CTS2ValueSetdownload"); 
                 vsNamesItem.setValue(valueSets);
 
-                FormItem[] allItems = new FormItem[] {zipFileNameItem, serviceNameItem, downloadTypeItem, vsNamesItem};
-    
-                i_downloadForm.setFields(allItems);
-                
-                i_downloadForm.submitForm();
+                i_downloadForm.submitForm(); 
             }
         });
 

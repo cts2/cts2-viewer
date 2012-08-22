@@ -35,22 +35,19 @@ public class CTS2DownloadServlet extends HttpServlet {
     }
 
     private void processDownloadAlgorithm(HttpServletRequest request, HttpServletResponse response) 
-    {
+    {    	
         String zipFileName = null;
-        //request.getParameter("ZipFileName");
-        //String serviceName = request.getParameter("serviceName");
-        //String downloadType = request.getParameter("downloadType"); 
-        
+
         String ext = ".xls";
         if ("json".equalsIgnoreCase(request.getParameter("downloadType"))) 
         {
         	ext = "_json.json";
-        	zipFileName = request.getParameter("ZipFileName") + "_JSON.zip";
+        	zipFileName = request.getParameter("ZipFileName") + "_JSON.zip"; 
         }
         else if ("xml".equalsIgnoreCase(request.getParameter("downloadType")))   
-        {
+        { 
         	ext = ".xml"; 
-        	zipFileName = request.getParameter("ZipFileName") + "_XML.zip";
+        	zipFileName = request.getParameter("ZipFileName") + "_XML.zip";  
         }
         else 
         	zipFileName = request.getParameter("ZipFileName") +  "_CSV.zip";
