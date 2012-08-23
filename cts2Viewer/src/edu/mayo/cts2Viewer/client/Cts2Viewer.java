@@ -114,6 +114,7 @@ public class Cts2Viewer implements EntryPoint {
 		searchLayout.setWidth100();
 		searchLayout.setHeight(60);
 		searchLayout.setMembersMargin(5);
+		searchLayout.setBackgroundColor("#c8d1d9");
 
 		i_searchItem = new SearchTextItem();
 
@@ -196,14 +197,14 @@ public class Cts2Viewer implements EntryPoint {
 					String complete = dc[0].getAttribute("complete");
 
 					i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " <b>" + numEntries + "</b>");
-					if ((complete != null) && !complete.equals("COMPLETE")) {
+					if (complete != null && !complete.equals("COMPLETE")) {
 						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + "<b> " + numEntries + "</b>+");
 					} else {
 						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " <b>" + numEntries + "</b>");
 					}
 
 					String searchText = i_searchItem.getValueAsString();
-					if ((searchText != null) && (searchText.length() > 0)) {
+					if (searchText != null && searchText.length() > 0) {
 
 					} else {
 						i_rowsRetrievedLabel.setContents("");
@@ -380,6 +381,6 @@ public class Cts2Viewer implements EntryPoint {
 	 */
 	protected void setClearButtonEnablement() {
 		String currentText = i_searchItem.getValueAsString();
-		i_clearButton.setDisabled((currentText == null) || (currentText.length() == 0));
+		i_clearButton.setDisabled(currentText == null || currentText.length() == 0);
 	}
 }
