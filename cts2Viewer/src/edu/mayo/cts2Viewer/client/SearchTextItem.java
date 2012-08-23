@@ -13,10 +13,9 @@ public class SearchTextItem extends TextItem {
 	}
 
 	private void init() {
-
 		setHint("Enter Search Text");
 		setShowHintInField(true);
-		setWidth(400);
+		setWidth(300);
 	}
 
 	/**

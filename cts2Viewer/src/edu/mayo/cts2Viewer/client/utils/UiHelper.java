@@ -2,12 +2,13 @@ package edu.mayo.cts2Viewer.client.utils;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.layout.HLayout;
 
 public class UiHelper {
 
 	private static final String BACKGROUND_COLOR_TITLE = "#dedad5";
 	public static final String SELECTED_TAG = "_SELECTED";
-	
+
 	// return a link that will open a page in a new window/tab.
 	public static String getLink(String url, String label) {
 		return "<a href=\"" + url + " \" target='_blank'>" + label + "</a>";
@@ -27,15 +28,42 @@ public class UiHelper {
 
 		return titleLabel;
 	}
-	
-	public static String getSelected(String serviceName)
-	{
-		if (serviceName == null)
+
+	public static String getSelected(String serviceName) {
+		if (serviceName == null) {
 			return null;
-		
-		if (serviceName.endsWith(SELECTED_TAG))
-				return serviceName.split(SELECTED_TAG)[0];
-		
+		}
+
+		if (serviceName.endsWith(SELECTED_TAG)) {
+			return serviceName.split(SELECTED_TAG)[0];
+		}
+
 		return null;
+	}
+
+	public static Label createTitleLabel(int width, String title) {
+		Label label = new Label("<b>" + title + "</b>");
+		label.setWrap(false);
+		label.setWidth(width);
+		label.setMargin(3);
+		return label;
+	}
+
+	public static Label createValueLabel(String title) {
+		Label label = new Label(title);
+		label.setWidth("*");
+		label.setMargin(3);
+		return label;
+	}
+
+	public static HLayout createNameValueLayout(Label title, Label value) {
+		HLayout layout = new HLayout();
+		layout.setWidth100();
+		layout.setHeight(20);
+
+		layout.addMember(title);
+		layout.addMember(value);
+
+		return layout;
 	}
 }

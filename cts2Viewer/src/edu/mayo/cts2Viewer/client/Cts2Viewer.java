@@ -12,36 +12,20 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.core.DataClass;
-import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.Encoding;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
-import com.smartgwt.client.widgets.events.MouseDownEvent;
-import com.smartgwt.client.widgets.events.MouseDownHandler;
-import com.smartgwt.client.widgets.events.MouseOutEvent;
-import com.smartgwt.client.widgets.events.MouseOutHandler;
-import com.smartgwt.client.widgets.events.MouseOverEvent;
-import com.smartgwt.client.widgets.events.MouseOverHandler;
-import com.smartgwt.client.widgets.events.MouseUpEvent;
-import com.smartgwt.client.widgets.events.MouseUpHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.BooleanItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
-import com.smartgwt.client.widgets.form.fields.FormItem;
-import com.smartgwt.client.widgets.form.fields.HiddenItem;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -70,291 +54,110 @@ public class Cts2Viewer implements EntryPoint {
 
 	private VLayout i_mainLayout;
 	private ValueSetsListGrid i_valueSetsListGrid;
-	private ValueSetInfoPanel i_valueSetInfoPanel;
+	private ValueSetPropertiesPanel i_valueSetPropertiesPanel;
+
+	private ResolvedValueSetPropertiesPanel i_resolvedValueSetPropertiesPanel;
 	private SearchTextItem i_searchItem;
+	private IButton i_clearButton;
 	private Label i_rowsRetrievedLabel;
 	private ComboBoxItem i_serverCombo;
 
-	/**
-	 * This is the entry point method.
-	 */
-	@Override
-	public void onModuleLoad() {
+	private DownloadPanel i_downloadPanel;
 
-		logger.log(Level.INFO, "init OnLoadModule().");
+	private VLayout createLeftSideComponentsLayout() {
 
-		Label titleLabel = UiHelper.createTitleLabel(TITLE);
+		VLayout componentsLayout = new VLayout();
+		componentsLayout.setWidth("55%");
+		componentsLayout.setHeight100();
+		componentsLayout.setMembersMargin(10);
 
-		// overall layout
-		i_mainLayout = new VLayout();
-		i_mainLayout.setWidth100();
-		i_mainLayout.setHeight100();
-		i_mainLayout.setBackgroundColor(BACKGROUND_COLOR);
+		i_valueSetsListGrid = new ValueSetsListGrid();
 
-		// add the label to the main layout at the top
-		i_mainLayout.addMember(titleLabel);
+		componentsLayout.addMember(createSearchWidgetLayout());
 
-		// layout for any content
-		VLayout contentLayout = new VLayout();
-		contentLayout.setWidth100();
-		contentLayout.setHeight100();
-		contentLayout.setAlign(VerticalAlignment.TOP);
-		contentLayout.setMargin(10);
-		contentLayout.setMembersMargin(10);
-
-		HLayout searchLayout = createSearchComponentLayout();
-		contentLayout.addMember(searchLayout);
+		i_downloadPanel = new DownloadPanel(i_serverCombo, i_valueSetsListGrid);
+		i_downloadPanel.setWidgetsEnabled(false);
 
 		i_rowsRetrievedLabel = new Label(ROWS_RETRIEVED_TITLE);
 		i_rowsRetrievedLabel.setWidth100();
-		i_rowsRetrievedLabel.setHeight(15);
+		i_rowsRetrievedLabel.setMargin(5);
+		i_rowsRetrievedLabel.setHeight(20);
 
-		// i_rowsRetrievedLabel.hide();
-		contentLayout.addMember(i_rowsRetrievedLabel);
+		// layout to hold the rows retrieved label and the download form.
+		HLayout rowsRetrievedAndDownloadLayout = new HLayout();
+		rowsRetrievedAndDownloadLayout.setWidth100();
+		rowsRetrievedAndDownloadLayout.setHeight(20);
 
-		i_valueSetsListGrid = new ValueSetsListGrid();
-		contentLayout.addMember(i_valueSetsListGrid);
+		rowsRetrievedAndDownloadLayout.addMember(i_rowsRetrievedLabel);
+		rowsRetrievedAndDownloadLayout.addMember(i_downloadPanel);
 
-		i_valueSetInfoPanel = new ValueSetInfoPanel();
-		contentLayout.addMember(i_valueSetInfoPanel);
+		componentsLayout.addMember(rowsRetrievedAndDownloadLayout);
+		componentsLayout.addMember(i_valueSetsListGrid);
 
-		// TODO CME make eventBus calls to update components.
-		linkWidgets();
+		// add the value set properties panel to the bottom
+		i_valueSetPropertiesPanel = new ValueSetPropertiesPanel();
+		componentsLayout.addMember(i_valueSetPropertiesPanel);
 
-		i_mainLayout.addMember(contentLayout);
-
-		createValueSetsReceivedEvent();
-
-		// Add the main layout to the root panel
-		RootLayoutPanel.get().add(i_mainLayout);
-
-		initWindowClosingConfirmationDialog();
+		return componentsLayout;
 	}
 
-    private DynamicForm i_downloadForm = null;
-    private Label i_downloadLabel = null;
-    private SelectItem i_exportTypeItem = null;
-    
-	private HiddenItem zipFileNameItem = null;
-	private HiddenItem serviceNameItem = null;
-    private HiddenItem downloadTypeItem = null;
-    private HiddenItem vsNamesItem = null;
+	private VLayout createSearchWidgetLayout() {
 
-	private HLayout createSearchComponentLayout() {
+		VLayout layout = new VLayout();
+		layout.setWidth100();
+		layout.setHeight(50);
+
+		// add the drop down to choose the server to connect to.
+		i_serverCombo = createServerCombo();
 
 		HLayout searchLayout = new HLayout();
 		searchLayout.setWidth100();
-		searchLayout.setHeight(30);
-		searchLayout.setMembersMargin(20);
+		searchLayout.setHeight(60);
+		searchLayout.setMembersMargin(5);
 
-		// i_searchComboBoxItem = new SearchComboBoxItem();
 		i_searchItem = new SearchTextItem();
 
 		DynamicForm searchForm = new DynamicForm();
-		searchForm.setItems(i_searchItem);
+		searchForm.setItems(i_serverCombo, i_searchItem);
+		searchForm.setHeight(55);
 		searchLayout.addMember(searchForm);
 
+		VLayout buttonLayout = new VLayout();
+		buttonLayout.setHeight(55);
+		buttonLayout.setMargin(4);
+		buttonLayout.setAlign(VerticalAlignment.BOTTOM);
+
 		// add a button to clear the search form.
-		IButton clearButton = new IButton("Clear");
-		clearButton.addClickHandler(new ClickHandler() {
+		i_clearButton = new IButton("Clear");
+		i_clearButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				i_searchItem.clearValue();
-
-				// i_valueSetsListGrid.getData("");
+				i_clearButton.setDisabled(true);
 				getValueSets("");
-				i_valueSetInfoPanel.clearPanels();
+				i_valueSetPropertiesPanel.clearValueSetInfo();
+				i_resolvedValueSetPropertiesPanel.clearPanels();
 			}
 		});
+		buttonLayout.addMember(i_clearButton);
+		searchLayout.addMember(buttonLayout);
+		layout.addMember(searchLayout);
 
-        final DynamicForm exportForm = new DynamicForm();  
-        exportForm.setWidth(300);  
-  
-        i_exportTypeItem = new SelectItem("exportType", "Export Type");  
-        i_exportTypeItem.setWidth("*");  
-        i_exportTypeItem.setDefaultToFirstOption(true);  
-  
-        LinkedHashMap valueMap = new LinkedHashMap();  
-        valueMap.put("csv", "CSV (Excel)");  
-        valueMap.put("xml", "XML");  
-        valueMap.put("json", "JSON");  
-  
-        i_exportTypeItem.setValueMap(valueMap);  
-  
-        BooleanItem showInWindowItem = new BooleanItem();  
-        showInWindowItem.setName("showInWindow");  
-        showInWindowItem.setTitle("Show in Window");  
-        showInWindowItem.setAlign(Alignment.LEFT);  
-  
-        exportForm.setItems(i_exportTypeItem, showInWindowItem);  
-        
-        /* Hidden frame for callback */
-        NamedFrame callbackFrame = new NamedFrame("downloadCallbackFrame");
-        callbackFrame.setHeight("1px");
-        callbackFrame.setWidth("1px");
-        callbackFrame.setVisible(false);
-        searchLayout.addMember(callbackFrame);
-
-        
-        i_downloadForm = new DynamicForm();
-        i_downloadForm.setTarget("downloadCallbackFrame");
-        i_downloadForm.setAction(GWT.getModuleBaseURL() + "cts2download");
-        i_downloadForm.setEncoding(Encoding.NORMAL);
-        i_downloadForm.setCanSubmit(true);
-
-    	zipFileNameItem = new HiddenItem("ZipFileName");
-    	serviceNameItem = new HiddenItem("serviceName");
-        downloadTypeItem = new HiddenItem("downloadType");
-        vsNamesItem = new HiddenItem("valueSetNames");
-        
-        FormItem[] allItems = new FormItem[] {zipFileNameItem, serviceNameItem, downloadTypeItem, vsNamesItem};
-        
-        i_downloadForm.setFields(allItems); 
-       
- 		searchLayout.addMember(clearButton);
-		searchLayout.addMember(exportForm);
-		//searchLayout.addMember(dlButton);
-
-        i_downloadLabel = createDownload();
-        //i_fileInfoPanel.addMember(i_downloadLabel);
-
-		searchLayout.addMember(i_downloadForm);
-		searchLayout.addMember(i_downloadLabel);
-		
-		
-		// fill up all of the extra space to push the search combo to the
-		// right.
-		HLayout spacerLayout = new HLayout();
-		spacerLayout.setWidth("*");
-		searchLayout.addMember(spacerLayout);
-
-		// add the drop down to choose the server to connect to.
-		searchLayout.addMember(createServerCombo());
-
-		return searchLayout;
+		return layout;
 	}
 
-    /**
-     * create a download "button".
-     * 
-     * @return
-     */
-    private Label createDownload() {
-
-        final Label label = new Label();
-        label.setHeight(36);
-        label.setWidth(210);
-        label.setPadding(3);
-        label.setAlign(Alignment.CENTER);
-        label.setValign(VerticalAlignment.CENTER);
-        label.setWrap(false);
-        //label.setIcon("download.png");
-        label.setIconHeight(32);
-        label.setIconWidth(32);
-        label.setShowEdges(true);
-        label.setEdgeSize(1);
-        label.setEdgeBackgroundColor("#6056b7");
-        label.setContents("Download");
-        label.setBackgroundColor("#f5f4fa");
-
-        label.addMouseOverHandler(new MouseOverHandler() {
-
-            @Override
-            public void onMouseOver(MouseOverEvent event) {
-                label.setBackgroundColor("#d7d5ec");
-                label.setContents("<i>Download</i>");
-            }
-        });
-
-        label.addMouseOutHandler(new MouseOutHandler() {
-
-            @Override
-            public void onMouseOut(MouseOutEvent event) {
-                label.setBackgroundColor("#f5f4fa");
-                label.setContents("Download");
-            }
-        });
-
-        label.addMouseDownHandler(new MouseDownHandler() {
-
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
-                label.setContents("<b><i>Download</i><b>");
-            }
-        });
-
-        label.addMouseUpHandler(new MouseUpHandler() {
-
-            @Override
-            public void onMouseUp(MouseUpEvent event) {
-                label.setContents("<i>Download</i>");
-            }
-        });
-        
-        label.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
-
-            @Override
-            public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) 
-            {
-            	ListGridRecord selectedTypeRecord = i_exportTypeItem.getSelectedRecord();
-            	
-            	String downloadType = selectedTypeRecord.getAttributeAsString("exportType");
-            	String serviceNameValue = i_serverCombo.getValueAsString();
-            	
-
-            	ListGridRecord[] selected = i_valueSetsListGrid.getSelectedRecords();
-            	if ((selected == null) || (selected.length == 0))
-            	{
-            		logger.log(Level.WARNING, "No ValueSet Selected!!");
-            		return;
-            	}
-            	
-            	String valueSets = "";
-            	
-            	for (ListGridRecord record : selected)
-            	{
-            		String value = record.getAttributeAsString("valueSetName");
-            		if ("".equals(valueSets))
-            			valueSets = value;
-            		else
-            			valueSets += "," + value;
-            	}
-
-            	if ("".equals(valueSets.trim()))
-            	{
-            		logger.log(Level.WARNING, "No ValueSet Names found in selected records!!");
-            		return;
-            	}
-            	
-                serviceNameItem.setValue(serviceNameValue);
-                downloadTypeItem.setValue(downloadType);
-                zipFileNameItem.setValue("CTS2ValueSetdownload"); 
-                vsNamesItem.setValue(valueSets);
-
-                i_downloadForm.submitForm(); 
-            }
-        });
-
-        return label;
-    }
-    
 	/**
 	 * Create the server ComboBoxItem to select the server to connect to.
 	 * 
 	 * @return
 	 */
-	private DynamicForm createServerCombo() {
-
-		final DynamicForm serverForm = new DynamicForm(); 
-		serverForm.setWidth(300);
-		serverForm.setAlign(Alignment.RIGHT);
-
+	private ComboBoxItem createServerCombo() {
 		i_serverCombo = new ComboBoxItem();
 		i_serverCombo.setDefaultToFirstOption(true);
 		i_serverCombo.setTitle("<b>CTS2 Server</b>");
 		i_serverCombo.setType("comboBox");
-		i_serverCombo.setWidth(250);
+		i_serverCombo.setWidth(300);
 		i_serverCombo.setWrapTitle(false);
 		i_serverCombo.setAttribute("browserSpellCheck", false);
 
@@ -362,68 +165,75 @@ public class Cts2Viewer implements EntryPoint {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				i_valueSetInfoPanel.clearPanels();
+				i_valueSetPropertiesPanel.clearValueSetInfo();
+				i_resolvedValueSetPropertiesPanel.clearPanels();
 				getValueSets(i_searchItem.getValueAsString());
 			}
 		});
 
-		serverForm.setFields(i_serverCombo);
-		serverForm.setAlign(Alignment.RIGHT);
-
 		retrieveServerOptions();
-
-		return serverForm;
+		return i_serverCombo;
 	}
 
 	/**
-	 * Make RPC call to retrieve the server(s) to connect to.
+	 * Listen for the event that ValueSets were retrieved.
 	 */
-	private void retrieveServerOptions() {
-		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		try {
-			service.getAvailableServices(new AsyncCallback<LinkedHashMap<String, String>>() {
+	private void createValueSetsReceivedEvent() {
+		EVENT_BUS.addHandler(ValueSetsReceivedEvent.TYPE, new ValueSetsReceivedEventHandler() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					SC.warn("Unable to retrieve servers to connect to");
-				}
+			@Override
+			public void onValueSetsReceived(ValueSetsReceivedEvent event) {
 
-				@Override
-				public void onSuccess(LinkedHashMap<String, String> result) 
-				{
-					String selected = null;
-					
-					for (String key : result.keySet())
-					{
-						if (selected == null)
-						{
-							selected = UiHelper.getSelected(result.get(key));
-							if (selected != null)
-								result.put(key, selected);
-						}
+				// initially disable the download because nothing will be
+				// selected.
+				i_downloadPanel.setWidgetsEnabled(false);
+
+				DataClass[] dc = ValueSetsXmlDS.getInstance().getTestData();
+
+				if (dc.length >= 1) {
+
+					String numEntries = dc[0].getAttribute("numEntries");
+					String complete = dc[0].getAttribute("complete");
+
+					i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " <b>" + numEntries + "</b>");
+					if ((complete != null) && !complete.equals("COMPLETE")) {
+						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + "<b> " + numEntries + "</b>+");
+					} else {
+						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " <b>" + numEntries + "</b>");
 					}
-					
-					i_serverCombo.setValueMap(result);
-					
-					if (selected != null)
-					{
-						i_serverCombo.setValue(selected);
-						i_valueSetInfoPanel.clearPanels();
-						getValueSets(null);
-					}
-					else
-						i_serverCombo.setValue(SELECT_SERVER_MSG);
-				}
 
-			});
-		} catch (Exception e) {
-			SC.warn("Unable to retrieve servers to connect to.");
-		}
+					String searchText = i_searchItem.getValueAsString();
+					if ((searchText != null) && (searchText.length() > 0)) {
+
+					} else {
+						i_rowsRetrievedLabel.setContents("");
+					}
+				} else {
+					i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " <b>0</b>");
+				}
+			}
+		});
 	}
 
 	protected void getValueSets(String searchText) {
 
 		i_valueSetsListGrid.getData(i_serverCombo.getValueAsString(), searchText);
+	}
+
+	/**
+	 * Display a confirmation dialog to leave our site when the user refreshes
+	 * or goes to another URL.
+	 */
+	protected void initWindowClosingConfirmationDialog() {
+		Window.addWindowClosingHandler(new ClosingHandler() {
+			@Override
+			public void onWindowClosing(ClosingEvent event) {
+				// This message doesn't show, but by adding this close handler,
+				// we get the default dialog to display and confirm that the
+				// user does want to leave our site.
+				event.setMessage("Are you sure you want to leave?");
+			}
+		});
 	}
 
 	private void linkWidgets() {
@@ -441,9 +251,8 @@ public class Cts2Viewer implements EntryPoint {
 
 				// ignore the arrow keys
 				if (i_searchItem.isValidSearchText()) {
-
+					setClearButtonEnablement();
 					getValueSets(i_searchItem.getValueAsString());
-					// i_valueSetsListGrid.getData(i_searchItem.getValueAsString());
 				}
 			}
 		});
@@ -454,59 +263,123 @@ public class Cts2Viewer implements EntryPoint {
 
 			@Override
 			public void onRecordClick(RecordClickEvent event) {
+				int numberOfRecordsSelected = i_valueSetsListGrid.getSelectedRecords().length;
+
+				// enable the download if there are records selected.
+				if (numberOfRecordsSelected > 0) {
+					i_downloadPanel.setWidgetsEnabled(true);
+				} else {
+					i_downloadPanel.setWidgetsEnabled(false);
+				}
+
 				String link = i_valueSetsListGrid.getSelectedRecord().getAttribute("href");
 				String valueSetName = i_valueSetsListGrid.getSelectedRecord().getAttribute("valueSetName");
 
-				i_valueSetInfoPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+				i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+				i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
 			}
 		});
 	}
 
 	/**
-	 * Listen for the event that ValueSets were retrieved.
+	 * This is the entry point method.
 	 */
-	private void createValueSetsReceivedEvent() {
-		EVENT_BUS.addHandler(ValueSetsReceivedEvent.TYPE, new ValueSetsReceivedEventHandler() {
+	@Override
+	public void onModuleLoad() {
 
-			@Override
-			public void onValueSetsReceived(ValueSetsReceivedEvent event) {
-				DataClass[] dc = ValueSetsXmlDS.getInstance().getTestData();
+		logger.log(Level.INFO, "init OnLoadModule().");
 
-				if (dc.length >= 1) {
-					String numEntries = dc[0].getAttribute("numEntries");
-					String complete = dc[0].getAttribute("complete");
+		Label titleLabel = UiHelper.createTitleLabel(TITLE);
 
-					i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " " + numEntries);
-					if (complete != null && !complete.equals("COMPLETE")) {
-						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " " + numEntries + "+");
-					} else {
-						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " " + numEntries);
+		// overall layout
+		i_mainLayout = new VLayout();
+		i_mainLayout.setWidth100();
+		i_mainLayout.setHeight100();
+		// i_mainLayout.setMargin(10);
+		i_mainLayout.setBackgroundColor(BACKGROUND_COLOR);
+
+		// add the label to the main layout at the top
+		i_mainLayout.addMember(titleLabel);
+
+		// layout for any content
+		HLayout contentLayout = new HLayout();
+		contentLayout.setWidth100();
+		contentLayout.setHeight100();
+		contentLayout.setAlign(VerticalAlignment.TOP);
+		contentLayout.setMargin(15);
+		contentLayout.setMembersMargin(15);
+		contentLayout.setBackgroundColor(BACKGROUND_COLOR);
+
+		// left side that contains the server, search and search results
+		VLayout leftLayout = createLeftSideComponentsLayout();
+		contentLayout.addMember(leftLayout);
+
+		// right side that contains the value set and resolved value set
+		i_resolvedValueSetPropertiesPanel = new ResolvedValueSetPropertiesPanel();
+		contentLayout.addMember(i_resolvedValueSetPropertiesPanel);
+
+		// TODO CME make eventBus calls to update components.
+		linkWidgets();
+
+		i_mainLayout.addMember(contentLayout);
+
+		setClearButtonEnablement();
+
+		// Add the main layout to the root panel
+		RootLayoutPanel.get().add(i_mainLayout);
+
+		createValueSetsReceivedEvent();
+		initWindowClosingConfirmationDialog();
+	}
+
+	/**
+	 * Make RPC call to retrieve the server(s) to connect to.
+	 */
+	private void retrieveServerOptions() {
+		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+		try {
+			service.getAvailableServices(new AsyncCallback<LinkedHashMap<String, String>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					SC.warn("Unable to retrieve servers to connect to");
+				}
+
+				@Override
+				public void onSuccess(LinkedHashMap<String, String> result) {
+					String selected = null;
+
+					for (String key : result.keySet()) {
+						if (selected == null) {
+							selected = UiHelper.getSelected(result.get(key));
+							if (selected != null) {
+								result.put(key, selected);
+							}
+						}
 					}
 
-					String searchText = i_searchItem.getValueAsString();
-					if (searchText != null && searchText.length() > 0) {
+					i_serverCombo.setValueMap(result);
 
+					if (selected != null) {
+						i_serverCombo.setValue(selected);
+						i_resolvedValueSetPropertiesPanel.clearPanels();
+						getValueSets(null);
 					} else {
-						i_rowsRetrievedLabel.setContents("");
+						i_serverCombo.setValue(SELECT_SERVER_MSG);
 					}
 				}
-			}
-		});
+
+			});
+		} catch (Exception e) {
+			SC.warn("Unable to retrieve servers to connect to.");
+		}
 	}
 
 	/**
-	 * Display a confirmation dialog to leave our site when the user refreshes
-	 * or goes to another URL.
+	 * The clear button should be disabled if the search text is empty.
 	 */
-	protected void initWindowClosingConfirmationDialog() {
-		Window.addWindowClosingHandler(new ClosingHandler() {
-			@Override
-			public void onWindowClosing(ClosingEvent event) {
-				// This message doesn't show, but by adding this close handler,
-				// we get the default dialog to display and confirm that the
-				// user does want to leave our site.
-				event.setMessage("Are you sure you want to leave?");
-			}
-		});
+	protected void setClearButtonEnablement() {
+		String currentText = i_searchItem.getValueAsString();
+		i_clearButton.setDisabled((currentText == null) || (currentText.length() == 0));
 	}
 }

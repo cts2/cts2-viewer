@@ -27,27 +27,23 @@ public class ValueSetsListGrid extends ListGrid {
 	public ValueSetsListGrid() {
 		super();
 
-		// i_valueSetsXmlDS = ValueSetsXmlDS.getInstance(VALUE_SETS_DS_ID);
 		i_valueSetsXmlDS = ValueSetsXmlDS.getInstance();
 
 		setWidth100();
-		setHeight(300);
+		setHeight100();
 		setShowAllRecords(true);
 		setWrapCells(false);
 		setDataSource(i_valueSetsXmlDS);
 
-		// setSelectionType(SelectionStyle.SIMPLE);
-		// setSelectionAppearance(SelectionAppearance.CHECKBOX);
-
 		ListGridField resourceTypeField = new ListGridField("resourceRoot", "Resource Type");
-		resourceTypeField.setWidth(100);
+		resourceTypeField.setWidth("45%");
 		resourceTypeField.setWrap(false);
-		resourceTypeField.setShowHover(false);
+		resourceTypeField.setShowHover(true);
 
 		ListGridField resourceNamefField = new ListGridField("valueSetName", "Value Set Name");
 		resourceNamefField.setWidth(250);
 		resourceNamefField.setWrap(false);
-		resourceNamefField.setShowHover(false);
+		resourceNamefField.setShowHover(true);
 
 		resourceNamefField.setCellFormatter(new CellFormatter() {
 
@@ -62,9 +58,9 @@ public class ValueSetsListGrid extends ListGrid {
 		});
 
 		ListGridField formalNameField = new ListGridField("formalName", "Formal Name");
-		formalNameField.setWidth("250");
+		formalNameField.setWidth("55%");
 		formalNameField.setWrap(false);
-		formalNameField.setShowHover(false);
+		formalNameField.setShowHover(true);
 
 		formalNameField.setCellFormatter(new CellFormatter() {
 
@@ -95,7 +91,10 @@ public class ValueSetsListGrid extends ListGrid {
 			}
 		});
 
-		setFields(resourceTypeField, resourceNamefField, formalNameField, descriptionField);
+		setFields(/* resourceTypeField, */resourceNamefField, formalNameField /*
+																			 * ,
+																			 * descriptionField
+																			 */);
 
 		setAutoFetchData(false);
 		setCanEdit(false);
@@ -113,7 +112,7 @@ public class ValueSetsListGrid extends ListGrid {
 	@Override
 	protected Canvas getCellHoverComponent(Record record, Integer rowNum, Integer colNum) {
 		// only show a custom DetailViewer for the description column only
-		if (colNum == 3) {
+		if (colNum == 1) {
 
 			DetailViewer detailViewer = new DetailViewer();
 			detailViewer.setWidth(400);
@@ -122,7 +121,8 @@ public class ValueSetsListGrid extends ListGrid {
 			// These
 			// fields are populated from the record of the selected ValueSets.
 			DetailViewerField descripitonField = new DetailViewerField("value", "Description");
-			detailViewer.setFields(descripitonField);
+			DetailViewerField formalNameField = new DetailViewerField("formalName", "Formal Name");
+			detailViewer.setFields(formalNameField, descripitonField);
 
 			detailViewer.setData(new Record[] { record });
 			return detailViewer;
