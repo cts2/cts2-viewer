@@ -17,10 +17,8 @@ import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 	private static final String TITLE_RESOLVED_VS_INFO = "Value Set Members";
-
 	private static final int RVS_TITLE_WIDTH = 125;
 
-	// private VLayout i_resolvedValueSetInfoPanel;
 	private ResolvedValueSetListGrid i_resolvedValueSetListGrid;
 
 	// Resolved Value Set Information
@@ -41,8 +39,10 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	private void init() {
 		setWidth("45%");
 		setHeight100();
-		setShowEdges(true);
 		setBackgroundColor("#ffffff");
+
+		// create rounded edges to the layout
+		UiHelper.createLayoutWithBorders(this);
 
 		Label resolvedValueSetLabel = UiHelper.createTitleLabel(TITLE_RESOLVED_VS_INFO);
 		addMember(resolvedValueSetLabel);

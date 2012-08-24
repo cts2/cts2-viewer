@@ -105,7 +105,7 @@ public class DownloadPanel extends HLayout {
 				String serviceNameValue = i_serverCombo.getValueAsString();
 
 				ListGridRecord[] selected = i_valueSetsListGrid.getSelectedRecords();
-				if ((selected == null) || (selected.length == 0)) {
+				if (selected == null || selected.length == 0) {
 					logger.log(Level.WARNING, "No ValueSet Selected!!");
 					return;
 				}
