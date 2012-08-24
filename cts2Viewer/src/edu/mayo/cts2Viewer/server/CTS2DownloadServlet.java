@@ -41,7 +41,7 @@ public class CTS2DownloadServlet extends HttpServlet {
         String ext = ".xls";
         if ("json".equalsIgnoreCase(request.getParameter("downloadType"))) 
         {
-        	ext = "_json.json";
+        	ext = ".json";
         	zipFileName = request.getParameter("ZipFileName") + "_JSON.zip"; 
         }
         else if ("xml".equalsIgnoreCase(request.getParameter("downloadType")))   
