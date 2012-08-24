@@ -64,12 +64,68 @@ public class Cts2Viewer implements EntryPoint {
 
 	private DownloadPanel i_downloadPanel;
 
+	/**
+	 * This is the entry point method.
+	 */
+	@Override
+	public void onModuleLoad() {
+
+		logger.log(Level.INFO, "init OnLoadModule().");
+
+		Label titleLabel = UiHelper.createMainTitleLabel(TITLE);
+		titleLabel = UiHelper.createLabelWithBorders(titleLabel);
+
+		// overall layout
+		i_mainLayout = new VLayout();
+		i_mainLayout.setWidth100();
+		i_mainLayout.setHeight100();
+		i_mainLayout.setBackgroundColor(BACKGROUND_COLOR);
+
+		// add the label to the main layout at the top
+		i_mainLayout.addMember(titleLabel);
+
+		// layout for any content
+		HLayout contentLayout = new HLayout();
+		contentLayout.setWidth100();
+		contentLayout.setHeight100();
+		contentLayout.setAlign(VerticalAlignment.TOP);
+		contentLayout.setMargin(15);
+		contentLayout.setMembersMargin(15);
+		contentLayout.setBackgroundColor(BACKGROUND_COLOR);
+
+		// left side that contains the server, search and search results
+		VLayout leftLayout = createLeftSideComponentsLayout();
+		contentLayout.addMember(leftLayout);
+
+		// right side that contains the value set and resolved value set
+		i_resolvedValueSetPropertiesPanel = new ResolvedValueSetPropertiesPanel();
+		contentLayout.addMember(i_resolvedValueSetPropertiesPanel);
+
+		// TODO CME make eventBus calls to update components.
+		linkWidgets();
+
+		i_mainLayout.addMember(contentLayout);
+
+		setClearButtonEnablement();
+
+		// Add the main layout to the root panel
+		RootLayoutPanel.get().add(i_mainLayout);
+
+		createValueSetsReceivedEvent();
+		initWindowClosingConfirmationDialog();
+	}
+
 	private VLayout createLeftSideComponentsLayout() {
 
 		VLayout componentsLayout = new VLayout();
 		componentsLayout.setWidth("55%");
 		componentsLayout.setHeight100();
 		componentsLayout.setMembersMargin(10);
+
+		// add rounded borders to the layout.
+		UiHelper.createLayoutWithBorders(componentsLayout);
+
+		componentsLayout.setShowResizeBar(true);
 
 		i_valueSetsListGrid = new ValueSetsListGrid();
 
@@ -106,6 +162,9 @@ public class Cts2Viewer implements EntryPoint {
 		VLayout layout = new VLayout();
 		layout.setWidth100();
 		layout.setHeight(50);
+
+		// add rounded borders to the layout.
+		UiHelper.createLayoutWithBorders(layout);
 
 		// add the drop down to choose the server to connect to.
 		i_serverCombo = createServerCombo();
@@ -280,57 +339,6 @@ public class Cts2Viewer implements EntryPoint {
 				i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
 			}
 		});
-	}
-
-	/**
-	 * This is the entry point method.
-	 */
-	@Override
-	public void onModuleLoad() {
-
-		logger.log(Level.INFO, "init OnLoadModule().");
-
-		Label titleLabel = UiHelper.createTitleLabel(TITLE);
-
-		// overall layout
-		i_mainLayout = new VLayout();
-		i_mainLayout.setWidth100();
-		i_mainLayout.setHeight100();
-		// i_mainLayout.setMargin(10);
-		i_mainLayout.setBackgroundColor(BACKGROUND_COLOR);
-
-		// add the label to the main layout at the top
-		i_mainLayout.addMember(titleLabel);
-
-		// layout for any content
-		HLayout contentLayout = new HLayout();
-		contentLayout.setWidth100();
-		contentLayout.setHeight100();
-		contentLayout.setAlign(VerticalAlignment.TOP);
-		contentLayout.setMargin(15);
-		contentLayout.setMembersMargin(15);
-		contentLayout.setBackgroundColor(BACKGROUND_COLOR);
-
-		// left side that contains the server, search and search results
-		VLayout leftLayout = createLeftSideComponentsLayout();
-		contentLayout.addMember(leftLayout);
-
-		// right side that contains the value set and resolved value set
-		i_resolvedValueSetPropertiesPanel = new ResolvedValueSetPropertiesPanel();
-		contentLayout.addMember(i_resolvedValueSetPropertiesPanel);
-
-		// TODO CME make eventBus calls to update components.
-		linkWidgets();
-
-		i_mainLayout.addMember(contentLayout);
-
-		setClearButtonEnablement();
-
-		// Add the main layout to the root panel
-		RootLayoutPanel.get().add(i_mainLayout);
-
-		createValueSetsReceivedEvent();
-		initWindowClosingConfirmationDialog();
 	}
 
 	/**
