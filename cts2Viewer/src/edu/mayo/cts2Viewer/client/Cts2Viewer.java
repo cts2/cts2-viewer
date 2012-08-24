@@ -332,6 +332,9 @@ public class Cts2Viewer implements EntryPoint {
 					i_downloadPanel.setWidgetsEnabled(false);
 				}
 
+				if (i_valueSetsListGrid.getSelectedRecord() == null)
+					return;
+				
 				String link = i_valueSetsListGrid.getSelectedRecord().getAttribute("href");
 				String valueSetName = i_valueSetsListGrid.getSelectedRecord().getAttribute("valueSetName");
 
