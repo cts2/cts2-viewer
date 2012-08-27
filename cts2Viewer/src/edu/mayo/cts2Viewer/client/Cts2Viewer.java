@@ -90,8 +90,7 @@ public class Cts2Viewer implements EntryPoint {
 		HLayout titleLayout = new HLayout();
 		titleLayout.setWidth100();
 		titleLayout.setAlign(VerticalAlignment.TOP);
-		titleLayout.setMargin(5);
-		// titleLayout.setMembersMargin(15);
+		titleLayout.setMargin(10);
 		titleLayout.setBackgroundColor(BACKGROUND_COLOR);
 
 		titleLayout.addMember(titleLabel);
