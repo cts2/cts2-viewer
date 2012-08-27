@@ -36,30 +36,72 @@ public class CTS2DownloadServlet extends HttpServlet {
 
     private void processDownloadAlgorithm(HttpServletRequest request, HttpServletResponse response) 
     {    	
-        String zipFileName = null;
+        String zipFileName = request.getParameter("ZipFileName");
 
-        String ext = ".xls";
-        if ("json".equalsIgnoreCase(request.getParameter("downloadType"))) 
+        if (CTS2Utils.isNull(zipFileName))
+        	zipFileName = "CTS2Download";
+        
+        String valueSetNames = request.getParameter("valueSetNames");
+        if (CTS2Utils.isNull(valueSetNames))
         {
-        	ext = ".json";
-        	zipFileName = request.getParameter("ZipFileName") + "_JSON.zip"; 
-        }
-        else if ("xml".equalsIgnoreCase(request.getParameter("downloadType")))   
-        { 
-        	ext = ".xml"; 
-        	zipFileName = request.getParameter("ZipFileName") + "_XML.zip";  
-        }
-        else 
-        	zipFileName = request.getParameter("ZipFileName") +  "_CSV.zip";
-        
-        //String vsNamesStr = request.getParameter("valueSetNames");
-         
-        if (CTS2Utils.isNull(request.getParameter("valueSetNames")))
+        	logger.severe("No Value Name received for download operation");
         	return; 
+        }
         
-        String[] valueSets = request.getParameter("valueSetNames").split(",");
+        String[] valueSets = valueSetNames.split(",");
 
-        //File algorithmFile = new File(zipPath);
+        String DT_XLS = "csv";
+        String DT_XML = "xml";
+        String DT_JSON = "json";
+        String DT_ALL = "all";
+
+        String downloadType = request.getParameter("downloadType");
+        if (CTS2Utils.isNull(downloadType))
+        	downloadType = DT_XLS; 
+
+        String XLS_EXTN = ".xls";
+        String XML_EXTN = ".xml";
+        String JSON_EXTN = ".json";
+        		
+        String[] exts = null;
+        String[] extTypes = null;
+        if ("all".equalsIgnoreCase(downloadType)) 
+        {
+        	exts = new String[3];
+        	extTypes = new String[3];
+        	
+        	exts[0]= XLS_EXTN; extTypes[0] = DT_XLS;
+        	exts[1]= XML_EXTN; extTypes[1] = DT_XML;
+        	exts[2]= JSON_EXTN; extTypes[2] = DT_JSON;
+        	zipFileName += "_ALL.zip"; 
+        }
+        else if ("json".equalsIgnoreCase(downloadType)) 
+        {
+        	exts = new String[1];
+        	extTypes = new String[1];
+        	
+        	exts[0]= JSON_EXTN; extTypes[0] = DT_JSON;
+
+        	zipFileName += "_JSON.zip"; 
+        }
+        else if ("xml".equalsIgnoreCase(downloadType))   
+        { 
+        	exts = new String[1];
+        	extTypes = new String[1];
+        	
+        	exts[0]= XML_EXTN; extTypes[0] = DT_XML;
+
+        	zipFileName += "_XML.zip";  
+        }
+        else
+        {
+        	exts = new String[1];
+        	extTypes = new String[1];
+        	
+        	exts[0]= XLS_EXTN; extTypes[0] = DT_XLS;
+        	zipFileName += "_CSV.zip";
+        }
+        
         logger.info("Download requested: " + zipFileName);
 
         //logger.info("Sending file " + algorithmFile.getAbsolutePath());
@@ -75,11 +117,14 @@ public class CTS2DownloadServlet extends HttpServlet {
         	ServletOutputStream out  = response.getOutputStream();
         	ZipOutputStream zipout = new ZipOutputStream(out);
         	
-        	for (String vs : valueSets)
+        	for (int m = 0; m < exts.length; m++)
         	{
-        		zipout.putNextEntry(new ZipEntry(vs + ext));
-        		zipout.write(createValueSetContent(request.getParameter("downloadType"), vs).getBytes());
-        		zipout.closeEntry();
+        		for (String vs : valueSets)
+        		{
+        			zipout.putNextEntry(new ZipEntry(vs + exts[m]));
+        			zipout.write(createValueSetContent(extTypes[m], vs).getBytes());
+        			zipout.closeEntry();
+        		}
         	}
         	
         	zipout.flush();

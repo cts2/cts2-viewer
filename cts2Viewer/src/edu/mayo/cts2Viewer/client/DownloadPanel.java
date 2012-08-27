@@ -78,6 +78,7 @@ public class DownloadPanel extends HLayout {
 		valueMap.put("csv", "CSV (Excel)");
 		valueMap.put("xml", "XML");
 		valueMap.put("json", "JSON");
+		valueMap.put("all", "All Formats");
 
 		// set images for each row
 		i_exportTypeItem.setImageURLSuffix(".png");
@@ -85,6 +86,7 @@ public class DownloadPanel extends HLayout {
 		valueIcons.put("csv", "csv");
 		valueIcons.put("xml", "xml");
 		valueIcons.put("json", "json");
+		valueIcons.put("all", "multiple");
 
 		i_exportTypeItem.setValueIcons(valueIcons);
 		i_exportTypeItem.setValueMap(valueMap);
