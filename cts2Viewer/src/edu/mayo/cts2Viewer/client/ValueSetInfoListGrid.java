@@ -23,9 +23,8 @@ public class ValueSetInfoListGrid extends ListGrid {
 	public ValueSetInfoListGrid() {
 		super();
 		i_valueSetInfoXmlDS = ValueSetInfoXmlDS.getInstance();
-
 		setWidth100();
-		setHeight100();
+		setHeight("*");
 		setShowAllRecords(true);
 		setShowAllColumns(true);
 		setWrapCells(false);

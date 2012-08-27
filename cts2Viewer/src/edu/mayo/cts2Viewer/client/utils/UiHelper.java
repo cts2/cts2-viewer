@@ -1,9 +1,12 @@
 package edu.mayo.cts2Viewer.client.utils;
 
 import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.types.AnimationAcceleration;
+import com.smartgwt.client.types.VisibilityMode;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.Layout;
+import com.smartgwt.client.widgets.layout.SectionStack;
 
 public class UiHelper {
 
@@ -44,6 +47,10 @@ public class UiHelper {
 		titleLabel.setContents(title);
 
 		return titleLabel;
+	}
+
+	public static String getSectionTitle(String title) {
+		return "<b style=\"font-size:14px;font-weight:bold;text-decoration:none\">" + title + "</b>";
 	}
 
 	public static String getSelected(String serviceName) {
@@ -120,5 +127,26 @@ public class UiHelper {
 		label.setEdgeOffset(10);
 		return label;
 
+	}
+
+	/**
+	 * Create a consistent operating SectionStack.
+	 * 
+	 * @return
+	 */
+	public static SectionStack createSectionStack() {
+
+		SectionStack sectionStack = new SectionStack();
+		sectionStack.setVisibilityMode(VisibilityMode.MULTIPLE);
+		sectionStack.setWidth100();
+		sectionStack.setHeight100();
+
+		// set animate options
+		sectionStack.setAnimateSections(true);
+		sectionStack.setAnimateTime(2000);
+		sectionStack.setAnimateHideAcceleration(AnimationAcceleration.SMOOTH_START_END);
+		sectionStack.setAnimateShowAcceleration(AnimationAcceleration.SMOOTH_START_END);
+
+		return sectionStack;
 	}
 }

@@ -24,7 +24,6 @@ public class ResolvedValueSetListGrid extends ListGrid {
 
 		i_resolvedValueSetXmlDS = ResolvedValueSetXmlDS.getInstance();
 
-		// setWidth(500);
 		setWidth100();
 		setHeight100();
 		setShowAllRecords(true);
@@ -32,7 +31,7 @@ public class ResolvedValueSetListGrid extends ListGrid {
 		setWrapCells(false);
 		setDataSource(i_resolvedValueSetXmlDS);
 
-		ListGridField nameSpaceField = new ListGridField("nameSpace", "Code System Version");
+		ListGridField nameSpaceField = new ListGridField("nameSpace", "Code System Name");
 		nameSpaceField.setWrap(false);
 		nameSpaceField.setWidth("25%");
 

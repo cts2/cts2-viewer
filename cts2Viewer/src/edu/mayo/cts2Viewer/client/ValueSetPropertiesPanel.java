@@ -1,6 +1,5 @@
 package edu.mayo.cts2Viewer.client;
 
-import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -12,7 +11,6 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
 public class ValueSetPropertiesPanel extends VLayout {
 
-	private static final String TITLE_VS_INFO = "Value Set Properties";
 	private static final int VS_TITLE_WIDTH = 100;
 
 	private ValueSetInfoListGrid i_valueSetInfoListGrid;
@@ -40,11 +38,8 @@ public class ValueSetPropertiesPanel extends VLayout {
 
 	private void init() {
 		setWidth100();
-		setHeight(300);
+		setHeight100();
 		setBackgroundColor("#ffffff");
-
-		Label valueSetLabel = UiHelper.createTitleLabel(TITLE_VS_INFO);
-		addMember(valueSetLabel);
 
 		VLayout vsLayout = new VLayout();
 		vsLayout.setWidth100();
@@ -72,14 +67,6 @@ public class ValueSetPropertiesPanel extends VLayout {
 		vsLayout.addMember(UiHelper.createNameValueLayout(i_contactTitle, i_contactValue));
 
 		addMember(vsLayout);
-
-		Label propertiesLabel = new Label("<b>Properties</b>");
-		propertiesLabel.setWidth100();
-		propertiesLabel.setHeight(20);
-		propertiesLabel.setAlign(Alignment.CENTER);
-		propertiesLabel.setBackgroundColor("#dedad5");
-
-		addMember(propertiesLabel);
 
 		i_valueSetInfoListGrid = new ValueSetInfoListGrid();
 		addMember(i_valueSetInfoListGrid);

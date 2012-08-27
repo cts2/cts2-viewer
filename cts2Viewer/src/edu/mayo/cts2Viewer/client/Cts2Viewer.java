@@ -29,6 +29,8 @@ import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
+import com.smartgwt.client.widgets.layout.SectionStack;
+import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
@@ -45,6 +47,9 @@ public class Cts2Viewer implements EntryPoint {
 
 	private static final String ROWS_RETRIEVED_TITLE = "Rows Matching Criteria:";
 	private static final String TITLE = "CTS2 - Value Sets";
+	private static final String TITLE_VS_INFO = "Value Set Properties";
+	private static final String TITLE_SEARCH_RESULTS = "Search Results";
+
 	private static final String SELECT_SERVER_MSG = "<Select a Server>";
 
 	private static Logger logger = Logger.getLogger(Cts2Viewer.class.getName());
@@ -81,15 +86,23 @@ public class Cts2Viewer implements EntryPoint {
 		i_mainLayout.setHeight100();
 		i_mainLayout.setBackgroundColor(BACKGROUND_COLOR);
 
-		// add the label to the main layout at the top
-		i_mainLayout.addMember(titleLabel);
+		// layout for main title
+		HLayout titleLayout = new HLayout();
+		titleLayout.setWidth100();
+		titleLayout.setAlign(VerticalAlignment.TOP);
+		titleLayout.setMargin(5);
+		// titleLayout.setMembersMargin(15);
+		titleLayout.setBackgroundColor(BACKGROUND_COLOR);
+
+		titleLayout.addMember(titleLabel);
+		i_mainLayout.addMember(titleLayout);
 
 		// layout for any content
 		HLayout contentLayout = new HLayout();
 		contentLayout.setWidth100();
 		contentLayout.setHeight100();
 		contentLayout.setAlign(VerticalAlignment.TOP);
-		contentLayout.setMargin(15);
+		contentLayout.setMargin(10);
 		contentLayout.setMembersMargin(15);
 		contentLayout.setBackgroundColor(BACKGROUND_COLOR);
 
@@ -148,13 +161,43 @@ public class Cts2Viewer implements EntryPoint {
 		rowsRetrievedAndDownloadLayout.addMember(i_downloadPanel);
 
 		componentsLayout.addMember(rowsRetrievedAndDownloadLayout);
-		componentsLayout.addMember(i_valueSetsListGrid);
 
 		// add the value set properties panel to the bottom
 		i_valueSetPropertiesPanel = new ValueSetPropertiesPanel();
-		componentsLayout.addMember(i_valueSetPropertiesPanel);
+
+		SectionStack sectionStack = createSectionStack(i_valueSetsListGrid, i_valueSetPropertiesPanel);
+		componentsLayout.addMember(sectionStack);
 
 		return componentsLayout;
+	}
+
+	/**
+	 * Create a SectionStack for the search results and collapsable value set
+	 * section
+	 * 
+	 * @param valueSetsGrid
+	 * @param panel
+	 * @return
+	 */
+	private SectionStack createSectionStack(ValueSetsListGrid valueSetsGrid, ValueSetPropertiesPanel panel) {
+
+		SectionStack sectionStack = UiHelper.createSectionStack();
+
+		String searchResultsTitle = UiHelper.getSectionTitle(TITLE_SEARCH_RESULTS);
+
+		SectionStackSection sectionSearchResults = new SectionStackSection(searchResultsTitle);
+		sectionSearchResults.setExpanded(true);
+		sectionSearchResults.addItem(valueSetsGrid);
+		sectionStack.addSection(sectionSearchResults);
+
+		String resolvedValueSetsTitle = UiHelper.getSectionTitle(TITLE_VS_INFO);
+
+		SectionStackSection sectionValueSetInfo = new SectionStackSection(resolvedValueSetsTitle);
+		sectionValueSetInfo.setExpanded(false);
+		sectionValueSetInfo.addItem(panel);
+		sectionStack.addSection(sectionValueSetInfo);
+
+		return sectionStack;
 	}
 
 	private VLayout createSearchWidgetLayout() {
@@ -332,9 +375,10 @@ public class Cts2Viewer implements EntryPoint {
 					i_downloadPanel.setWidgetsEnabled(false);
 				}
 
-				if (i_valueSetsListGrid.getSelectedRecord() == null)
+				if (i_valueSetsListGrid.getSelectedRecord() == null) {
 					return;
-				
+				}
+
 				String link = i_valueSetsListGrid.getSelectedRecord().getAttribute("href");
 				String valueSetName = i_valueSetsListGrid.getSelectedRecord().getAttribute("valueSetName");
 

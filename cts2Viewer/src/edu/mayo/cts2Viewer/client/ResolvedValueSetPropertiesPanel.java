@@ -1,8 +1,9 @@
 package edu.mayo.cts2Viewer.client;
 
-import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.layout.SectionStack;
+import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 import edu.mayo.cts2Viewer.client.events.ResolvedValueSetInfoReceivedEvent;
@@ -17,6 +18,7 @@ import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 	private static final String TITLE_RESOLVED_VS_INFO = "Value Set Members";
+	private static final String TITLE_RESOLVED_VS_MEMBERS = "Entities";
 	private static final int RVS_TITLE_WIDTH = 125;
 
 	private ResolvedValueSetListGrid i_resolvedValueSetListGrid;
@@ -44,12 +46,10 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		// create rounded edges to the layout
 		UiHelper.createLayoutWithBorders(this);
 
-		Label resolvedValueSetLabel = UiHelper.createTitleLabel(TITLE_RESOLVED_VS_INFO);
-		addMember(resolvedValueSetLabel);
-
+		// layout for the resolved value set information
 		VLayout resolvedVsLayout = new VLayout();
 		resolvedVsLayout.setWidth100();
-		resolvedVsLayout.setHeight(150);
+		resolvedVsLayout.setHeight(100);
 		resolvedVsLayout.setMembersMargin(4);
 
 		i_valueSetDefinitionTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Value Set Definition:");
@@ -57,7 +57,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		resolvedVsLayout
 		        .addMember(UiHelper.createNameValueLayout(i_valueSetDefinitionTitle, i_valueSetDefinitionValue));
 
-		i_codeSystemVersionTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Code System Version:");
+		i_codeSystemVersionTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Code System Name:");
 		i_codeSystemVersionValue = UiHelper.createValueLabel("");
 		resolvedVsLayout.addMember(UiHelper.createNameValueLayout(i_codeSystemVersionTitle, i_codeSystemVersionValue));
 
@@ -65,24 +65,32 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		i_codeSystemValue = UiHelper.createValueLabel("");
 		resolvedVsLayout.addMember(UiHelper.createNameValueLayout(i_codeSystemTitle, i_codeSystemValue));
 
-		addMember(resolvedVsLayout);
+		// SectionStack for the collapsable sections - the resolved VS general
+		// info and the members/entities
+		SectionStack resolvedValueSetSectionStack = UiHelper.createSectionStack();
 
-		Label propertiesLabel = new Label("<b>Value Set Members</b>");
-		propertiesLabel.setWidth100();
-		propertiesLabel.setHeight(20);
-		propertiesLabel.setAlign(Alignment.CENTER);
-		propertiesLabel.setBackgroundColor("#dedad5");
+		String resolvedValueSetsTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_INFO);
 
-		addMember(propertiesLabel);
+		SectionStackSection sectionResolvedValueSetInfo = new SectionStackSection(resolvedValueSetsTitle);
+		sectionResolvedValueSetInfo.setExpanded(false);
+		sectionResolvedValueSetInfo.addItem(resolvedVsLayout);
+		resolvedValueSetSectionStack.addSection(sectionResolvedValueSetInfo);
+
+		String membersTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS);
 
 		i_resolvedValueSetListGrid = new ResolvedValueSetListGrid();
-		addMember(i_resolvedValueSetListGrid);
+		SectionStackSection sectionResolvedValueSetMembers = new SectionStackSection(membersTitle);
+		sectionResolvedValueSetMembers.setExpanded(true);
+		sectionResolvedValueSetMembers.setCanCollapse(false);
+		sectionResolvedValueSetMembers.addItem(i_resolvedValueSetListGrid);
+		resolvedValueSetSectionStack.addSection(sectionResolvedValueSetMembers);
+
+		addMember(resolvedValueSetSectionStack);
 
 		createResolvedValueSetInfoReceivedEvent();
 	}
 
 	public void updatePanel(String serviceName, String valueSet, String link) {
-
 		// clear the Resolved Value Set info as the call to update this
 		// information takes a few seconds.
 		clearResolvedValueSetInfo();
