@@ -101,7 +101,7 @@ public class CTS2DownloadServlet extends HttpServlet {
         	exts[0]= XLS_EXTN; extTypes[0] = DT_XLS;
         	zipFileName += "_CSV.zip";
         }
-        
+        logger.info("Download Type=" + downloadType);
         logger.info("Download requested: " + zipFileName);
 
         //logger.info("Sending file " + algorithmFile.getAbsolutePath());
