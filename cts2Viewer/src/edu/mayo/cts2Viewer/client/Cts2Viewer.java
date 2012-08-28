@@ -29,6 +29,8 @@ import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
+import com.smartgwt.client.widgets.grid.events.SelectionChangedHandler;
+import com.smartgwt.client.widgets.grid.events.SelectionEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -374,7 +376,17 @@ public class Cts2Viewer implements EntryPoint {
 
 					i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
 					i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+				}
+			}
+		});
 
+		// handler for when the selection changes via the checkbox selection.
+		i_valueSetsListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
+
+			@Override
+			public void onSelectionChanged(SelectionEvent event) {
+				Record[] selectedRecords = i_valueSetsListGrid.getSelectedRecords();
+				if (selectedRecords != null && selectedRecords.length > 0) {
 					i_downloadPanel.setWidgetsEnabled(true);
 				} else {
 					i_downloadPanel.setWidgetsEnabled(false);
