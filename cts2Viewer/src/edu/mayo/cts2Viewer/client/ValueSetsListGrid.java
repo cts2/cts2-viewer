@@ -6,6 +6,8 @@ import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.SortSpecifier;
+import com.smartgwt.client.types.SelectionAppearance;
+import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.grid.CellFormatter;
@@ -34,6 +36,9 @@ public class ValueSetsListGrid extends ListGrid {
 		setShowAllRecords(true);
 		setWrapCells(false);
 		setDataSource(i_valueSetsXmlDS);
+
+		setSelectionType(SelectionStyle.SIMPLE);
+		setSelectionAppearance(SelectionAppearance.CHECKBOX);
 
 		ListGridField resourceTypeField = new ListGridField("resourceRoot", "Resource Type");
 		resourceTypeField.setWidth("45%");
@@ -91,10 +96,7 @@ public class ValueSetsListGrid extends ListGrid {
 			}
 		});
 
-		setFields(/* resourceTypeField, */resourceNamefField, formalNameField /*
-																			 * ,
-																			 * descriptionField
-																			 */);
+		setFields(resourceNamefField, formalNameField);
 
 		setAutoFetchData(false);
 		setCanEdit(false);

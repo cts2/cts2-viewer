@@ -14,6 +14,7 @@ import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.core.DataClass;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
@@ -28,6 +29,8 @@ import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
+import com.smartgwt.client.widgets.grid.events.SelectionUpdatedEvent;
+import com.smartgwt.client.widgets.grid.events.SelectionUpdatedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -359,30 +362,35 @@ public class Cts2Viewer implements EntryPoint {
 			}
 		});
 
+		i_valueSetsListGrid.addSelectionUpdatedHandler(new SelectionUpdatedHandler() {
+
+			@Override
+			public void onSelectionUpdated(SelectionUpdatedEvent event) {
+				String valueSetName = i_valueSetsListGrid.getSelectedRecord().getAttribute("valueSetName");
+				System.out.println("addSelectionUpdatedHandler -- " + valueSetName);
+			}
+		});
+
 		// add a handler to determine when a user clicks on a record in the
 		// valueSets listgrid
 		i_valueSetsListGrid.addRecordClickHandler(new RecordClickHandler() {
 
 			@Override
 			public void onRecordClick(RecordClickEvent event) {
-				int numberOfRecordsSelected = i_valueSetsListGrid.getSelectedRecords().length;
 
-				// enable the download if there are records selected.
-				if (numberOfRecordsSelected > 0) {
+				Record record = event.getRecord();
+				if (record != null) {
+					String link = record.getAttribute("href");
+					String valueSetName = record.getAttribute("valueSetName");
+
+					i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+					i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+
 					i_downloadPanel.setWidgetsEnabled(true);
 				} else {
 					i_downloadPanel.setWidgetsEnabled(false);
+
 				}
-
-				if (i_valueSetsListGrid.getSelectedRecord() == null) {
-					return;
-				}
-
-				String link = i_valueSetsListGrid.getSelectedRecord().getAttribute("href");
-				String valueSetName = i_valueSetsListGrid.getSelectedRecord().getAttribute("valueSetName");
-
-				i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
-				i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
 			}
 		});
 	}
