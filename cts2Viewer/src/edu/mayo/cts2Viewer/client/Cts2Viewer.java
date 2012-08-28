@@ -29,8 +29,6 @@ import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionUpdatedEvent;
-import com.smartgwt.client.widgets.grid.events.SelectionUpdatedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -113,7 +111,7 @@ public class Cts2Viewer implements EntryPoint {
 		contentLayout.addMember(leftLayout);
 
 		// right side that contains the value set and resolved value set
-		i_resolvedValueSetPropertiesPanel = new ResolvedValueSetPropertiesPanel();
+		i_resolvedValueSetPropertiesPanel = new ResolvedValueSetPropertiesPanel(i_serverCombo);
 		contentLayout.addMember(i_resolvedValueSetPropertiesPanel);
 
 		// TODO CME make eventBus calls to update components.
@@ -359,15 +357,6 @@ public class Cts2Viewer implements EntryPoint {
 					setClearButtonEnablement();
 					getValueSets(i_searchItem.getValueAsString());
 				}
-			}
-		});
-
-		i_valueSetsListGrid.addSelectionUpdatedHandler(new SelectionUpdatedHandler() {
-
-			@Override
-			public void onSelectionUpdated(SelectionUpdatedEvent event) {
-				String valueSetName = i_valueSetsListGrid.getSelectedRecord().getAttribute("valueSetName");
-				System.out.println("addSelectionUpdatedHandler -- " + valueSetName);
 			}
 		});
 

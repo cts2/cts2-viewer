@@ -1,7 +1,11 @@
 package edu.mayo.cts2Viewer.client;
 
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -23,6 +27,8 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 	private ResolvedValueSetListGrid i_resolvedValueSetListGrid;
 
+	private final ComboBoxItem i_serverCombo;
+
 	// Resolved Value Set Information
 	private Label i_valueSetDefinitionTitle;
 	private Label i_valueSetDefinitionValue;
@@ -33,8 +39,11 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	private Label i_codeSystemTitle;
 	private Label i_codeSystemValue;
 
-	public ResolvedValueSetPropertiesPanel() {
+	public ResolvedValueSetPropertiesPanel(ComboBoxItem serverCombo) {
 		super();
+
+		i_serverCombo = serverCombo;
+
 		init();
 	}
 
@@ -87,6 +96,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 		addMember(resolvedValueSetSectionStack);
 
+		addListGridRecordClickedHandler();
 		createResolvedValueSetInfoReceivedEvent();
 	}
 
@@ -113,6 +123,32 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		clearResolvedValueSetInfo();
 	}
 
+	/**
+	 * Create a click handler for the Resolved Value Set List Grid.
+	 */
+	private void addListGridRecordClickedHandler() {
+		i_resolvedValueSetListGrid.addRecordClickHandler(new RecordClickHandler() {
+
+			@Override
+			public void onRecordClick(RecordClickEvent event) {
+				Record record = event.getRecord();
+				if (record != null) {
+					String href = record.getAttribute("href");
+					String name = record.getAttribute("name");
+					String description = record.getAttribute("designation");
+
+					EntityWindow entityWindow = EntityWindow.getInstance(i_serverCombo.getValueAsString(), href, name,
+					        description);
+					entityWindow.show();
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * Listen for when a Resolved Value Set has been loaded.
+	 */
 	private void createResolvedValueSetInfoReceivedEvent() {
 		Cts2Viewer.EVENT_BUS.addHandler(ResolvedValueSetInfoReceivedEvent.TYPE,
 		        new ResolvedValueSetInfoReceivedEventHandler() {

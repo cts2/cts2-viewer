@@ -30,35 +30,31 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
-public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service 
-{
+public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service {
 	private static Logger logger = Logger.getLogger(Cts2ServiceImpl.class.getName());
 
 	private static final String SERVER_PROPERTIES_FILE = "CTS2Profiles.properties";
-	
+
 	private ConvenienceMethods cm = null;
 
 	/**
 	 * Get ValueSets that match the criteria
 	 */
 	@Override
-	public String getValueSets(String serviceName, String searchText) throws IllegalArgumentException 
-	{
+	public String getValueSets(String serviceName, String searchText) throws IllegalArgumentException {
 		String results = "";
-		//RestExecuter restExecuter = RestExecuter.getInstance();
+		// RestExecuter restExecuter = RestExecuter.getInstance();
 
-		try 
-		{
+		try {
 			initCM(serviceName);
-			
+
 			cm.getCurrentContext().resultLimit = 100;
-			if (CTS2Utils.isNull(searchText))
-				results = cm.getAvailableValueSets(false,  false, false, ServiceResultFormat.XML);
-			else
+			if (CTS2Utils.isNull(searchText)) {
+				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
+			} else {
 				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
-		} 
-		catch (Exception e) 
-		{
+			}
+		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error retrieving ValueSets" + e);
 		}
 
@@ -72,13 +68,12 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	public ValueSetInfo getValueSetInfo(String serviceName, String valueSetName) throws IllegalArgumentException {
 
 		String results = "";
-		//RestExecuter restExecuter = RestExecuter.getInstance();
+		// RestExecuter restExecuter = RestExecuter.getInstance();
 		ValueSetInfo vsi = new ValueSetInfo();
 
-		try 
-		{
+		try {
 			initCM(serviceName);
-			//results = restExecuter.getValueSetInfo(valueSet);
+			// results = restExecuter.getValueSetInfo(valueSet);
 			VocabularyId valueSetId = new VocabularyId();
 			valueSetId.name = valueSetName;
 			results = cm.getValueSetInformation(valueSetId, ServiceResultFormat.XML);
@@ -99,17 +94,16 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	        throws IllegalArgumentException {
 
 		String results = "";
-		//RestExecuter restExecuter = RestExecuter.getInstance();
+		// RestExecuter restExecuter = RestExecuter.getInstance();
 		ResolvedValueSetInfo rvsi = new ResolvedValueSetInfo();
 
-		try 
-		{
+		try {
 			initCM(serviceName);
 			results = cm.getValueSetMembers(valueSetName, ServiceResultFormat.XML);
-			//results = restExecuter.getResolvedValueSetInfo(serverUrl, valueSet);
-			
-			if (results != null && results.length() > 0) 
-			{
+			// results = restExecuter.getResolvedValueSetInfo(serverUrl,
+			// valueSet);
+
+			if (results != null && results.length() > 0) {
 				rvsi = getResolvedValueSetGeneralInfo(results);
 			}
 			// TODO CME this is the way for bioportal, but phinvads is different
@@ -322,53 +316,52 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		return result;
 	}
 
-	private void initCM(String serviceName)
-	{
-			try 
-			{
-				logger.log(Level.SEVERE, "PRINTING BASE PATH...");
-				logger.log(Level.SEVERE, getBasePath());
-				
-				if (this.cm == null)
-					this.cm = ConvenienceMethods.instance(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
-				
-				if ((!CTS2Utils.isNull(serviceName))&&(!(cm.getCurrentProfileName().equals(serviceName))))
-					cm.setCurrentProfileName(serviceName);
-			} 
-			catch (Exception ex) 
-			{
-					logger.log(Level.SEVERE, ex.getMessage(), ex);
+	private void initCM(String serviceName) {
+		try {
+			logger.log(Level.SEVERE, "PRINTING BASE PATH...");
+			logger.log(Level.SEVERE, getBasePath());
+
+			if (this.cm == null) {
+				this.cm = ConvenienceMethods.instance(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
 			}
+
+			if (!CTS2Utils.isNull(serviceName) && !cm.getCurrentProfileName().equals(serviceName)) {
+				cm.setCurrentProfileName(serviceName);
+			}
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, ex.getMessage(), ex);
+		}
 	}
-	
+
 	@Override
-	public LinkedHashMap<String, String> getAvailableServices() throws IllegalArgumentException 
-	{
+	public LinkedHashMap<String, String> getAvailableServices() throws IllegalArgumentException {
 		LinkedHashMap<String, String> serverOptions = new LinkedHashMap<String, String>();
 		Set<String> services = null;
 		String selectedService = null;
 
-		try 
-		{
+		try {
 			initCM(null);
 			services = cm.getAvailableProfiles();
 			selectedService = cm.getCurrentProfileName();
-		} 
-		catch (Exception ex) 
-		{
-				logger.log(Level.SEVERE, ex.getMessage(), ex);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 
-
-		for (String service : services)
-		{
-			if (selectedService.endsWith(service))
+		for (String service : services) {
+			if (selectedService.endsWith(service)) {
 				serverOptions.put(service, service + CTS2Utils.SELECTED_TAG);
-			else
+			} else {
 				serverOptions.put(service, service);
+			}
 		}
-		
+
 		return serverOptions;
+	}
+
+	@Override
+	public String getEntity(String serviceName, String url) {
+
+		return "This is the data from the server";
 	}
 
 	public String getBasePath() {
@@ -397,4 +390,5 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	private boolean isDevelopmentMode() {
 		return getThreadLocalRequest().getHeader("Referer").contains("127.0.0.1");
 	}
+
 }

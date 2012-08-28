@@ -19,7 +19,8 @@ public interface Cts2Service extends RemoteService {
 
 	ValueSetInfo getValueSetInfo(String serviceName, String valueSetName) throws IllegalArgumentException;
 
-	ResolvedValueSetInfo getResolvedValueSetInfo(String serviceName, String valueSetName) throws IllegalArgumentException;
-	
-	//Set<String> getAvailableServices() throws IllegalArgumentException;
+	ResolvedValueSetInfo getResolvedValueSetInfo(String serviceName, String valueSetName)
+	        throws IllegalArgumentException;
+
+	String getEntity(String serviceName, String url);
 }

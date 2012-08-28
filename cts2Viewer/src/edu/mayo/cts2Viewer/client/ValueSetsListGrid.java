@@ -114,7 +114,7 @@ public class ValueSetsListGrid extends ListGrid {
 	@Override
 	protected Canvas getCellHoverComponent(Record record, Integer rowNum, Integer colNum) {
 		// only show a custom DetailViewer for the description column only
-		if (colNum == 1) {
+		if (colNum == 2) {
 
 			DetailViewer detailViewer = new DetailViewer();
 			detailViewer.setWidth(400);
