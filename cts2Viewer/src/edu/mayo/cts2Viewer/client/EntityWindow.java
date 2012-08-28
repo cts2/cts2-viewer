@@ -9,8 +9,12 @@ import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.AnimationEffect;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.HTMLPane;
+import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.layout.HLayout;
 
 import edu.mayo.cts2Viewer.client.utils.ModalWindow;
 
@@ -63,6 +67,8 @@ public class EntityWindow extends Window {
 
 		i_htmlPane = createHTMLPane();
 		addItem(i_htmlPane);
+
+		addItem(addCloseButton());
 	}
 
 	private HTMLPane createHTMLPane() {
@@ -129,6 +135,26 @@ public class EntityWindow extends Window {
 		windowTitleLabel.setBackgroundColor("#efefef");
 
 		return windowTitleLabel;
+	}
+
+	private HLayout addCloseButton() {
+		HLayout buttonLayout = new HLayout();
+		buttonLayout.setWidth100();
+		buttonLayout.setHeight(30);
+		buttonLayout.setMargin(5);
+		buttonLayout.setAlign(Alignment.RIGHT);
+
+		IButton closeButton = new IButton("Close");
+		closeButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				i_entityWindow.hide();
+			}
+		});
+
+		buttonLayout.addMember(closeButton);
+		return buttonLayout;
 	}
 
 }
