@@ -46,7 +46,7 @@ import edu.mayo.cts2Viewer.client.utils.UiHelper;
  */
 public class Cts2Viewer implements EntryPoint {
 
-	private static final String BACKGROUND_COLOR = "#d5d9de";
+	private static final String BACKGROUND_COLOR = "#eff0f2";
 
 	private static final String ROWS_RETRIEVED_TITLE = "Rows Matching Criteria:";
 	private static final String TITLE = "CTS2 - Value Sets";
@@ -218,7 +218,7 @@ public class Cts2Viewer implements EntryPoint {
 		searchLayout.setWidth100();
 		searchLayout.setHeight(60);
 		searchLayout.setMembersMargin(5);
-		searchLayout.setBackgroundColor("#c8d1d9");
+		searchLayout.setBackgroundColor("#f6faff");
 
 		i_searchItem = new SearchTextItem();
 
