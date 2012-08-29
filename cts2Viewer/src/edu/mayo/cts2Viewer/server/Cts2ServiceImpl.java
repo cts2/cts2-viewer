@@ -1,5 +1,7 @@
 package edu.mayo.cts2Viewer.server;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -20,6 +22,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.VocabularyId;
 import edu.mayo.cts2Viewer.client.Cts2Service;
@@ -359,9 +362,26 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	}
 
 	@Override
-	public String getEntity(String serviceName, String url) {
-
-		return "This is the data from the server";
+	public String getEntity(String serviceName, String url) 
+	{
+		try 
+		{
+			if (CTS2Utils.isNull(url))
+				return "request url is null!!";
+			
+			initCM(serviceName);
+			
+			String uri = (new URI(url)).toString();
+			return cm.getVocabularyEntityByURI(uri, ServiceResultFormat.XML);
+		} catch (SearchException e) 
+		{
+			e.printStackTrace();
+			return e.getMessage();
+		} catch (URISyntaxException e) 
+		{
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
 
 	public String getBasePath() {

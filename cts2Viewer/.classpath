@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="lib/smartgwt.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-core-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cts2search-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/cts2search-0.0.1-SNAPSHOT.jar" sourcepath="/cts2search/src"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
