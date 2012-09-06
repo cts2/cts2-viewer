@@ -52,6 +52,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 
         String DT_XLS = "csv";
         String DT_XML = "xml";
+        String DT_SVS = "svs";
         String DT_JSON = "json";
         String DT_ALL = "all";
 
@@ -62,20 +63,22 @@ public class CTS2DownloadServlet extends HttpServlet {
         String XLS_EXTN = ".xls";
         String XML_EXTN = ".xml";
         String JSON_EXTN = ".json";
+        String SVS_EXTN = ".xml";
         		
         String[] exts = null;
         String[] extTypes = null;
-        if ("all".equalsIgnoreCase(downloadType)) 
+        if (DT_ALL.equalsIgnoreCase(downloadType)) 
         {
-        	exts = new String[3];
-        	extTypes = new String[3];
+        	exts = new String[4];
+        	extTypes = new String[4];
         	
         	exts[0]= XLS_EXTN; extTypes[0] = DT_XLS;
         	exts[1]= XML_EXTN; extTypes[1] = DT_XML;
         	exts[2]= JSON_EXTN; extTypes[2] = DT_JSON;
+        	exts[3]= SVS_EXTN; extTypes[3] = DT_SVS;
         	zipFileName += "_ALL.zip"; 
         }
-        else if ("json".equalsIgnoreCase(downloadType)) 
+        else if (DT_JSON.equalsIgnoreCase(downloadType)) 
         {
         	exts = new String[1];
         	extTypes = new String[1];
@@ -84,7 +87,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 
         	zipFileName += "_JSON.zip"; 
         }
-        else if ("xml".equalsIgnoreCase(downloadType))   
+        else if (DT_XML.equalsIgnoreCase(downloadType))   
         { 
         	exts = new String[1];
         	extTypes = new String[1];
@@ -92,6 +95,15 @@ public class CTS2DownloadServlet extends HttpServlet {
         	exts[0]= XML_EXTN; extTypes[0] = DT_XML;
 
         	zipFileName += "_XML.zip";  
+        }
+        else if (DT_SVS.equalsIgnoreCase(downloadType))   
+        { 
+        	exts = new String[1];
+        	extTypes = new String[1];
+        	
+        	exts[0]= SVS_EXTN; extTypes[0] = DT_SVS;
+
+        	zipFileName += "_SVS.zip";  
         }
         else
         {
@@ -167,6 +179,9 @@ public class CTS2DownloadServlet extends HttpServlet {
     	
     	if (formatType.toLowerCase().indexOf("csv") != -1)
     		return ServiceResultFormat.CSV;
+
+    	if (formatType.toLowerCase().indexOf("svs") != -1)
+    		return ServiceResultFormat.SVS;
 
     	return ServiceResultFormat.XML;
     }
