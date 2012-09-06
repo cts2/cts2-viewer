@@ -362,26 +362,49 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	}
 
 	@Override
-	public String getEntity(String serviceName, String url) 
-	{
-		try 
-		{
-			if (CTS2Utils.isNull(url))
+	public String getEntity(String serviceName, String url) {
+		try {
+			if (CTS2Utils.isNull(url)) {
 				return "request url is null!!";
-			
+			}
+
 			initCM(serviceName);
-			
-			String uri = (new URI(url)).toString();
-			return cm.getVocabularyEntityByURI(uri, ServiceResultFormat.XML);
-		} catch (SearchException e) 
-		{
+
+			new URI(url).toString();
+			return cm.getVocabularyEntityByURI(url, ServiceResultFormat.XML);
+
+		} catch (SearchException e) {
 			e.printStackTrace();
 			return e.getMessage();
-		} catch (URISyntaxException e) 
-		{
+		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
+	}
+
+	/**
+	 * Determine if the user needs to provide credentials for the selected
+	 * server.
+	 */
+	@Override
+	public Boolean getCredentialsRequired(String serviceName) throws IllegalArgumentException {
+
+		if (serviceName.startsWith("PHIN")) {
+			return new Boolean(false);
+		} else {
+			return new Boolean(true);
+		}
+
+	}
+
+	/**
+	 * Validate the credentials for the given service
+	 */
+	@Override
+	public Boolean validateCredentials(edu.mayo.cts2Viewer.shared.Credentials credentials)
+	        throws IllegalArgumentException {
+
+		return new Boolean(true);
 	}
 
 	public String getBasePath() {

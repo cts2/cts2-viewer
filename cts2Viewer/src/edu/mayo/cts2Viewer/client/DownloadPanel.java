@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.NamedFrame;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Encoding;
 import com.smartgwt.client.widgets.IButton;
@@ -50,13 +49,6 @@ public class DownloadPanel extends HLayout {
 		setHeight(25);
 		setAlign(Alignment.RIGHT);
 		setMembersMargin(4);
-
-		/* Hidden frame for callback */
-		NamedFrame callbackFrame = new NamedFrame("downloadCallbackFrame");
-		callbackFrame.setHeight("1px");
-		callbackFrame.setWidth("1px");
-		callbackFrame.setVisible(false);
-		addMember(callbackFrame);
 
 		i_downloadForm = new DynamicForm();
 		i_downloadForm.setTarget("downloadCallbackFrame");

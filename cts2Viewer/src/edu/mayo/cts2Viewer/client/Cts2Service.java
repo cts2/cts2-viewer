@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
@@ -14,6 +15,10 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 @RemoteServiceRelativePath("cts2")
 public interface Cts2Service extends RemoteService {
 	LinkedHashMap<String, String> getAvailableServices() throws IllegalArgumentException;
+
+	Boolean getCredentialsRequired(String serviceName) throws IllegalArgumentException;
+
+	Boolean validateCredentials(Credentials credentials) throws IllegalArgumentException;
 
 	String getValueSets(String serviceName, String searchText) throws IllegalArgumentException;
 

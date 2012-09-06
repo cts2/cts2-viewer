@@ -139,27 +139,37 @@ public class ValueSetsListGrid extends ListGrid {
 	 */
 	public void getData(String serviceName, String searchText) {
 
-		i_searchString = searchText;
+		if (serviceName.equals(Cts2Panel.SELECT_SERVER_MSG)) {
+			// set to empty. don't do a search.
+			setData(new ListGridRecord[0]);
+			redraw();
 
-		Criteria criteria = new Criteria();
-		criteria.addCriteria("searchText", searchText);
-		criteria.addCriteria("serviceName", serviceName);
+			// let others know that the data has been retrieved.
+			Cts2Viewer.EVENT_BUS.fireEvent(new ValueSetsReceivedEvent());
+		}
 
-		i_valueSetsXmlDS.fetchData(criteria, new DSCallback() {
+		else {
+			i_searchString = searchText;
 
-			@Override
-			public void execute(DSResponse response, Object rawData, DSRequest request) {
-				// set to empty
-				setData(new ListGridRecord[0]);
+			Criteria criteria = new Criteria();
+			criteria.addCriteria("searchText", searchText);
+			criteria.addCriteria("serviceName", serviceName);
 
-				fetchData();
-				redraw();
+			i_valueSetsXmlDS.fetchData(criteria, new DSCallback() {
 
-				// let others know that the data has been retrieved.
-				Cts2Viewer.EVENT_BUS.fireEvent(new ValueSetsReceivedEvent());
-			}
-		});
+				@Override
+				public void execute(DSResponse response, Object rawData, DSRequest request) {
+					// set to empty
+					setData(new ListGridRecord[0]);
 
+					fetchData();
+					redraw();
+
+					// let others know that the data has been retrieved.
+					Cts2Viewer.EVENT_BUS.fireEvent(new ValueSetsReceivedEvent());
+				}
+			});
+		}
 	}
 
 	/**

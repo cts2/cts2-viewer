@@ -173,6 +173,30 @@ public class RestExecuter extends BaseCts2Servlet {
 		return sb.toString();
 	}
 
+	public String getRequest(String urlString) throws Exception {
+
+		StringBuilder sb = new StringBuilder();
+
+		try {
+
+			URL url = new URL(urlString);
+			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+
+			String inputLine;
+
+			while ((inputLine = in.readLine()) != null) {
+				sb.append(inputLine);
+			}
+			in.close();
+
+		} catch (Exception e) {
+			sb = new StringBuilder(); // reset
+			logger.log(Level.SEVERE, "Error getting Request information for  " + urlString + "  " + e);
+		}
+
+		return sb.toString();
+	}
+
 	/**
 	 * Get the REST URL for searching for value sets.
 	 * 

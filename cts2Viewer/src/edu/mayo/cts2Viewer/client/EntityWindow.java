@@ -108,7 +108,11 @@ public class EntityWindow extends Window {
 
 			@Override
 			public void onSuccess(String result) {
-				i_htmlPane.setContents(result);
+				// i_htmlPane.setContents(result);
+				// i_htmlPane.setContentsURL("http://informatics.mayo.edu/cts2/cts2formats/sample.xml");
+
+				i_htmlPane
+				        .setContentsURL("http://informatics.mayo.edu/cts2/services/py4cts2/cts2/concept/309343006?noq&xslt=namedEntity");
 
 				// hide the busy indicator.
 				i_busyIndicator.hide();

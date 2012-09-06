@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
@@ -12,6 +13,10 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
  */
 public interface Cts2ServiceAsync {
 	void getAvailableServices(AsyncCallback<LinkedHashMap<String, String>> callback) throws IllegalArgumentException;
+
+	void getCredentialsRequired(String serviceName, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void validateCredentials(Credentials credentials, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	void getValueSets(String serviceName, String searchText, AsyncCallback<String> callback)
 	        throws IllegalArgumentException;
