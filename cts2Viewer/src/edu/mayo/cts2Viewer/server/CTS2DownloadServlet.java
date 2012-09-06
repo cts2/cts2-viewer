@@ -63,7 +63,7 @@ public class CTS2DownloadServlet extends HttpServlet {
         String XLS_EXTN = ".xls";
         String XML_EXTN = ".xml";
         String JSON_EXTN = ".json";
-        String SVS_EXTN = ".svs";
+        String SVS_EXTN = ".xml";
         		
         String[] exts = null;
         String[] extTypes = null;
