@@ -283,7 +283,8 @@ public class LoginWindow extends Window {
 		pane.setMargin(5);
 		pane.setBackgroundColor("#ffffff");
 
-		pane.setContentsURL("data/login/login.html");
+		// The name of the html file is the same as the server name.
+		pane.setContentsURL("data/login/" + i_server + ".html");
 
 		return pane;
 	}

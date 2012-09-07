@@ -359,7 +359,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 	@Override
 	public Boolean logout(Credentials credentials) {
-		cm.setCurrentProfileName(null);
+		// cm.setCurrentProfileName(null);
 		return new Boolean(true);
 	}
 
