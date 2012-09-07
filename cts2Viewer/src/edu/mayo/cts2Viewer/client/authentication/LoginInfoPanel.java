@@ -71,7 +71,7 @@ public class LoginInfoPanel extends HLayout {
 
 	private DynamicForm createHelpButton() {
 		DynamicForm form = new DynamicForm();
-		form.setWidth(20);
+		form.setWidth(5);
 
 		FormItemIcon icon = new FormItemIcon();
 		icon.setSrc("[SKIN]/actions/help.png");
@@ -80,6 +80,7 @@ public class LoginInfoPanel extends HLayout {
 		blankTextItem.setName("blank");
 		blankTextItem.setTitle("");
 		blankTextItem.setIcons(icon);
+
 		blankTextItem.addIconClickHandler(new IconClickHandler() {
 
 			@Override

@@ -40,7 +40,6 @@ public class DownloadPanel extends HLayout {
 		super();
 		i_serverCombo = serverCombo;
 		i_valueSetsListGrid = valueSetsListGrid;
-
 		init();
 	}
 
@@ -70,6 +69,7 @@ public class DownloadPanel extends HLayout {
 		valueMap.put("csv", "CSV (Excel)");
 		valueMap.put("xml", "XML");
 		valueMap.put("json", "JSON");
+		valueMap.put("svs", "SVS");
 		valueMap.put("all", "All Formats");
 
 		// set images for each row
@@ -78,6 +78,7 @@ public class DownloadPanel extends HLayout {
 		valueIcons.put("csv", "csv");
 		valueIcons.put("xml", "xml");
 		valueIcons.put("json", "json");
+		valueIcons.put("svs", "svs");
 		valueIcons.put("all", "multiple");
 
 		i_exportTypeItem.setValueIcons(valueIcons);
@@ -116,7 +117,7 @@ public class DownloadPanel extends HLayout {
 				}
 
 				if ("".equals(valueSets.trim())) {
-					logger.log(Level.WARNING, "No ValueSet Names found in selected records!!");
+					logger.log(Level.WARNING, "No ValueSet Names found in selected records!");
 					return;
 				}
 
