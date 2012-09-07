@@ -47,6 +47,11 @@ public class ResolvedValueSetListGrid extends ListGrid {
 				String href = record.getAttribute("href");
 				String name = record.getAttribute("name");
 
+				// Don't create a link if the href is missing
+				if (href == null) {
+					return name;
+				}
+
 				return UiHelper.getLink(href, name);
 			}
 		});
