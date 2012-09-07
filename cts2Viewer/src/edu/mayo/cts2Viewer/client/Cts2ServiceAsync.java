@@ -28,4 +28,6 @@ public interface Cts2ServiceAsync {
 	        throws IllegalArgumentException;
 
 	void getEntity(String serviceName, String url, AsyncCallback<String> callback) throws IllegalArgumentException;
+
+	void logout(Credentials credentials, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 }

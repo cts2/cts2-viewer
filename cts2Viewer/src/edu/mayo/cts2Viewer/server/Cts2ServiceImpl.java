@@ -26,6 +26,7 @@ import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.VocabularyId;
 import edu.mayo.cts2Viewer.client.Cts2Service;
+import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
@@ -46,7 +47,6 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	@Override
 	public String getValueSets(String serviceName, String searchText) throws IllegalArgumentException {
 		String results = "";
-		// RestExecuter restExecuter = RestExecuter.getInstance();
 
 		try {
 			initCM(serviceName);
@@ -76,7 +76,6 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 		try {
 			initCM(serviceName);
-			// results = restExecuter.getValueSetInfo(valueSet);
 			VocabularyId valueSetId = new VocabularyId();
 			valueSetId.name = valueSetName;
 			results = cm.getValueSetInformation(valueSetId, ServiceResultFormat.XML);
@@ -97,33 +96,15 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	        throws IllegalArgumentException {
 
 		String results = "";
-		// RestExecuter restExecuter = RestExecuter.getInstance();
 		ResolvedValueSetInfo rvsi = new ResolvedValueSetInfo();
 
 		try {
 			initCM(serviceName);
 			results = cm.getValueSetMembers(valueSetName, ServiceResultFormat.XML);
-			// results = restExecuter.getResolvedValueSetInfo(serverUrl,
-			// valueSet);
 
 			if (results != null && results.length() > 0) {
 				rvsi = getResolvedValueSetGeneralInfo(results);
 			}
-			// TODO CME this is the way for bioportal, but phinvads is different
-			/*
-			 * results = restExecuter.getResolvedValueSetLocation(serverUrl,
-			 * valueSet); if (results != null && results.length() > 0) { String
-			 * resolvedValueSetUrl = getResolvedValueSetUrl(results);
-			 * 
-			 * results =
-			 * restExecuter.getResolvedValueSetInfo(resolvedValueSetUrl);
-			 * 
-			 * if (results != null && results.length() > 0) { rvsi =
-			 * getResolvedValueSetGeneralInfo(results); } } else {
-			 * logger.log(Level.SEVERE,
-			 * "Error retrieving Resolved ValueSets for serverUrl " + serverUrl
-			 * + " and value " + valueSet); }
-			 */
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error retrieving ValueSets" + e);
@@ -266,63 +247,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		return rvsi;
 	}
 
-	private String getResolvedValueSetUrl(String xmlStr) {
-
-		String result = "";
-
-		try {
-			DocumentBuilderFactory xmlFact = DocumentBuilderFactory.newInstance();
-			xmlFact.setNamespaceAware(true);
-			DocumentBuilder builder = xmlFact.newDocumentBuilder();
-			Document document = builder.parse(new java.io.ByteArrayInputStream(xmlStr.getBytes()));
-
-			NamespaceContext namespaceContext = new NamespaceContext() {
-
-				@Override
-				public String getNamespaceURI(String prefix) {
-					String uri;
-					if (prefix.equals("cts2")) {
-						uri = "http://schema.omg.org/spec/CTS2/1.0/ValueSetDefinition";
-					} else if (prefix.equals("core")) {
-						uri = "http://schema.omg.org/spec/CTS2/1.0/Core";
-					} else if (prefix.equals("xsi")) {
-						uri = "http://www.w3.org/2001/XMLSchema-instance";
-					} else {
-						uri = null;
-					}
-					return uri;
-				}
-
-				@Override
-				public Iterator getPrefixes(String arg0) {
-					return null;
-				}
-
-				@Override
-				public String getPrefix(String arg0) {
-					return null;
-				}
-			};
-
-			// XPath expression
-			String xpathStr = "/cts2:ResolvedValueSetDirectory/cts2:entry[1]/@href";
-
-			XPathFactory xpathFact = XPathFactory.newInstance();
-			XPath xpath = xpathFact.newXPath();
-			xpath.setNamespaceContext(namespaceContext);
-
-			result = xpath.evaluate(xpathStr, document);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
 	private void initCM(String serviceName) {
 		try {
-			logger.log(Level.SEVERE, "PRINTING BASE PATH...");
-			logger.log(Level.SEVERE, getBasePath());
 
 			if (this.cm == null) {
 				this.cm = ConvenienceMethods.instance(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
@@ -389,12 +315,16 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	@Override
 	public Boolean getCredentialsRequired(String serviceName) throws IllegalArgumentException {
 
-		if (serviceName.startsWith("PHIN")) {
-			return new Boolean(false);
-		} else {
-			return new Boolean(true);
-		}
+		Boolean required;
 
+		try {
+			initCM(serviceName);
+			required = new Boolean(cm.getCurrentContext().secure);
+		} catch (Exception e) {
+			required = new Boolean(true);
+			logger.log(Level.SEVERE, "Error determining if credentials are required" + e);
+		}
+		return required;
 	}
 
 	/**
@@ -404,6 +334,32 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	public Boolean validateCredentials(edu.mayo.cts2Viewer.shared.Credentials credentials)
 	        throws IllegalArgumentException {
 
+		Boolean valid;
+
+		// just do a simple search that will return quick.
+		String searchText = "abcd";
+		try {
+			initCM(credentials.getServer());
+
+			cm.getCurrentContext().userName = credentials.getUser();
+			cm.getCurrentContext().password = credentials.getPassword();
+
+			cm.getCurrentContext().resultLimit = 1;
+			cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
+			valid = new Boolean(true);
+
+		} catch (Exception e) {
+			valid = new Boolean(false);
+			logger.log(Level.WARNING, "User " + credentials.getUser() + " on server " + credentials.getServer()
+			        + " entered invalid credentials.");
+		}
+
+		return valid;
+	}
+
+	@Override
+	public Boolean logout(Credentials credentials) {
+		cm.setCurrentProfileName(null);
 		return new Boolean(true);
 	}
 

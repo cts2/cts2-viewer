@@ -48,6 +48,8 @@ public class LoginWindow extends Window {
 	private final Label i_titleLabel;
 	private final HTMLPane i_htmlPane;
 	private DynamicForm i_form;
+	private TextItem i_userIdItem;
+	private PasswordItem i_passwordItem;
 	private VLayout i_mainLayout;
 	private final VLayout i_overallLayout;
 
@@ -117,42 +119,43 @@ public class LoginWindow extends Window {
 		i_form.setNumCols(2);
 		i_form.setAlign(Alignment.CENTER);
 
-		TextItem userIdItem = new TextItem("userId");
-		userIdItem.setSelectOnFocus(true);
-		userIdItem.setTitle("User Id");
-		userIdItem.setWidth(WIDGET_WIDTH);
-		userIdItem.setRequired(true);
+		i_userIdItem = new TextItem("userId");
+		i_userIdItem.setSelectOnFocus(true);
+		i_userIdItem.setTitle("User Id");
+		i_userIdItem.setWidth(WIDGET_WIDTH);
+		i_userIdItem.setRequired(true);
 
 		// if user clicks on the ENTER key, with this button in focus then have
 		// this act as clicking the login button.
-		userIdItem.addKeyUpHandler(new KeyUpHandler() {
+		i_userIdItem.addKeyUpHandler(new KeyUpHandler() {
 
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
-				if (event.getKeyName().equals(KeyNames.ENTER)) {
+
+				if (event != null && event.getKeyName() != null && event.getKeyName().equals(KeyNames.ENTER)) {
 					authenticateUser();
 				}
 			}
 		});
 
-		PasswordItem passwordItem = new PasswordItem("password");
-		passwordItem.setTitle("Password");
-		passwordItem.setWidth(WIDGET_WIDTH);
-		passwordItem.setRequired(true);
+		i_passwordItem = new PasswordItem("password");
+		i_passwordItem.setTitle("Password");
+		i_passwordItem.setWidth(WIDGET_WIDTH);
+		i_passwordItem.setRequired(true);
 
 		// if user clicks on the ENTER key, with this button in focus then have
 		// this act as clicking the login button.
-		passwordItem.addKeyUpHandler(new KeyUpHandler() {
+		i_passwordItem.addKeyUpHandler(new KeyUpHandler() {
 
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
-				if (event.getKeyName().equals(KeyNames.ENTER)) {
+				if (event != null && event.getKeyName() != null && event.getKeyName().equals(KeyNames.ENTER)) {
 					authenticateUser();
 				}
 			}
 		});
 
-		i_form.setFields(new FormItem[] { userIdItem, passwordItem });
+		i_form.setFields(new FormItem[] { i_userIdItem, i_passwordItem });
 		formLayout.addMember(i_form);
 
 		HLayout buttonLayout = new HLayout(20);
@@ -239,6 +242,9 @@ public class LoginWindow extends Window {
 					busyIndicator.hide();
 
 					if (!valid) {
+						// set the user id as selected.
+						i_userIdItem.setSelectionRange(0, userName.length());
+
 						String message = "Invalid Id/Password.  Please try again.";
 						SC.warn(message);
 

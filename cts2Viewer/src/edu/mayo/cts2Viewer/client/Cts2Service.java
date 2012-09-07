@@ -28,4 +28,6 @@ public interface Cts2Service extends RemoteService {
 	        throws IllegalArgumentException;
 
 	String getEntity(String serviceName, String url);
+
+	Boolean logout(Credentials credentials);
 }

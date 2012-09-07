@@ -323,8 +323,6 @@ public class Cts2Panel extends VLayout {
 				@Override
 				public void onSuccess(Boolean credentialsRequired) {
 					if (credentialsRequired) {
-						System.out.println("Credentials REQUIRED for server " + selectedServer);
-
 						// Check if we have cached the credentials in
 						// Authentication before asking user to login again.
 						Credentials credentials = Authentication.getInstance().getCredentials(selectedServer);
@@ -341,8 +339,6 @@ public class Cts2Panel extends VLayout {
 						}
 
 					} else {
-						System.out.println("Credentials NOT REQUIRED for server " + selectedServer);
-
 						// clear out the logged in user for this server
 						i_loginInfoPanel.clearUser();
 
@@ -399,6 +395,8 @@ public class Cts2Panel extends VLayout {
 			@Override
 			public void onLogOutRequest(LogOutRequestEvent logOutRequestEvent) {
 				Credentials credentials = logOutRequestEvent.getCredential();
+				logoutFromServer(credentials);
+
 				i_loginInfoPanel.clearUser();
 				Authentication.getInstance().removeCredential(credentials.getServer());
 
@@ -407,6 +405,7 @@ public class Cts2Panel extends VLayout {
 				i_serverCombo.setValue(i_lastValidServer);
 				updateServiceSelection();
 			}
+
 		});
 	}
 
@@ -510,6 +509,29 @@ public class Cts2Panel extends VLayout {
 	}
 
 	/**
+	 * Make RPC call to logout from the current server
+	 */
+	private void logoutFromServer(Credentials credentials) {
+		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+		try {
+			service.logout(credentials, new AsyncCallback<Boolean>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					// Do nothing
+				}
+
+				@Override
+				public void onSuccess(Boolean result) {
+					// Do nothing
+				}
+			});
+		} catch (Exception e) {
+			lgr.log(Level.WARNING, "Logout from server failed: " + e);
+		}
+	}
+
+	/**
 	 * Make RPC call to retrieve the server(s) to connect to.
 	 */
 	private void retrieveServerOptions() {
@@ -543,7 +565,7 @@ public class Cts2Panel extends VLayout {
 
 			});
 		} catch (Exception e) {
-			SC.warn("Unable to retrieve servers to connect to.");
+			lgr.log(Level.WARNING, "Unable to retrieve servers to connect to.");
 		}
 	}
 
