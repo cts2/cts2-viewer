@@ -110,7 +110,13 @@ public class ValueSetPropertiesPanel extends VLayout {
 					String source = vsi.getSource() != null ? vsi.getSource() : "";
 					String sourceUri = vsi.getSourceUri() != null ? vsi.getSourceUri() : "";
 					i_contactTitle.setContents("<b>" + title + "</b>");
-					i_contactValue.setContents(UiHelper.getLink(sourceUri, source));
+
+					// don't create a link if the uri is not present.
+					if (sourceUri != null && sourceUri.length() > 0) {
+						i_contactValue.setContents(UiHelper.getLink(sourceUri, source));
+					} else {
+						i_contactValue.setContents(source);
+					}
 				}
 			}
 		});

@@ -45,7 +45,12 @@ public class ValueSetInfoListGrid extends ListGrid {
 				String uri = record.getAttribute("uri");
 				String name = record.getAttribute("name");
 
-				return UiHelper.getLink(uri, name);
+				// if uri is not present, don't create a link
+				if (uri != null && uri.length() > 0) {
+					return UiHelper.getLink(uri, name);
+				} else {
+					return name;
+				}
 			}
 		});
 
