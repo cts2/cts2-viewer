@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,6 +24,7 @@ import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.VocabularyId;
 import edu.mayo.cts2Viewer.client.Cts2Service;
+import edu.mayo.cts2Viewer.server.properties.PropertiesHelper;
 import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
@@ -35,10 +34,10 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
  */
 @SuppressWarnings("serial")
 public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service {
+
 	private static Logger logger = Logger.getLogger(Cts2ServiceImpl.class.getName());
 
-	private static final String SERVER_PROPERTIES_FILE = "CTS2Profiles.properties";
-
+	private static final int RESULT_LIMIT = 100;
 	private ConvenienceMethods cm = null;
 
 	/**
@@ -51,7 +50,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		try {
 			initCM(serviceName);
 
-			cm.getCurrentContext().resultLimit = 100;
+			cm.getCurrentContext().resultLimit = RESULT_LIMIT;
 			if (CTS2Utils.isNull(searchText)) {
 				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
 			} else {
@@ -249,9 +248,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 	private void initCM(String serviceName) {
 		try {
-
 			if (this.cm == null) {
-				this.cm = ConvenienceMethods.instance(getBasePath() + "data/" + SERVER_PROPERTIES_FILE);
+				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
 			}
 
 			if (!CTS2Utils.isNull(serviceName) && !cm.getCurrentProfileName().equals(serviceName)) {
@@ -362,32 +360,22 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		// cm.setCurrentProfileName(null);
 		return new Boolean(true);
 	}
-
-	public String getBasePath() {
-		String dataPath;
-
-		HttpSession httpSession = getThreadLocalRequest().getSession(true);
-		ServletContext context = httpSession.getServletContext();
-
-		String realContextPath = context.getRealPath(getThreadLocalRequest().getContextPath());
-
-		if (isDevelopmentMode()) {
-			dataPath = realContextPath;
-		} else {
-			dataPath = realContextPath + "/../";
-		}
-
-		return dataPath;
-	}
-
-	/**
-	 * Determine if the app is in development mode. To do this get the request
-	 * URL and if it contains 127.0.0.1, then it is in development mode.
+	/*
+	 * public String getPathToPropertiesFile() { String propertiesPath;
 	 * 
-	 * @return
+	 * // if (isDevelopmentMode()) { // logger.log(Level.INFO,
+	 * "In Development Mode"); // HttpSession httpSession =
+	 * getThreadLocalRequest().getSession(true); // ServletContext context =
+	 * httpSession.getServletContext(); // String realContextPath = //
+	 * context.getRealPath(getThreadLocalRequest().getContextPath()); // //
+	 * dataPath = realContextPath; // propertiesPath = dataPath + "data/" +
+	 * SERVER_PROPERTIES_FILE; // // } else { logger.log(Level.INFO,
+	 * "Getting file from directory in classes dir"); // dataPath =
+	 * realContextPath + "/../"; propertiesPath =
+	 * PropertiesHelper.getInstance().getPropertiesDirectory(); //
+	 * getPropertiesDirectory(); // }
+	 * 
+	 * return propertiesPath; }
 	 */
-	private boolean isDevelopmentMode() {
-		return getThreadLocalRequest().getHeader("Referer").contains("127.0.0.1");
-	}
 
 }
