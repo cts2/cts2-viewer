@@ -99,6 +99,9 @@ public class Cts2Panel extends VLayout {
 		titleLayout.setMargin(10);
 		titleLayout.setBackgroundColor(BACKGROUND_COLOR);
 
+		// add the css for the title layout.
+		// titleLayout.addStyleName("cts2-header");
+
 		titleLayout.addMember(titleLabel);
 		addMember(titleLayout);
 
