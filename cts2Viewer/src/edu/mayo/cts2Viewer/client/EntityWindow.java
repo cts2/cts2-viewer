@@ -25,6 +25,9 @@ public class EntityWindow extends Window {
 	private ModalWindow i_busyIndicator;
 	private static final String TITLE = "Entity Details";
 
+	private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
+	private static final String BYPASS_OPTION = "?bypass=1";
+
 	private static EntityWindow i_entityWindow;
 	private final Label i_titleLabel;
 	private final HTMLPane i_htmlPane;
@@ -47,7 +50,7 @@ public class EntityWindow extends Window {
 		super();
 
 		setWidth(700);
-		setHeight(450);
+		setHeight(400);
 
 		// set a thinner window edge.
 		setEdgeSize(4);
@@ -94,14 +97,13 @@ public class EntityWindow extends Window {
 
 		i_titleLabel.setContents(titleFormatted);
 
-		getEntityInformation(i_server, href, name);
+		getEntityInformation(i_server, i_href, name);
 	}
 
-	private void getEntityInformation(String serviceName, final String url, String id) {
+	private void getEntityInformation(String serviceName, final String entityUrl, String id) {
 
-		i_htmlPane.setContentsURL("http://informatics.mayo.edu/cts2/services/py4cts2/cts2/concept/" + id
-		        + "?noq&xslt=namedEntity");
-
+		String completeUrl = BASE_URL + entityUrl + BYPASS_OPTION;
+		i_htmlPane.setContentsURL(completeUrl);
 	}
 
 	private static Label createWindowTitle(String title) {
