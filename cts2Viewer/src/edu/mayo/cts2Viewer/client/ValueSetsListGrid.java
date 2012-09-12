@@ -185,10 +185,9 @@ public class ValueSetsListGrid extends ListGrid {
 		}
 
 		String lowerCaseCellText = cellText.toLowerCase();
-		int startIndex = lowerCaseCellText.indexOf(i_searchString);
+		int startIndex = lowerCaseCellText.indexOf(i_searchString.toLowerCase());
 
 		if (startIndex >= 0) {
-
 			int first = startIndex;
 
 			cellText = cellText.substring(0, first) + "<b style=\"color:#e33b74\">"

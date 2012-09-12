@@ -1,12 +1,10 @@
 package edu.mayo.cts2Viewer.client;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.AnimationEffect;
+import com.smartgwt.client.types.ContentsType;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.HTMLPane;
 import com.smartgwt.client.widgets.IButton;
@@ -26,6 +24,9 @@ public class EntityWindow extends Window {
 	private static final Logger logger = Logger.getLogger(EntityWindow.class.getName());
 	private ModalWindow i_busyIndicator;
 	private static final String TITLE = "Entity Details";
+
+	private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
+	private static final String BYPASS_OPTION = "?bypass=1";
 
 	private static EntityWindow i_entityWindow;
 	private final Label i_titleLabel;
@@ -49,7 +50,7 @@ public class EntityWindow extends Window {
 		super();
 
 		setWidth(700);
-		setHeight(550);
+		setHeight(400);
 
 		// set a thinner window edge.
 		setEdgeSize(4);
@@ -66,6 +67,7 @@ public class EntityWindow extends Window {
 		addItem(i_titleLabel);
 
 		i_htmlPane = createHTMLPane();
+		i_htmlPane.setHeight("*");
 		addItem(i_htmlPane);
 
 		addItem(addCloseButton());
@@ -76,6 +78,7 @@ public class EntityWindow extends Window {
 		pane.setWidth100();
 		pane.setHeight100();
 		pane.setMargin(5);
+		pane.setContentsType(ContentsType.PAGE);
 
 		return pane;
 	}
@@ -94,38 +97,13 @@ public class EntityWindow extends Window {
 
 		i_titleLabel.setContents(titleFormatted);
 
-		getEntityInformation(i_server, href);
+		getEntityInformation(i_server, i_href, name);
 	}
 
-	private void getEntityInformation(String serviceName, final String url) {
+	private void getEntityInformation(String serviceName, final String entityUrl, String id) {
 
-		i_busyIndicator = new ModalWindow(this, 40, "#dedede");
-		i_busyIndicator.setLoadingIcon("loading_circle.gif");
-		i_busyIndicator.show("Retrieving Entity...", true);
-
-		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getEntity(serviceName, url, new AsyncCallback<String>() {
-
-			@Override
-			public void onSuccess(String result) {
-				// i_htmlPane.setContents(result);
-				// i_htmlPane.setContentsURL("http://informatics.mayo.edu/cts2/cts2formats/sample.xml");
-
-				i_htmlPane
-				        .setContentsURL("http://informatics.mayo.edu/cts2/services/py4cts2/cts2/concept/309343006?noq&xslt=namedEntity");
-
-				// hide the busy indicator.
-				i_busyIndicator.hide();
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				// hide the busy indicator.
-				i_busyIndicator.hide();
-
-				logger.log(Level.SEVERE, "Error retrieving entity at " + url);
-			}
-		});
+		String completeUrl = BASE_URL + entityUrl + BYPASS_OPTION;
+		i_htmlPane.setContentsURL(completeUrl);
 	}
 
 	private static Label createWindowTitle(String title) {
@@ -135,7 +113,7 @@ public class EntityWindow extends Window {
 		windowTitleLabel.setHeight(25);
 		windowTitleLabel.setAlign(Alignment.CENTER);
 		windowTitleLabel.setValign(VerticalAlignment.CENTER);
-		windowTitleLabel.setWrap(false);
+		windowTitleLabel.setWrap(true);
 		windowTitleLabel.setBackgroundColor("#efefef");
 
 		return windowTitleLabel;

@@ -24,54 +24,24 @@ public class PropertiesHelper {
 	}
 
 	private PropertiesHelper() {
-
+		// private
 	}
 
 	public String getPropertiesDirectory() {
 
 		logger.log(Level.INFO, "Getting path to properties file from the classpath...");
 
-		String path = this.getClass().getPackage().toString();
+		String path = this.getClass().getPackage().getName();
 		path = path.replaceAll("[.]", File.separator);
 		path = path + File.separator + SERVER_PROPERTIES_FILE;
 		logger.log(Level.INFO, "Path = " + path);
 
-		// try {
-		// start from the "classes" directory -
-		// webapps/cts2Viewer/WEB-INF/classes/
-		// InputStream inputStream =
-		// this.getClass().getResourceAsStream("/../../data/" +
-		// SERVER_PROPERTIES_FILE);
-
-		// String path = this.getClass().getResource("/../../data/" +
-		// SERVER_PROPERTIES_FILE).getPath();
-		// String path =
-		// this.getClass().getResource(SERVER_PROPERTIES_FILE).getPath();
-
-		// System.out.println("getName() = " + this.getClass().getName());
-		// System.out.println("getCanonicalName() = " +
-		// this.getClass().getCanonicalName());
-		// System.out.println("getPackage() = " + this.getClass().getPackage());
-
-		// getPropertiesFile(path);
-
-		// properties.load(inputStream);
-		// logger.log(Level.INFO, "Properties loaded");
-		//
-		// String prop = properties.getProperty("profiles");
-		// logger.log(Level.INFO, "Profiles = " + prop);
-		//
-		// System.out.println("\nFile is created..........");
-		// } catch (IOException e) {
-		// logger.log(Level.INFO, "IOException = " + e.toString());
-		// }
-
 		return path;
 	}
 
-	public void getPropertiesFile(String path) {
+	private void getPropertiesFileTest(String path) {
 		Properties properties = new Properties();
-
+		logger.log(Level.INFO, "TESTING loading Properties...");
 		try {
 			// the properties file is in the same directory
 			InputStream inputStream = this.getClass().getResourceAsStream(SERVER_PROPERTIES_FILE);
@@ -82,7 +52,10 @@ public class PropertiesHelper {
 			String prop = properties.getProperty("profiles");
 			logger.log(Level.INFO, "Profiles = " + prop);
 
+			logger.log(Level.INFO, "TESTING loading Properties - SUCCESS");
+
 		} catch (IOException e) {
+			logger.log(Level.INFO, "TESTING loading Properties - FAILURE");
 			logger.log(Level.INFO, "IOException = " + e.toString());
 		}
 	}

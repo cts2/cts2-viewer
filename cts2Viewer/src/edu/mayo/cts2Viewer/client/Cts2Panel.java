@@ -8,6 +8,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
@@ -95,9 +96,22 @@ public class Cts2Panel extends VLayout {
 		// layout for main title
 		HLayout titleLayout = new HLayout();
 		titleLayout.setWidth100();
-		titleLayout.setAlign(VerticalAlignment.TOP);
+		titleLayout.setAlign(Alignment.CENTER);
 		titleLayout.setMargin(10);
 		titleLayout.setBackgroundColor(BACKGROUND_COLOR);
+
+		// String image = "cts2Logo.png";
+
+		// Img logoImg = new Img(image, 300, 60);
+		// logoImg.setImageWidth(400);
+		// logoImg.setImageHeight(50);
+		// logoImg.setImageType(ImageStyle.NORMAL);
+		// logoImg.setBorder("1px solid gray");
+		//
+		// titleLayout.addMember(logoImg);
+
+		// add the css for the title layout.
+		// titleLayout.addStyleName("cts2-header");
 
 		titleLayout.addMember(titleLabel);
 		addMember(titleLayout);
