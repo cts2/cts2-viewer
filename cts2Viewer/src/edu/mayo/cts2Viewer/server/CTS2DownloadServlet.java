@@ -181,16 +181,27 @@ public class CTS2DownloadServlet extends HttpServlet {
 		return ServiceResultFormat.XML;
 	}
 
-	private void initCM(String serviceName) {
-		try {
-			if (this.cm == null) {
+	private void initCM(String serviceName) 
+	{
+		try 
+		{
+			if (this.cm == null) 
+			{
 				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
 			}
 
-			if (!CTS2Utils.isNull(serviceName) && !cm.getCurrentProfileName().equals(serviceName)) {
-				cm.setCurrentProfileName(serviceName);
+			if (CTS2Utils.isNull(serviceName))
+			{
+				logger.log(Level.WARNING, "(CTS2 Download Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
+				return;
 			}
-		} catch (Exception ex) {
+					
+			if ((CTS2Utils.isNull(cm.getCurrentProfileName()))||
+				(!cm.getCurrentProfileName().equals(serviceName))) 
+				cm.setCurrentProfileName(serviceName);
+		} 
+		catch (Exception ex) 
+		{
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 	}
