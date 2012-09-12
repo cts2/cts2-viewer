@@ -360,22 +360,4 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		// cm.setCurrentProfileName(null);
 		return new Boolean(true);
 	}
-	/*
-	 * public String getPathToPropertiesFile() { String propertiesPath;
-	 * 
-	 * // if (isDevelopmentMode()) { // logger.log(Level.INFO,
-	 * "In Development Mode"); // HttpSession httpSession =
-	 * getThreadLocalRequest().getSession(true); // ServletContext context =
-	 * httpSession.getServletContext(); // String realContextPath = //
-	 * context.getRealPath(getThreadLocalRequest().getContextPath()); // //
-	 * dataPath = realContextPath; // propertiesPath = dataPath + "data/" +
-	 * SERVER_PROPERTIES_FILE; // // } else { logger.log(Level.INFO,
-	 * "Getting file from directory in classes dir"); // dataPath =
-	 * realContextPath + "/../"; propertiesPath =
-	 * PropertiesHelper.getInstance().getPropertiesDirectory(); //
-	 * getPropertiesDirectory(); // }
-	 * 
-	 * return propertiesPath; }
-	 */
-
 }

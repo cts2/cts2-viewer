@@ -17,14 +17,11 @@ import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
 public class SearchComboBoxItem extends ComboBoxItem {
 
 	private static final String EMPTY_MESSAGE = "No Values Matching Criteria";
-	private static final String VALUE_SETS_DS_ID = "SearchComboBoxItem_ID";
-
 	private final ValueSetsXmlDS i_valueSetsXmlDS;
 
 	public SearchComboBoxItem() {
 		super("search", "Search");
 
-		// i_valueSetsXmlDS = ValueSetsXmlDS.getInstance(VALUE_SETS_DS_ID);
 		i_valueSetsXmlDS = ValueSetsXmlDS.getInstance();
 
 		setAddUnknownValues(true);
@@ -44,7 +41,6 @@ public class SearchComboBoxItem extends ComboBoxItem {
 		setValueField("resourceName");
 
 		// filter on multiple fields.
-
 		setTextMatchStyle(TextMatchStyle.SUBSTRING);
 		setFilterFields("resourceName", "formalName", "value");
 
@@ -55,21 +51,12 @@ public class SearchComboBoxItem extends ComboBoxItem {
 
 				String keyName = event.getKeyName();
 
-				// TODO CME - filter what characters are allowed. Don't allow
-				// up/down arrows.
-				System.out.println(keyName);
-
 				// ignore the arrow keys
 				if (keyName != null && keyName.indexOf("Arrow") < 0) {
-
 					getData(getDisplayValue());
-
-				} else {
-					// nothing.
 				}
 			}
 		});
-
 	}
 
 	/**
@@ -86,7 +73,6 @@ public class SearchComboBoxItem extends ComboBoxItem {
 
 			@Override
 			public void execute(DSResponse response, Object rawData, DSRequest request) {
-				System.out.println("in callback... going to call fetchData() now");
 				fetchData();
 			}
 		});
