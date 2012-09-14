@@ -39,11 +39,14 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	private Label i_codeSystemTitle;
 	private Label i_codeSystemValue;
 
+	private SectionStack i_resolvedValueSetSectionStack;
+	private SectionStackSection i_sectionResolvedValueSetMembers;
+	private SectionStackSection i_sectionResolvedValueSetInfo;
+
 	public ResolvedValueSetPropertiesPanel(ComboBoxItem serverCombo) {
 		super();
 
 		i_serverCombo = serverCombo;
-
 		init();
 	}
 
@@ -76,35 +79,55 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 		// SectionStack for the collapsable sections - the resolved VS general
 		// info and the members/entities
-		SectionStack resolvedValueSetSectionStack = UiHelper.createSectionStack();
+		i_resolvedValueSetSectionStack = UiHelper.createSectionStack();
 
 		String resolvedValueSetsTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_INFO);
 
-		SectionStackSection sectionResolvedValueSetInfo = new SectionStackSection(resolvedValueSetsTitle);
-		sectionResolvedValueSetInfo.setExpanded(false);
-		sectionResolvedValueSetInfo.addItem(resolvedVsLayout);
-		resolvedValueSetSectionStack.addSection(sectionResolvedValueSetInfo);
+		i_sectionResolvedValueSetInfo = new SectionStackSection(resolvedValueSetsTitle);
+		i_sectionResolvedValueSetInfo.setExpanded(false);
+		i_sectionResolvedValueSetInfo.addItem(resolvedVsLayout);
+		i_resolvedValueSetSectionStack.addSection(i_sectionResolvedValueSetInfo);
 
 		String membersTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS);
 
 		i_resolvedValueSetListGrid = new ResolvedValueSetListGrid();
-		SectionStackSection sectionResolvedValueSetMembers = new SectionStackSection(membersTitle);
-		sectionResolvedValueSetMembers.setExpanded(true);
-		sectionResolvedValueSetMembers.setCanCollapse(false);
-		sectionResolvedValueSetMembers.addItem(i_resolvedValueSetListGrid);
-		resolvedValueSetSectionStack.addSection(sectionResolvedValueSetMembers);
+		i_sectionResolvedValueSetMembers = new SectionStackSection(membersTitle);
+		i_sectionResolvedValueSetMembers.setExpanded(true);
+		i_sectionResolvedValueSetMembers.setCanCollapse(false);
+		i_sectionResolvedValueSetMembers.addItem(i_resolvedValueSetListGrid);
+		i_resolvedValueSetSectionStack.addSection(i_sectionResolvedValueSetMembers);
 
-		addMember(resolvedValueSetSectionStack);
+		addMember(i_resolvedValueSetSectionStack);
 
 		addListGridRecordClickedHandler();
 		createResolvedValueSetInfoReceivedEvent();
 	}
 
-	public void updatePanel(String serviceName, String valueSet, String link) {
+	public void updatePanel(String serviceName, String valueSet, String formalName, String link) {
 		// clear the Resolved Value Set info as the call to update this
 		// information takes a few seconds.
 		clearResolvedValueSetInfo();
+		updateResolevedValueSetSectionTitle(formalName);
+
 		i_resolvedValueSetListGrid.getData(serviceName, valueSet);
+
+	}
+
+	/**
+	 * Update the title of the resolved value set section with the value set
+	 * selected.
+	 * 
+	 * @param formalName
+	 */
+	private void updateResolevedValueSetSectionTitle(String formalName) {
+		String updatedTitle;
+
+		if (formalName == null || formalName.length() == 0) {
+			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS);
+		} else {
+			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS + " for " + formalName);
+		}
+		i_sectionResolvedValueSetMembers.setTitle(updatedTitle);
 	}
 
 	private void clearResolvedValueSetInfo() {

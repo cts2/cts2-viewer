@@ -500,9 +500,11 @@ public class Cts2Panel extends VLayout {
 				if (record != null) {
 					String link = record.getAttribute("href");
 					String valueSetName = record.getAttribute("valueSetName");
+					String formalName = record.getAttribute("formalName");
 
 					i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
-					i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+					i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName,
+					        formalName, link);
 				}
 			}
 		});

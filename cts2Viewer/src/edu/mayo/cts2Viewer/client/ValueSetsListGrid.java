@@ -41,12 +41,12 @@ public class ValueSetsListGrid extends ListGrid {
 		setSelectionAppearance(SelectionAppearance.CHECKBOX);
 
 		ListGridField resourceTypeField = new ListGridField("resourceRoot", "Resource Type");
-		resourceTypeField.setWidth("45%");
+		resourceTypeField.setWidth("50%");
 		resourceTypeField.setWrap(false);
 		resourceTypeField.setShowHover(true);
 
-		ListGridField resourceNamefField = new ListGridField("valueSetName", "Value Set Name");
-		resourceNamefField.setWidth(250);
+		ListGridField resourceNamefField = new ListGridField("valueSetName", "Value Set Identifier");
+		resourceNamefField.setWidth("45%");
 		resourceNamefField.setWrap(false);
 		resourceNamefField.setShowHover(true);
 
@@ -96,7 +96,7 @@ public class ValueSetsListGrid extends ListGrid {
 			}
 		});
 
-		setFields(resourceNamefField, formalNameField);
+		setFields(formalNameField, resourceNamefField);
 
 		setAutoFetchData(false);
 		setCanEdit(false);
@@ -114,7 +114,7 @@ public class ValueSetsListGrid extends ListGrid {
 	@Override
 	protected Canvas getCellHoverComponent(Record record, Integer rowNum, Integer colNum) {
 		// only show a custom DetailViewer for the description column only
-		if (colNum == 2) {
+		if (colNum == 1) {
 
 			DetailViewer detailViewer = new DetailViewer();
 			detailViewer.setWidth(400);
