@@ -21,10 +21,11 @@ import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
+import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.grid.events.CellSavedEvent;
+import com.smartgwt.client.widgets.grid.events.CellSavedHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionChangedHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -498,30 +499,48 @@ public class Cts2Panel extends VLayout {
 
 				Record record = event.getRecord();
 				if (record != null) {
-					String link = record.getAttribute("href");
-					String valueSetName = record.getAttribute("valueSetName");
-					String formalName = record.getAttribute("formalName");
 
-					i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
-					i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName,
-					        formalName, link);
+					ListGridField selectedField = event.getField();
+
+					// if the user clicked on the download field then don't
+					// retrieve data.
+					if (!selectedField.getName().equals("download")) {
+
+						String link = record.getAttribute("href");
+						String valueSetName = record.getAttribute("valueSetName");
+						String formalName = record.getAttribute("formalName");
+
+						i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
+						i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName,
+						        formalName, link);
+					}
 				}
 			}
 		});
 
-		// handler for when the selection changes via the checkbox selection.
-		i_valueSetsListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
-
+		i_valueSetsListGrid.getField("download").addCellSavedHandler(new CellSavedHandler() {
 			@Override
-			public void onSelectionChanged(SelectionEvent event) {
-				Record[] selectedRecords = i_valueSetsListGrid.getSelectedRecords();
-				if (selectedRecords != null && selectedRecords.length > 0) {
-					i_downloadPanel.setWidgetsEnabled(true);
-				} else {
-					i_downloadPanel.setWidgetsEnabled(false);
-				}
+			public void onCellSaved(CellSavedEvent event) {
+				i_downloadPanel.setWidgetsEnabled(hasDownloadRecords());
 			}
 		});
+
+	}
+
+	/**
+	 * Determine if there are any rows that are selected for download
+	 * 
+	 * @return
+	 */
+	private boolean hasDownloadRecords() {
+		boolean checkedRow = false;
+
+		Record[] records = i_valueSetsListGrid.getRecords();
+		for (int i = 0; !checkedRow && i < records.length; i++) {
+			checkedRow = records[i].getAttributeAsBoolean("download");
+		}
+
+		return checkedRow;
 	}
 
 	/**

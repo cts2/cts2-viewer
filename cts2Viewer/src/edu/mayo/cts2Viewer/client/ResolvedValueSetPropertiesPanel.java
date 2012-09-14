@@ -103,13 +103,13 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		createResolvedValueSetInfoReceivedEvent();
 	}
 
-	public void updatePanel(String serviceName, String valueSet, String formalName, String link) {
+	public void updatePanel(String serviceName, String valueSetName, String formalName, String link) {
 		// clear the Resolved Value Set info as the call to update this
 		// information takes a few seconds.
 		clearResolvedValueSetInfo();
-		updateResolevedValueSetSectionTitle(formalName);
+		updateResolevedValueSetSectionTitle(formalName, valueSetName);
 
-		i_resolvedValueSetListGrid.getData(serviceName, valueSet);
+		i_resolvedValueSetListGrid.getData(serviceName, valueSetName);
 
 	}
 
@@ -118,14 +118,16 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	 * selected.
 	 * 
 	 * @param formalName
+	 * @param valueSetName
 	 */
-	private void updateResolevedValueSetSectionTitle(String formalName) {
+	private void updateResolevedValueSetSectionTitle(String formalName, String valueSetName) {
 		String updatedTitle;
 
 		if (formalName == null || formalName.length() == 0) {
 			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS);
 		} else {
-			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS + " for " + formalName);
+			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS + " \"" + formalName + "(" + valueSetName
+			        + ")\"");
 		}
 		i_sectionResolvedValueSetMembers.setTitle(updatedTitle);
 	}

@@ -67,9 +67,9 @@ public class DownloadPanel extends HLayout {
 
 		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 		valueMap.put("csv", "CSV (Excel)");
-		valueMap.put("xml", "XML");
-		valueMap.put("json", "JSON");
-		valueMap.put("svs", "SVS");
+		valueMap.put("xml", "CTS2 XML");
+		valueMap.put("json", "CTS2 JSON");
+		valueMap.put("svs", "SVS XML");
 		valueMap.put("all", "All Formats");
 
 		// set images for each row
@@ -99,7 +99,7 @@ public class DownloadPanel extends HLayout {
 				String downloadType = i_exportTypeItem.getValueAsString();
 				String serviceNameValue = i_serverCombo.getValueAsString();
 
-				ListGridRecord[] selected = i_valueSetsListGrid.getSelectedRecords();
+				ListGridRecord[] selected = i_valueSetsListGrid.getDownloadRecords();
 				if (selected == null || selected.length == 0) {
 					logger.log(Level.WARNING, "No ValueSet Selected!!");
 					return;

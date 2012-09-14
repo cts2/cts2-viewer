@@ -1,11 +1,14 @@
 package edu.mayo.cts2Viewer.client;
 
+import java.util.ArrayList;
+
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSCallback;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.SortSpecifier;
+import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.SelectionAppearance;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.SortDirection;
@@ -37,8 +40,11 @@ public class ValueSetsListGrid extends ListGrid {
 		setWrapCells(false);
 		setDataSource(i_valueSetsXmlDS);
 
-		setSelectionType(SelectionStyle.SIMPLE);
-		setSelectionAppearance(SelectionAppearance.CHECKBOX);
+		ListGridField downloadField = new ListGridField("download", "Download");
+		downloadField.setType(ListGridFieldType.BOOLEAN);
+		downloadField.setShowHover(false);
+		downloadField.setDefaultValue(false);
+		downloadField.setCanEdit(true);
 
 		ListGridField resourceTypeField = new ListGridField("resourceRoot", "Resource Type");
 		resourceTypeField.setWidth("50%");
@@ -46,7 +52,7 @@ public class ValueSetsListGrid extends ListGrid {
 		resourceTypeField.setShowHover(true);
 
 		ListGridField resourceNamefField = new ListGridField("valueSetName", "Value Set Identifier");
-		resourceNamefField.setWidth("45%");
+		resourceNamefField.setWidth("*");
 		resourceNamefField.setWrap(false);
 		resourceNamefField.setShowHover(true);
 
@@ -96,10 +102,17 @@ public class ValueSetsListGrid extends ListGrid {
 			}
 		});
 
-		setFields(formalNameField, resourceNamefField);
+		setFields(downloadField, formalNameField, resourceNamefField);
+
+		setSelectOnEdit(true);
+		setSelectionAppearance(SelectionAppearance.ROW_STYLE);
+		setSelectionType(SelectionStyle.SINGLE);
+
+		// Set edit and edit event to get the download checkbox to work
+		// correctly.
+		setCanEdit(true);
 
 		setAutoFetchData(false);
-		setCanEdit(false);
 
 		setCanHover(true);
 		setShowHover(true);
@@ -109,6 +122,24 @@ public class ValueSetsListGrid extends ListGrid {
 		SortSpecifier[] sortspec = new SortSpecifier[1];
 		sortspec[0] = new SortSpecifier("formalName", SortDirection.ASCENDING);
 		setInitialSort(sortspec);
+	}
+
+	public ListGridRecord[] getDownloadRecords() {
+
+		boolean checkedRow;
+		ArrayList<ListGridRecord> selectedRecords = new ArrayList<ListGridRecord>();
+
+		ListGridRecord[] records = getRecords();
+		for (ListGridRecord record : records) {
+			checkedRow = record.getAttributeAsBoolean("download");
+
+			if (checkedRow) {
+				selectedRecords.add(record);
+			}
+		}
+
+		ListGridRecord[] finalRecords = selectedRecords.toArray(new ListGridRecord[selectedRecords.size()]);
+		return finalRecords;
 	}
 
 	@Override

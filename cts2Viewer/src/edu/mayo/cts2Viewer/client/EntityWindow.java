@@ -12,6 +12,8 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
+import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 
 import edu.mayo.cts2Viewer.client.utils.ModalWindow;
@@ -71,6 +73,13 @@ public class EntityWindow extends Window {
 		addItem(i_htmlPane);
 
 		addItem(addCloseButton());
+		addCloseClickHandler(new CloseClickHandler() {
+
+			@Override
+			public void onCloseClick(CloseClickEvent event) {
+				i_entityWindow.hide();
+			}
+		});
 	}
 
 	private HTMLPane createHTMLPane() {
