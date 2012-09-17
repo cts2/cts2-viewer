@@ -64,12 +64,14 @@ public class CTS2DownloadServlet extends HttpServlet {
 		}
 
 		String XLS_EXTN = ".xls";
-		String XML_EXTN = ".xml";
-		String JSON_EXTN = ".json";
-		String SVS_EXTN = ".xml";
+		String XML_EXTN = "_CTS2.xml";
+		String JSON_EXTN = "_CTS2.json";
+		String SVS_EXTN = "_SVS.xml";
 
 		String[] exts = null;
 		String[] extTypes = null;
+		String contentTypeForSingleFileDownload = "text/plain";
+		
 		if (DT_ALL.equalsIgnoreCase(downloadType)) {
 			exts = new String[4];
 			extTypes = new String[4];
@@ -92,6 +94,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 			extTypes[0] = DT_JSON;
 
 			zipFileName += "_JSON.zip";
+			contentTypeForSingleFileDownload = "application/json";
 		} else if (DT_XML.equalsIgnoreCase(downloadType)) {
 			exts = new String[1];
 			extTypes = new String[1];
@@ -100,6 +103,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 			extTypes[0] = DT_XML;
 
 			zipFileName += "_XML.zip";
+			contentTypeForSingleFileDownload = "application/xml";
 		} else if (DT_SVS.equalsIgnoreCase(downloadType)) {
 			exts = new String[1];
 			extTypes = new String[1];
@@ -108,6 +112,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 			extTypes[0] = DT_SVS;
 
 			zipFileName += "_SVS.zip";
+			contentTypeForSingleFileDownload = "application/xml";
 		} else {
 			exts = new String[1];
 			extTypes = new String[1];
@@ -115,35 +120,65 @@ public class CTS2DownloadServlet extends HttpServlet {
 			exts[0] = XLS_EXTN;
 			extTypes[0] = DT_XLS;
 			zipFileName += "_CSV.zip";
+			contentTypeForSingleFileDownload = "application/octet-stream";
 		}
-		logger.info("Download Type=" + downloadType);
-		logger.info("Download requested: " + zipFileName);
+		//logger.info("Download Type=" + downloadType);
+		//logger.info("Download requested: " + zipFileName);
+		
 
-		// logger.info("Sending file " + algorithmFile.getAbsolutePath());
-		response.setContentType("application/zip");
-		// response.setContentLength((int) algorithmFile.length());
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + zipFileName + "\"");
-
-		initCM(request.getParameter("serviceName"));
-
-		try {
-			ServletOutputStream out = response.getOutputStream();
-			ZipOutputStream zipout = new ZipOutputStream(out);
-
-			for (int m = 0; m < exts.length; m++) {
-				for (String vs : valueSets) {
-					zipout.putNextEntry(new ZipEntry(vs + exts[m]));
-					zipout.write(createValueSetContent(extTypes[m], vs).getBytes());
-					zipout.closeEntry();
-				}
+		if ((valueSets.length == 1)&&(!(DT_ALL.equalsIgnoreCase(downloadType))))
+		{
+			//logger.info("Single file download Content Type: " + contentTypeForSingleFileDownload);
+			
+			try
+			{
+				response.setContentType(contentTypeForSingleFileDownload);
+				String fileText = createValueSetContent(extTypes[0], valueSets[0]);
+				
+				initCM(request.getParameter("serviceName"));
+				String singleFileName = valueSets[0] + exts[0];
+				
+				response.setHeader("Content-Length", String.valueOf(fileText.getBytes().length));
+				
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + singleFileName + "\"");
+				
+				ServletOutputStream out = response.getOutputStream();
+				out.write(fileText.getBytes());
+				out.close();
+				
+			} catch (IOException ioe1) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				logger.log(Level.SEVERE, "Unable to write the file to the response output stream.", ioe1);
 			}
-
-			zipout.flush();
-			zipout.close();
-			out.close();
-		} catch (IOException ioe) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			logger.log(Level.SEVERE, "Unable to write the file to the response output stream.", ioe);
+		}
+		else
+		{
+			// logger.info("Sending file " + algorithmFile.getAbsolutePath());
+			response.setContentType("application/zip");
+			// response.setContentLength((int) algorithmFile.length());
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + zipFileName + "\"");
+	
+			initCM(request.getParameter("serviceName"));
+	
+			try {
+				ServletOutputStream out = response.getOutputStream();
+				ZipOutputStream zipout = new ZipOutputStream(out);
+	
+				for (int m = 0; m < exts.length; m++) {
+					for (String vs : valueSets) {
+						zipout.putNextEntry(new ZipEntry(vs + exts[m]));
+						zipout.write(createValueSetContent(extTypes[m], vs).getBytes());
+						zipout.closeEntry();
+					}
+				}
+	
+				zipout.flush();
+				zipout.close();
+				out.close();
+			} catch (IOException ioe2) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				logger.log(Level.SEVERE, "Unable to write the file to the response output stream.", ioe2);
+			}
 		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
