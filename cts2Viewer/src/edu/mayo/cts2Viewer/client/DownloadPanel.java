@@ -117,7 +117,7 @@ public class DownloadPanel extends HLayout {
 					record.setAttribute("download", true);
 					i_valueSetsListGrid.updateData(record);
 				}
-				i_downloadButton.setDisabled(false);
+				setDownloadEnabled(true);
 			}
 		});
 
@@ -136,7 +136,7 @@ public class DownloadPanel extends HLayout {
 					record.setAttribute("download", false);
 					i_valueSetsListGrid.updateData(record);
 				}
-				i_downloadButton.setDisabled(true);
+				setDownloadEnabled(false);
 			}
 		});
 
@@ -192,6 +192,7 @@ public class DownloadPanel extends HLayout {
 		i_downloadButton.setDisabled(true);
 		i_clearAllButton.setDisabled(true);
 		i_selectAllButton.setDisabled(true);
+		i_exportTypeItem.setDisabled(true);
 
 		createValueSetsReceivedEvent();
 	}
@@ -209,9 +210,6 @@ public class DownloadPanel extends HLayout {
 		} else {
 			i_downloadButton.disable();
 		}
-
-		i_exportTypeItem.setDisabled(!enabled);
-
 	}
 
 	/**
@@ -232,9 +230,11 @@ public class DownloadPanel extends HLayout {
 				if (dc.length >= 1) {
 					i_selectAllButton.enable();
 					i_clearAllButton.enable();
+					i_exportTypeItem.setDisabled(false);
 				} else {
 					i_selectAllButton.disable();
 					i_clearAllButton.disable();
+					i_exportTypeItem.setDisabled(true);
 				}
 			}
 		});
