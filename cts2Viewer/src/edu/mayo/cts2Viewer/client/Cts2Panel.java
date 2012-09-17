@@ -163,9 +163,8 @@ public class Cts2Panel extends VLayout {
 		componentsLayout.addMember(createSearchWidgetLayout());
 
 		i_downloadPanel = new DownloadPanel(i_serverCombo, i_valueSetsListGrid);
-		i_downloadPanel.setWidgetsEnabled(false);
 
-		i_rowsRetrievedLabel = new Label(ROWS_RETRIEVED_TITLE);
+		i_rowsRetrievedLabel = new Label("");
 		i_rowsRetrievedLabel.setWidth100();
 		i_rowsRetrievedLabel.setMargin(5);
 		i_rowsRetrievedLabel.setHeight(20);
@@ -205,6 +204,7 @@ public class Cts2Panel extends VLayout {
 
 		SectionStackSection sectionSearchResults = new SectionStackSection(searchResultsTitle);
 		sectionSearchResults.setExpanded(true);
+
 		sectionSearchResults.addItem(valueSetsGrid);
 		sectionStack.addSection(sectionSearchResults);
 
@@ -433,10 +433,6 @@ public class Cts2Panel extends VLayout {
 			@Override
 			public void onValueSetsReceived(ValueSetsReceivedEvent event) {
 
-				// initially disable the download because nothing will be
-				// selected.
-				i_downloadPanel.setWidgetsEnabled(false);
-
 				DataClass[] dc = ValueSetsXmlDS.getInstance().getTestData();
 
 				if (dc.length >= 1) {
@@ -521,7 +517,7 @@ public class Cts2Panel extends VLayout {
 		i_valueSetsListGrid.getField("download").addCellSavedHandler(new CellSavedHandler() {
 			@Override
 			public void onCellSaved(CellSavedEvent event) {
-				i_downloadPanel.setWidgetsEnabled(hasDownloadRecords());
+				i_downloadPanel.setDownloadEnabled(hasDownloadRecords());
 			}
 		});
 

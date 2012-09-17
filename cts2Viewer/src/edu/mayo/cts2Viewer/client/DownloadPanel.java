@@ -5,9 +5,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Encoding;
+import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
@@ -15,6 +19,10 @@ import com.smartgwt.client.widgets.form.fields.HiddenItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.HLayout;
+
+import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
+import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
+import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEventHandler;
 
 /**
  * Panel to hold the widgets to select the format and download button.
@@ -31,6 +39,9 @@ public class DownloadPanel extends HLayout {
 	private IButton i_downloadButton;
 	private SelectItem i_exportTypeItem = null;
 
+	private IButton i_selectAllButton;
+	private IButton i_clearAllButton;
+
 	private HiddenItem zipFileNameItem = null;
 	private HiddenItem serviceNameItem = null;
 	private HiddenItem downloadTypeItem = null;
@@ -45,8 +56,9 @@ public class DownloadPanel extends HLayout {
 
 	private void init() {
 		setWidth100();
-		setHeight(25);
+		setHeight(21);
 		setAlign(Alignment.RIGHT);
+		setAlign(VerticalAlignment.CENTER);
 		setMembersMargin(4);
 
 		i_downloadForm = new DynamicForm();
@@ -62,6 +74,7 @@ public class DownloadPanel extends HLayout {
 
 		i_exportTypeItem = new SelectItem("exportType", "Format");
 		i_exportTypeItem.setWidth(120);
+		i_exportTypeItem.setHeight(20);
 		i_exportTypeItem.setWrapTitle(false);
 		i_exportTypeItem.setDefaultToFirstOption(true);
 
@@ -89,7 +102,48 @@ public class DownloadPanel extends HLayout {
 
 		i_downloadForm.setFields(allItems);
 
+		i_selectAllButton = new IButton("Select All");
+		i_selectAllButton.setWidth(55);
+		i_selectAllButton.setHeight(20);
+		i_selectAllButton.setValign(VerticalAlignment.CENTER);
+		i_selectAllButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+
+				ListGridRecord[] records = i_valueSetsListGrid.getRecords();
+
+				for (ListGridRecord record : records) {
+					record.setAttribute("download", true);
+					i_valueSetsListGrid.updateData(record);
+				}
+				i_downloadButton.setDisabled(false);
+			}
+		});
+
+		i_clearAllButton = new IButton("Clear All");
+		i_clearAllButton.setWidth(55);
+		i_clearAllButton.setHeight(20);
+		i_clearAllButton.setValign(VerticalAlignment.CENTER);
+		i_clearAllButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+
+				ListGridRecord[] records = i_valueSetsListGrid.getRecords();
+
+				for (ListGridRecord record : records) {
+					record.setAttribute("download", false);
+					i_valueSetsListGrid.updateData(record);
+				}
+				i_downloadButton.setDisabled(true);
+			}
+		});
+
 		i_downloadButton = new IButton("Download");
+		i_downloadButton.setWidth(90);
+		i_downloadButton.setHeight(20);
+		i_downloadButton.setValign(VerticalAlignment.CENTER);
 		i_downloadButton.setIcon("download.png");
 		i_downloadButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 
@@ -131,7 +185,15 @@ public class DownloadPanel extends HLayout {
 		});
 
 		addMember(i_downloadForm);
+		addMember(i_clearAllButton);
+		addMember(i_selectAllButton);
 		addMember(i_downloadButton);
+
+		i_downloadButton.setDisabled(true);
+		i_clearAllButton.setDisabled(true);
+		i_selectAllButton.setDisabled(true);
+
+		createValueSetsReceivedEvent();
 	}
 
 	/**
@@ -139,15 +201,42 @@ public class DownloadPanel extends HLayout {
 	 * 
 	 * @param enabled
 	 */
-	public void setWidgetsEnabled(boolean enabled) {
+	public void setDownloadEnabled(boolean enabled) {
 
 		if (enabled) {
 			i_downloadButton.enable();
+
 		} else {
 			i_downloadButton.disable();
 		}
 
 		i_exportTypeItem.setDisabled(!enabled);
 
+	}
+
+	/**
+	 * Listen for the event that ValueSets were retrieved.
+	 */
+	private void createValueSetsReceivedEvent() {
+		Cts2Viewer.EVENT_BUS.addHandler(ValueSetsReceivedEvent.TYPE, new ValueSetsReceivedEventHandler() {
+
+			@Override
+			public void onValueSetsReceived(ValueSetsReceivedEvent event) {
+
+				// initially disable the download because nothing will be
+				// selected.
+				setDownloadEnabled(false);
+
+				DataClass[] dc = ValueSetsXmlDS.getInstance().getTestData();
+
+				if (dc.length >= 1) {
+					i_selectAllButton.enable();
+					i_clearAllButton.enable();
+				} else {
+					i_selectAllButton.disable();
+					i_clearAllButton.disable();
+				}
+			}
+		});
 	}
 }
