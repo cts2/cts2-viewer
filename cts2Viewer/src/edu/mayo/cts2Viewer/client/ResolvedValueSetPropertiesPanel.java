@@ -139,6 +139,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		i_valueSetDefinitionValue.setContents("");
 		i_codeSystemVersionValue.setContents("");
 		i_codeSystemValue.setContents("");
+		updateResolevedValueSetSectionTitle(null, null);
 	}
 
 	/**
