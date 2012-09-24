@@ -246,27 +246,22 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		return rvsi;
 	}
 
-	private void initCM(String serviceName) 
-	{
-		try 
-		{
-			if (this.cm == null) 
-			{
+	private void initCM(String serviceName) {
+		try {
+			if (this.cm == null) {
 				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
 			}
 
-			if (CTS2Utils.isNull(serviceName))
-			{
-				logger.log(Level.WARNING, "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
+			if (CTS2Utils.isNull(serviceName)) {
+				logger.log(Level.WARNING,
+				        "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
 				return;
 			}
-					
-			if ((CTS2Utils.isNull(cm.getCurrentProfileName()))||
-				(!cm.getCurrentProfileName().equals(serviceName))) 
+
+			if (CTS2Utils.isNull(cm.getCurrentProfileName()) || !cm.getCurrentProfileName().equals(serviceName)) {
 				cm.setCurrentProfileName(serviceName);
-		} 
-		catch (Exception ex) 
-		{
+			}
+		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 	}
@@ -281,6 +276,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			initCM(null);
 			services = cm.getAvailableProfiles();
 			selectedService = cm.getCurrentProfileName();
+
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
@@ -294,6 +290,21 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		}
 
 		return serverOptions;
+	}
+
+	@Override
+	public String getDefaultService() throws IllegalArgumentException {
+		String defaultService = null;
+
+		try {
+			initCM(null);
+			defaultService = cm.getDefaultProfileName();
+
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "Failed to get the defualt service. " + ex.getMessage());
+		}
+
+		return defaultService;
 	}
 
 	@Override
@@ -367,9 +378,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	}
 
 	@Override
-	public Boolean logout(Credentials credentials) 
-	{
+	public Boolean logout(Credentials credentials) {
 		cm.removeCurrentContext();
 		return new Boolean(true);
 	}
+
 }

@@ -20,6 +20,7 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.viewer.DetailViewer;
 import com.smartgwt.client.widgets.viewer.DetailViewerField;
 
+import edu.mayo.cts2Viewer.client.authentication.Authentication;
 import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
 import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
 
@@ -50,11 +51,13 @@ public class ValueSetsListGrid extends ListGrid {
 		resourceTypeField.setWidth("50%");
 		resourceTypeField.setWrap(false);
 		resourceTypeField.setShowHover(true);
+		resourceTypeField.setCanEdit(false);
 
 		ListGridField resourceNamefField = new ListGridField("valueSetName", "Value Set Identifier");
 		resourceNamefField.setWidth("*");
 		resourceNamefField.setWrap(false);
 		resourceNamefField.setShowHover(true);
+		resourceNamefField.setCanEdit(false);
 
 		resourceNamefField.setCellFormatter(new CellFormatter() {
 
@@ -72,6 +75,7 @@ public class ValueSetsListGrid extends ListGrid {
 		formalNameField.setWidth("55%");
 		formalNameField.setWrap(false);
 		formalNameField.setShowHover(true);
+		formalNameField.setCanEdit(false);
 
 		formalNameField.setCellFormatter(new CellFormatter() {
 
@@ -89,6 +93,7 @@ public class ValueSetsListGrid extends ListGrid {
 		descriptionField.setWidth("*");
 		descriptionField.setShowHover(true);
 		descriptionField.setWrap(true);
+		descriptionField.setCanEdit(false);
 
 		descriptionField.setCellFormatter(new CellFormatter() {
 
@@ -170,7 +175,8 @@ public class ValueSetsListGrid extends ListGrid {
 	 */
 	public void getData(String serviceName, String searchText) {
 
-		if (serviceName.equals(Cts2Panel.SELECT_SERVER_MSG)) {
+		if (!Cts2Viewer.s_showAll && Authentication.getInstance().getCredentials(serviceName) == null
+		        || serviceName.equals(Cts2Panel.SELECT_SERVER_MSG)) {
 			// set to empty. don't do a search.
 			setData(new ListGridRecord[0]);
 			redraw();

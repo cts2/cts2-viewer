@@ -9,6 +9,8 @@ import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Encoding;
 import com.smartgwt.client.types.VerticalAlignment;
+import com.smartgwt.client.util.BooleanCallback;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -29,6 +31,8 @@ import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEventHandler;
  * 
  */
 public class DownloadPanel extends HLayout {
+
+	private static final int DOWNLOAD_THRESHOLD = 10;
 
 	private static Logger logger = Logger.getLogger(Cts2Viewer.class.getName());
 
@@ -149,38 +153,7 @@ public class DownloadPanel extends HLayout {
 
 			@Override
 			public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
-
-				String downloadType = i_exportTypeItem.getValueAsString();
-				String serviceNameValue = i_serverCombo.getValueAsString();
-
-				ListGridRecord[] selected = i_valueSetsListGrid.getDownloadRecords();
-				if (selected == null || selected.length == 0) {
-					logger.log(Level.WARNING, "No ValueSet Selected!!");
-					return;
-				}
-
-				String valueSets = "";
-
-				for (ListGridRecord record : selected) {
-					String value = record.getAttributeAsString("valueSetName");
-					if ("".equals(valueSets)) {
-						valueSets = value;
-					} else {
-						valueSets += "," + value;
-					}
-				}
-
-				if ("".equals(valueSets.trim())) {
-					logger.log(Level.WARNING, "No ValueSet Names found in selected records!");
-					return;
-				}
-
-				serviceNameItem.setValue(serviceNameValue);
-				downloadTypeItem.setValue(downloadType);
-				zipFileNameItem.setValue("CTS2ValueSetdownload");
-				vsNamesItem.setValue(valueSets);
-
-				i_downloadForm.submitForm();
+				prepareDownload();
 			}
 		});
 
@@ -195,6 +168,72 @@ public class DownloadPanel extends HLayout {
 		i_exportTypeItem.setDisabled(true);
 
 		createValueSetsReceivedEvent();
+	}
+
+	/**
+	 * Get the selected records. If there are more records than the
+	 * DOWNLOAD_THRESHOLD, then confirm the download first.
+	 */
+	private void prepareDownload() {
+
+		final ListGridRecord[] selected = i_valueSetsListGrid.getDownloadRecords();
+		if (selected == null || selected.length == 0) {
+			logger.log(Level.WARNING, "No ValueSet Selected!!");
+			return;
+		}
+
+		if (selected.length > DOWNLOAD_THRESHOLD) {
+			String title = "Confirm Download";
+			String message = "You have selected " + selected.length
+			        + " Value Sets to download.  This may take several seconds.  Are you sure you want to continue?";
+
+			SC.ask(title, message, new BooleanCallback() {
+
+				@Override
+				public void execute(Boolean value) {
+					if (value) {
+						startDownload(selected);
+					}
+				}
+			});
+
+		} else {
+			startDownload(selected);
+		}
+	}
+
+	/**
+	 * Perform the download.
+	 * 
+	 * @param selected
+	 */
+	private void startDownload(ListGridRecord[] selected) {
+
+		String downloadType = i_exportTypeItem.getValueAsString();
+		String serviceNameValue = i_serverCombo.getValueAsString();
+
+		String valueSets = "";
+
+		for (ListGridRecord record : selected) {
+			String value = record.getAttributeAsString("valueSetName");
+			if ("".equals(valueSets)) {
+				valueSets = value;
+			} else {
+				valueSets += "," + value;
+			}
+		}
+
+		if ("".equals(valueSets.trim())) {
+			logger.log(Level.WARNING, "No ValueSet Names found in selected records!");
+			return;
+		}
+
+		serviceNameItem.setValue(serviceNameValue);
+		downloadTypeItem.setValue(downloadType);
+		zipFileNameItem.setValue("CTS2ValueSetdownload");
+		vsNamesItem.setValue(valueSets);
+
+		i_downloadForm.submitForm();
 	}
 
 	/**

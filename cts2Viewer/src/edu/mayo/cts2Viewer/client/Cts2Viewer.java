@@ -28,9 +28,12 @@ import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEventHandler;
 public class Cts2Viewer implements EntryPoint {
 
 	private static Logger logger = Logger.getLogger(Cts2Viewer.class.getName());
+	private static final String SHOW_ALL = "showAll";
 
 	// Event Bus to capture global events and act upon them.
 	public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
+
+	public static boolean s_showAll = false;
 
 	private VLayout i_overallLayout;
 
@@ -44,6 +47,8 @@ public class Cts2Viewer implements EntryPoint {
 	public void onModuleLoad() {
 
 		logger.log(Level.INFO, "init onLoadModule().");
+
+		checkForInputParameters();
 
 		i_contextAreaPanel = new ContextAreaPanel();
 		i_cts2Panel = new Cts2Panel();
@@ -65,6 +70,20 @@ public class Cts2Viewer implements EntryPoint {
 		createLoginSuccessfulEvent();
 
 		initWindowClosingConfirmationDialog();
+	}
+
+	/**
+	 * See if any parameters were sent in on the URL
+	 */
+	private void checkForInputParameters() {
+
+		String showAll = Window.Location.getParameter(SHOW_ALL);
+		if (showAll != null && showAll.equalsIgnoreCase("true")) {
+			s_showAll = true;
+		} else {
+			s_showAll = false;
+		}
+
 	}
 
 	private void showMainPage() {

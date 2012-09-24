@@ -14,6 +14,8 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 public interface Cts2ServiceAsync {
 	void getAvailableServices(AsyncCallback<LinkedHashMap<String, String>> callback) throws IllegalArgumentException;
 
+	void getDefaultService(AsyncCallback<String> callback) throws IllegalArgumentException;
+
 	void getCredentialsRequired(String serviceName, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	void validateCredentials(Credentials credentials, AsyncCallback<Boolean> callback) throws IllegalArgumentException;

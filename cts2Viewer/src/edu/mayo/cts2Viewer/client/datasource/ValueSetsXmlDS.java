@@ -120,10 +120,8 @@ public class ValueSetsXmlDS extends DataSource {
 
 			@Override
 			public void onSuccess(String result) {
-
 				Object results = XMLTools.selectNodes(result, RECORD_X_PATH, i_nsMap);
 				Record[] fetchRecords = recordsFromXML(results);
-
 				setTestData(fetchRecords);
 
 				// use the callback to let the widget know we got the data...

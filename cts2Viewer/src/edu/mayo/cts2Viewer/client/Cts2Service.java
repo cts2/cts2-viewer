@@ -16,6 +16,8 @@ import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 public interface Cts2Service extends RemoteService {
 	LinkedHashMap<String, String> getAvailableServices() throws IllegalArgumentException;
 
+	String getDefaultService() throws IllegalArgumentException;
+
 	Boolean getCredentialsRequired(String serviceName) throws IllegalArgumentException;
 
 	Boolean validateCredentials(Credentials credentials) throws IllegalArgumentException;

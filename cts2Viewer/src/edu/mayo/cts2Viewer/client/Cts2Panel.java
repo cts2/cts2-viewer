@@ -17,6 +17,7 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
+import com.smartgwt.client.widgets.form.fields.StaticTextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
@@ -54,9 +55,13 @@ public class Cts2Panel extends VLayout {
 	static Logger lgr = Logger.getLogger(Cts2Panel.class.getName());
 
 	private static final String BACKGROUND_COLOR = "#eff0f2";
+	private static final int WIDGET_WIDTH = 300;
+	private static final int WIDGET_HEIGHT = 20;
+
+	private static final String SERVICE_TITLE = "<b>Service</b>";
 
 	private static final String ROWS_RETRIEVED_TITLE = "Rows Matching Criteria:";
-	private static final String TITLE = "CTS2 Value Sets";
+	private static final String TITLE = "Value Sets";
 	private static final String TITLE_VS_INFO = "Value Set Properties";
 	private static final String TITLE_SEARCH_RESULTS = "Search Results";
 
@@ -70,6 +75,8 @@ public class Cts2Panel extends VLayout {
 	private IButton i_clearButton;
 	private Label i_rowsRetrievedLabel;
 	private ComboBoxItem i_serverCombo;
+	private StaticTextItem i_defaultServerTextItem;
+	private String i_defaultServer;
 
 	private DownloadPanel i_downloadPanel;
 	private String i_lastValidServer;
@@ -230,22 +237,38 @@ public class Cts2Panel extends VLayout {
 		// add the drop down to choose the server to connect to.
 		i_serverCombo = createServerCombo();
 
+		// create the single server to connect to.
+		i_defaultServerTextItem = createDefaultServerTextItem();
+
 		HLayout searchLayout = new HLayout();
 		searchLayout.setWidth100();
-		searchLayout.setHeight(60);
+		searchLayout.setHeight(55);
 		searchLayout.setMembersMargin(5);
 		searchLayout.setBackgroundColor("#f6faff");
 
 		i_searchItem = new SearchTextItem();
 
 		DynamicForm searchForm = new DynamicForm();
-		searchForm.setItems(i_serverCombo, i_searchItem);
+		searchForm.setMargin(5);
+
+		// Determine if we show a combo with all services or just a single
+		// selection.
+		if (Cts2Viewer.s_showAll) {
+			searchForm.setItems(i_serverCombo, i_searchItem);
+		} else {
+			searchForm.setItems(i_defaultServerTextItem, i_searchItem);
+		}
+
 		searchForm.setHeight(55);
 		searchLayout.addMember(searchForm);
 
+		int height = Cts2Viewer.s_showAll ? 62 : 55;
 		VLayout buttonLayout = new VLayout();
-		buttonLayout.setHeight(55);
-		buttonLayout.setMargin(4);
+
+		// buttonLayout.setHeight(55);
+		// buttonLayout.setHeight(62);
+		buttonLayout.setHeight(height);
+		buttonLayout.setMargin(7);
 		buttonLayout.setAlign(VerticalAlignment.BOTTOM);
 
 		i_loginInfoPanel = new LoginInfoPanel();
@@ -253,6 +276,7 @@ public class Cts2Panel extends VLayout {
 
 		// add a button to clear the search form.
 		i_clearButton = new IButton("Clear");
+		i_clearButton.setHeight(20);
 		i_clearButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -279,9 +303,10 @@ public class Cts2Panel extends VLayout {
 	private ComboBoxItem createServerCombo() {
 		i_serverCombo = new ComboBoxItem();
 		i_serverCombo.setDefaultToFirstOption(true);
-		i_serverCombo.setTitle("<b>CTS2 Server</b>");
+		i_serverCombo.setTitle(SERVICE_TITLE);
 		i_serverCombo.setType("comboBox");
-		i_serverCombo.setWidth(300);
+		i_serverCombo.setWidth(WIDGET_WIDTH);
+		// i_serverCombo.setHeight(WIDGET_HEIGHT);
 		i_serverCombo.setWrapTitle(false);
 		i_serverCombo.setAttribute("browserSpellCheck", false);
 
@@ -295,6 +320,24 @@ public class Cts2Panel extends VLayout {
 
 		retrieveServerOptions();
 		return i_serverCombo;
+	}
+
+	/**
+	 * Create a StaticTextItem to display the single service.
+	 * 
+	 * @return
+	 */
+	private StaticTextItem createDefaultServerTextItem() {
+		i_defaultServerTextItem = new StaticTextItem();
+		i_defaultServerTextItem.setTitle(SERVICE_TITLE);
+		i_defaultServerTextItem.setWidth(WIDGET_WIDTH);
+		// i_defaultServerTextItem.setHeight(WIDGET_HEIGHT);
+
+		i_defaultServerTextItem.setWrapTitle(false);
+
+		retrieveDefaultServerOption();
+
+		return i_defaultServerTextItem;
 	}
 
 	private void updateServiceSelection() {
@@ -317,12 +360,26 @@ public class Cts2Panel extends VLayout {
 		updateServiceSelection();
 	}
 
+	private String getSelectedServer() {
+
+		final String selectedServer;
+
+		if (Cts2Viewer.s_showAll) {
+			selectedServer = i_serverCombo.getValueAsString();
+		} else {
+			selectedServer = i_defaultServer;
+		}
+
+		return selectedServer;
+	}
+
 	/**
 	 * Check if credentials are needed for this server selection.
 	 */
 	protected void checkCredentials() {
 
-		final String selectedServer = i_serverCombo.getValueAsString();
+		// final String selectedServer = i_serverCombo.getValueAsString();
+		final String selectedServer = getSelectedServer();
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 		try {
@@ -412,7 +469,7 @@ public class Cts2Panel extends VLayout {
 				Credentials credentials = logOutRequestEvent.getCredential();
 				logoutFromServer(credentials);
 
-				i_loginInfoPanel.clearUser();
+				// i_loginInfoPanel.clearUser();
 				Authentication.getInstance().removeCredential(credentials.getServer());
 
 				// reset the server selection and the server selection
@@ -420,7 +477,6 @@ public class Cts2Panel extends VLayout {
 				i_serverCombo.setValue(i_lastValidServer);
 				updateServiceSelection();
 			}
-
 		});
 	}
 
@@ -462,7 +518,11 @@ public class Cts2Panel extends VLayout {
 
 	protected void getValueSets(String searchText) {
 
-		i_valueSetsListGrid.getData(i_serverCombo.getValueAsString(), searchText);
+		if (Cts2Viewer.s_showAll) {
+			i_valueSetsListGrid.getData(i_serverCombo.getValueAsString(), searchText);
+		} else {
+			i_valueSetsListGrid.getData(i_defaultServer, searchText);
+		}
 	}
 
 	private void linkWidgets() {
@@ -592,6 +652,40 @@ public class Cts2Panel extends VLayout {
 
 					// Always show this message and let user select a server.
 					i_serverCombo.setValue(SELECT_SERVER_MSG);
+
+					if (Cts2Viewer.s_showAll) {
+						i_loginInfoPanel.addWidgets();
+					}
+				}
+
+			});
+		} catch (Exception e) {
+			lgr.log(Level.WARNING, "Unable to retrieve servers to connect to.");
+		}
+	}
+
+	/**
+	 * Make RPC call to retrieve the default server to connect to.
+	 */
+	private void retrieveDefaultServerOption() {
+		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+		try {
+			service.getDefaultService(new AsyncCallback<String>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					SC.warn("Unable to retrieve the default server to connect to.");
+				}
+
+				@Override
+				public void onSuccess(String defaultServer) {
+					i_defaultServer = defaultServer;
+					i_defaultServerTextItem.setValue("<b>" + i_defaultServer + "</b>");
+
+					if (!Cts2Viewer.s_showAll) {
+						i_loginInfoPanel.setDefaultServer(i_defaultServer);
+						i_loginInfoPanel.addWidgets();
+					}
 				}
 
 			});

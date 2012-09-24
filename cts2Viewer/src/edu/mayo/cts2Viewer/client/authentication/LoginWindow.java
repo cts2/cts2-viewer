@@ -38,7 +38,7 @@ import edu.mayo.cts2Viewer.shared.Credentials;
 public class LoginWindow extends Window {
 
 	private static final Logger logger = Logger.getLogger(LoginWindow.class.getName());
-	private static final String TITLE = "Server Login";
+	private static final String TITLE = "Service Login";
 
 	private static final int WIDTH = 350;
 	private static final int HEIGHT = 100;
@@ -291,7 +291,7 @@ public class LoginWindow extends Window {
 
 	private Label createWindowTitle(String server) {
 
-		Label windowTitleLabel = new Label("<b>Server Login for " + server + "</b>");
+		Label windowTitleLabel = new Label("<b>Login for " + server + "</b>");
 		windowTitleLabel.setWidth100();
 		windowTitleLabel.setHeight(25);
 		windowTitleLabel.setAlign(Alignment.CENTER);

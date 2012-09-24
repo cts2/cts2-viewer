@@ -150,6 +150,7 @@ public class ValueSetInfoXmlDS extends DataSource {
 				String result = vsi.getXml();
 
 				if (result != null && result.length() > 0) {
+
 					Object results = XMLTools.selectNodes(result, RECORD_X_PATH, i_nsMap);
 					Record[] fetchRecords = recordsFromXML(results);
 
