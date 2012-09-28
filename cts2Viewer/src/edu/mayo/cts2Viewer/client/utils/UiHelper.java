@@ -50,7 +50,7 @@ public class UiHelper {
 	}
 
 	public static String getSectionTitle(String title) {
-		return "<b style=\"font-size:14px;font-weight:bold;text-decoration:none\">" + title + "</b>";
+		return "<b style=\"font-size:12px;font-weight:bold;text-decoration:none\">" + title + "</b>";
 	}
 
 	public static String getSelected(String serviceName) {

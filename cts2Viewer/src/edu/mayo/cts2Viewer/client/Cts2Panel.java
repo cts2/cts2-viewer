@@ -56,7 +56,6 @@ public class Cts2Panel extends VLayout {
 
 	private static final String BACKGROUND_COLOR = "#eff0f2";
 	private static final int WIDGET_WIDTH = 300;
-	private static final int WIDGET_HEIGHT = 20;
 
 	private static final String SERVICE_TITLE = "<b>Service</b>";
 
@@ -106,23 +105,10 @@ public class Cts2Panel extends VLayout {
 		titleLayout.setWidth100();
 		titleLayout.setAlign(Alignment.CENTER);
 		titleLayout.setMargin(10);
-		titleLayout.setBackgroundColor(BACKGROUND_COLOR);
-
-		// String image = "cts2Logo.png";
-
-		// Img logoImg = new Img(image, 300, 60);
-		// logoImg.setImageWidth(400);
-		// logoImg.setImageHeight(50);
-		// logoImg.setImageType(ImageStyle.NORMAL);
-		// logoImg.setBorder("1px solid gray");
-		//
-		// titleLayout.addMember(logoImg);
-
-		// add the css for the title layout.
-		// titleLayout.addStyleName("cts2-header");
+		// titleLayout.setBackgroundColor(BACKGROUND_COLOR);
 
 		titleLayout.addMember(titleLabel);
-		addMember(titleLayout);
+		// addMember(titleLayout);
 
 		// layout for any content
 		HLayout contentLayout = new HLayout();

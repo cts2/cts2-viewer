@@ -22,7 +22,6 @@ import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
 public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 	private static final String TITLE_RESOLVED_VS_INFO = "Value Set Members";
-	private static final String TITLE_RESOLVED_VS_MEMBERS = "Entities";
 	private static final int RVS_TITLE_WIDTH = 125;
 
 	private ResolvedValueSetListGrid i_resolvedValueSetListGrid;
@@ -88,10 +87,8 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		i_sectionResolvedValueSetInfo.addItem(resolvedVsLayout);
 		i_resolvedValueSetSectionStack.addSection(i_sectionResolvedValueSetInfo);
 
-		String membersTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS);
-
 		i_resolvedValueSetListGrid = new ResolvedValueSetListGrid();
-		i_sectionResolvedValueSetMembers = new SectionStackSection(membersTitle);
+		i_sectionResolvedValueSetMembers = new SectionStackSection("");
 		i_sectionResolvedValueSetMembers.setExpanded(true);
 		i_sectionResolvedValueSetMembers.setCanCollapse(false);
 		i_sectionResolvedValueSetMembers.addItem(i_resolvedValueSetListGrid);
@@ -124,10 +121,9 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		String updatedTitle;
 
 		if (formalName == null || formalName.length() == 0) {
-			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS);
+			updatedTitle = UiHelper.getSectionTitle("");
 		} else {
-			updatedTitle = UiHelper.getSectionTitle(TITLE_RESOLVED_VS_MEMBERS + " \"" + formalName + "(" + valueSetName
-			        + ")\"");
+			updatedTitle = UiHelper.getSectionTitle(formalName + " (" + valueSetName + ")");
 		}
 		i_sectionResolvedValueSetMembers.setTitle(updatedTitle);
 	}

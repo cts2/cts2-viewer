@@ -26,8 +26,9 @@ import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
 
 public class ValueSetsListGrid extends ListGrid {
 
-	private final ValueSetsXmlDS i_valueSetsXmlDS;
+	private static final String EMPTY_MESSAGE = "No value sets to display.";
 
+	private final ValueSetsXmlDS i_valueSetsXmlDS;
 	private String i_searchString;
 
 	public ValueSetsListGrid() {
@@ -40,6 +41,7 @@ public class ValueSetsListGrid extends ListGrid {
 		setShowAllRecords(true);
 		setWrapCells(false);
 		setDataSource(i_valueSetsXmlDS);
+		setEmptyMessage(EMPTY_MESSAGE);
 
 		ListGridField downloadField = new ListGridField("download", "Download");
 		downloadField.setType(ListGridFieldType.BOOLEAN);

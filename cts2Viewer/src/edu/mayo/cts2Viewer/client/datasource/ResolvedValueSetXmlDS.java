@@ -81,6 +81,7 @@ public class ResolvedValueSetXmlDS extends DataSource {
 		DataSourceTextField vsDefinitionHrefField = new DataSourceTextField("valueSetDefinitionHref",
 		        "Value Set Definition HREF");
 		vsDefinitionHrefField.setValueXPath(X_PATH_VS_DEFINITION_HREF);
+		vsDefinitionHrefField.setPrimaryKey(true);
 
 		DataSourceTextField codeSystemVersionField = new DataSourceTextField("codeSystemVersion", "Code System Version");
 		codeSystemVersionField.setValueXPath(X_PATH_CODE_SYSTEM_VERSION);

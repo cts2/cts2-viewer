@@ -7,11 +7,15 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 import edu.mayo.cts2Viewer.client.authentication.LoginWindow;
@@ -27,6 +31,8 @@ import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEventHandler;
  */
 public class Cts2Viewer implements EntryPoint {
 
+	private static final int NORTH_HEIGHT = 85;
+
 	private static Logger logger = Logger.getLogger(Cts2Viewer.class.getName());
 	private static final String SHOW_ALL = "showAll";
 
@@ -36,9 +42,18 @@ public class Cts2Viewer implements EntryPoint {
 	public static boolean s_showAll = false;
 
 	private VLayout i_overallLayout;
+	private HLayout i_northLayout;
+
+	private Cts2ToolStrip i_toolstrip;
 
 	private ContextAreaPanel i_contextAreaPanel;
 	private Cts2Panel i_cts2Panel;
+
+	interface GlobalResources extends ClientBundle {
+		@NotStrict
+		@Source("Cts2Viewer.css")
+		CssResource css();
+	}
 
 	/**
 	 * This is the entry point method.
@@ -47,6 +62,14 @@ public class Cts2Viewer implements EntryPoint {
 	public void onModuleLoad() {
 
 		logger.log(Level.INFO, "init onLoadModule().");
+
+		// inject global styles
+		GWT.<GlobalResources> create(GlobalResources.class).css().ensureInjected();
+
+		// get rid of scroll bars, and clear out the window's built-in margin,
+		// because we want to take advantage of the entire client area
+		Window.enableScrolling(false);
+		Window.setMargin("0px");
 
 		checkForInputParameters();
 
@@ -58,7 +81,26 @@ public class Cts2Viewer implements EntryPoint {
 		i_overallLayout.setWidth100();
 		i_overallLayout.setHeight100();
 
+		// initialize the North layout container
+		i_northLayout = new HLayout();
+		i_northLayout.setHeight(NORTH_HEIGHT);
+
+		VLayout vLayout = new VLayout();
+		// add the MasterHeader to the nested layout container
+		vLayout.addMember(new MasterHeader());
+
+		i_toolstrip = new Cts2ToolStrip();
+		// add the Menu to the nested layout container
+		vLayout.addMember(i_toolstrip);
+
+		// add the nested layout container to the North layout container
+		i_northLayout.addMember(vLayout);
+		i_overallLayout.addMember(i_northLayout);
 		i_overallLayout.addMember(i_contextAreaPanel);
+
+		// add the MasterFooter to the bottom
+		i_overallLayout.addMember(new MasterFooter());
+
 		createDownloadCallbackFrame();
 
 		// Add the main layout to the root panel

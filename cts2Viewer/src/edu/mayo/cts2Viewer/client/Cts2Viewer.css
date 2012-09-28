@@ -1,0 +1,59 @@
+/** Add css rules here for your application. */
+
+
+.cts2-ToolStripMenu {
+  background-image: url(images/application_menu.png);
+  background-repeat: repeat-x; 
+  
+  padding-top: 4px;
+  padding-left: 4px;
+}
+
+/********************
+** MASTER HEADER
+********************/
+
+.cts2-MasterHeader {
+  background-image: url(images/masthead.png);
+  background-repeat: repeat-x; 
+}
+
+.cts2-MasterHeader-Logo {
+  /* height: 48px;
+  width: 48px; */
+  padding-top: 4px;
+  padding-left: 8px;
+  padding-right: 8px;	
+}
+
+.cts2-MastHead-SignedInUser {
+  color: #FFFFFF;  
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+  overflow: hidden;
+  padding-right: 4px;
+  text-align: right;
+}
+
+.cts2-MasterHeader-Title {
+  color: #FFFFFF;  
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  overflow: hidden;
+  text-align: center;
+}
+
+/********************
+** MASTER FOOTER
+********************/
+
+.cts2-MasterFooter {
+  background-image: url(images/application_menu.png);
+  background-repeat: repeat-x; 
+}
+
+.cts2-MasterFooter-Logo {
+  padding-right: 8px;	
+}
