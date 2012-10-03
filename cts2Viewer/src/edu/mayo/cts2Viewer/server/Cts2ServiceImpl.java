@@ -51,6 +51,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			initCM(serviceName);
 
 			cm.getCurrentContext().resultLimit = RESULT_LIMIT;
+
 			if (CTS2Utils.isNull(searchText)) {
 				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
 			} else {
