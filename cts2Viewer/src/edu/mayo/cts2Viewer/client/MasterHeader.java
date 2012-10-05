@@ -11,6 +11,7 @@ import com.smartgwt.client.widgets.layout.HLayout;
 public class MasterHeader extends HLayout {
 
 	private static final int MASTHEAD_HEIGHT = 58;
+	private static final String TITLE = "Value Sets Service";
 
 	private Label i_titleLabel;
 
@@ -30,7 +31,9 @@ public class MasterHeader extends HLayout {
 		// initialize the Name label
 		Label i_titleLabel = new Label();
 		i_titleLabel.addStyleName("cts2-MasterHeader-Title");
-		i_titleLabel.setContents("Value Sets");
+		i_titleLabel.setWrap(false);
+		i_titleLabel.setWidth("*");
+		i_titleLabel.setContents(TITLE);
 
 		// initialize the West layout container
 		HLayout westLayout = new HLayout();
