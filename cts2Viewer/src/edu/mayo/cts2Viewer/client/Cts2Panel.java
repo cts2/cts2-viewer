@@ -55,7 +55,7 @@ public class Cts2Panel extends VLayout {
 	static Logger lgr = Logger.getLogger(Cts2Panel.class.getName());
 
 	private static final String BACKGROUND_COLOR = "#eff0f2";
-	private static final int WIDGET_WIDTH = 300;
+	private static final int WIDGET_WIDTH = 200;
 
 	private static final String SERVICE_TITLE = "<b>Service</b>";
 
@@ -275,6 +275,7 @@ public class Cts2Panel extends VLayout {
 			}
 		});
 		buttonLayout.addMember(i_clearButton);
+
 		searchLayout.addMember(buttonLayout);
 		layout.addMember(searchLayout);
 

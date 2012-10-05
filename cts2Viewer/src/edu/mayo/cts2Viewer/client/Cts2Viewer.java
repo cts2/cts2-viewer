@@ -49,6 +49,7 @@ public class Cts2Viewer implements EntryPoint {
 	private ContextAreaPanel i_contextAreaPanel;
 	private Cts2Panel i_cts2Panel;
 
+	// include our own css
 	interface GlobalResources extends ClientBundle {
 		@NotStrict
 		@Source("Cts2Viewer.css")

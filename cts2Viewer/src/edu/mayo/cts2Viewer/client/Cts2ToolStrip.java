@@ -1,7 +1,6 @@
 package edu.mayo.cts2Viewer.client;
 
 import com.google.gwt.user.client.Window;
-import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
@@ -16,8 +15,7 @@ public class Cts2ToolStrip extends ToolStrip {
 	private static final int HEIGHT = 27;
 	private static final String WIDTH = "100%";
 
-	private static final String HREF_HELP_CONTENTS = "http://informatics.mayo.edu/cts2/index.php/Users";
-	private static final String HREF_HELP_ABOUT = "http://informatics.mayo.edu/cts2/index.php?title=Value_Set_UI&action=edit&redlink=1";
+	private static final String HREF_HELP_CONTENTS = "http://informatics.mayo.edu/cts2/index.php?title=Value_Set_UI&action=edit&redlink=1";
 	private static final String WINDOW_PROPERTIES = "width=900,height=800,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes,resizable=yes";
 
 	private final ToolStripButton i_valueSetsButton;
@@ -39,7 +37,8 @@ public class Cts2ToolStrip extends ToolStrip {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				SC.say("Value Sets");
+				// if there are different pages/panels we would need to flip to
+				// the valueset one here
 			}
 		});
 
@@ -72,7 +71,8 @@ public class Cts2ToolStrip extends ToolStrip {
 
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				Window.open(HREF_HELP_ABOUT, "help_about", WINDOW_PROPERTIES);
+				AboutWindow aboutWindow = new AboutWindow();
+				aboutWindow.show();
 			}
 		});
 

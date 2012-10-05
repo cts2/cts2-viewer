@@ -29,7 +29,7 @@ public class SearchComboBoxItem extends ComboBoxItem {
 		setCompleteOnTab(true);
 		setHint("Enter Search Text");
 		setShowHintInField(true);
-		setWidth(400);
+		setWidth(200);
 
 		setOptionDataSource(i_valueSetsXmlDS);
 		setAutoFetchData(false);
