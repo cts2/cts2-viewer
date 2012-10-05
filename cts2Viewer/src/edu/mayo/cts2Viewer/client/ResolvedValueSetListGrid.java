@@ -46,9 +46,9 @@ public class ResolvedValueSetListGrid extends ListGrid {
 		setShowRecordComponentsByCell(true);
 
 		ListGridField xmlIconField = new ListGridField("href", "XML");
-		xmlIconField.setWidth(50);
+		xmlIconField.setWidth(40);
 		xmlIconField.setType(ListGridFieldType.LINK);
-		xmlIconField.setAlign(Alignment.CENTER);
+		xmlIconField.setAlign(Alignment.LEFT);
 		xmlIconField.setLinkText(Canvas.imgHTML("xml.png", 34, 16, "Entity XML", "align=center", null));
 		xmlIconField.setHoverCustomizer(new HoverCustomizer() {
 
@@ -72,7 +72,13 @@ public class ResolvedValueSetListGrid extends ListGrid {
 		designationField.setWrap(false);
 		designationField.setWidth("*");
 
-		setFields(xmlIconField, nameField, nameSpaceField, designationField);
+		// only show the XML column if the user is an expert user (defined by
+		// the showAll parameter).
+		if (Cts2Viewer.s_showAll) {
+			setFields(xmlIconField, nameField, nameSpaceField, designationField);
+		} else {
+			setFields(nameField, nameSpaceField, designationField);
+		}
 
 		setAutoFetchData(false);
 		setCanEdit(false);
