@@ -2,6 +2,7 @@ package edu.mayo.cts2Viewer.client;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ContentsType;
+import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.HTMLPane;
 import com.smartgwt.client.widgets.IButton;
@@ -12,6 +13,10 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
+import com.smartgwt.client.widgets.events.MouseOutEvent;
+import com.smartgwt.client.widgets.events.MouseOutHandler;
+import com.smartgwt.client.widgets.events.MouseOverEvent;
+import com.smartgwt.client.widgets.events.MouseOverHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 
 import edu.mayo.cts2Viewer.client.events.EntityChangedEvent;
@@ -116,7 +121,7 @@ public class EntityWindow extends Window {
 		headerLayout.setAlign(Alignment.RIGHT);
 
 		String upArrow = "arrow_up.png";
-		Img upArrowImg = new Img(upArrow, 32, 32);
+		final Img upArrowImg = new Img(upArrow, 32, 32);
 
 		HLayout upLayout = new HLayout();
 		upLayout.setWidth(32);
@@ -126,7 +131,7 @@ public class EntityWindow extends Window {
 		headerLayout.addMember(upLayout);
 
 		String downArrow = "arrow_down.png";
-		Img downArrowImg = new Img(downArrow, 32, 32);
+		final Img downArrowImg = new Img(downArrow, 32, 32);
 
 		downArrowImg.addClickHandler(new ClickHandler() {
 
@@ -136,6 +141,20 @@ public class EntityWindow extends Window {
 				Cts2Viewer.EVENT_BUS.fireEvent(new EntityChangedEvent(EntityChangedEvent.NEXT));
 			}
 		});
+		downArrowImg.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				downArrowImg.setCursor(Cursor.HAND);
+			}
+		});
+		downArrowImg.addMouseOutHandler(new MouseOutHandler() {
+
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				downArrowImg.setCursor(Cursor.AUTO);
+			}
+		});
 
 		upArrowImg.addClickHandler(new ClickHandler() {
 
@@ -143,6 +162,21 @@ public class EntityWindow extends Window {
 			public void onClick(ClickEvent event) {
 				// fire the entity change event
 				Cts2Viewer.EVENT_BUS.fireEvent(new EntityChangedEvent(EntityChangedEvent.PREVIOUS));
+			}
+		});
+
+		upArrowImg.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				upArrowImg.setCursor(Cursor.HAND);
+			}
+		});
+		upArrowImg.addMouseOutHandler(new MouseOutHandler() {
+
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				upArrowImg.setCursor(Cursor.AUTO);
 			}
 		});
 
