@@ -3,11 +3,11 @@ package edu.mayo.cts2Viewer.client;
 import java.util.logging.Logger;
 
 import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.AnimationEffect;
 import com.smartgwt.client.types.ContentsType;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.HTMLPane;
 import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
@@ -16,7 +16,7 @@ import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 
-import edu.mayo.cts2Viewer.client.utils.ModalWindow;
+import edu.mayo.cts2Viewer.client.events.EntityChangedEvent;
 
 /**
  * Window to retrieve and display Entity information.
@@ -24,7 +24,6 @@ import edu.mayo.cts2Viewer.client.utils.ModalWindow;
 public class EntityWindow extends Window {
 
 	private static final Logger logger = Logger.getLogger(EntityWindow.class.getName());
-	private ModalWindow i_busyIndicator;
 	private static final String TITLE = "Entity Details";
 
 	private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
@@ -61,12 +60,9 @@ public class EntityWindow extends Window {
 		setIsModal(false);
 		centerInPage();
 
-		setAnimateShowTime(1000);
-		setAnimateFadeTime(1000);
-		setAnimateShowEffect(AnimationEffect.WIPE);
-
 		i_titleLabel = createWindowTitle("");
-		addItem(i_titleLabel);
+		// addItem(i_titleLabel);
+		addItem(createHeader());
 
 		i_htmlPane = createHTMLPane();
 		i_htmlPane.setHeight("*");
@@ -113,6 +109,61 @@ public class EntityWindow extends Window {
 
 		String completeUrl = BASE_URL + entityUrl + BYPASS_OPTION;
 		i_htmlPane.setContentsURL(completeUrl);
+	}
+
+	private HLayout createHeader() {
+
+		HLayout headerLayout = new HLayout();
+		headerLayout.setWidth100();
+		headerLayout.setHeight(32);
+		headerLayout.setAlign(Alignment.RIGHT);
+
+		String upArrow = "arrow_up.png";
+		Img upArrowImg = new Img(upArrow, 32, 32);
+		upArrowImg.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				System.out.println("Up");
+			}
+		});
+
+		HLayout upLayout = new HLayout();
+		upLayout.setWidth(32);
+		upLayout.setHeight(32);
+		upLayout.setPrompt("Previous Entity");
+		upLayout.addMember(upArrowImg);
+		headerLayout.addMember(upLayout);
+
+		String downArrow = "arrow_down.png";
+		Img downArrowImg = new Img(downArrow, 32, 32);
+
+		downArrowImg.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// fire the entity change event
+				Cts2Viewer.EVENT_BUS.fireEvent(new EntityChangedEvent(EntityChangedEvent.NEXT));
+			}
+		});
+
+		upArrowImg.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// fire the entity change event
+				Cts2Viewer.EVENT_BUS.fireEvent(new EntityChangedEvent(EntityChangedEvent.PREVIOUS));
+			}
+		});
+
+		HLayout downLayout = new HLayout();
+		downLayout.setWidth(32);
+		downLayout.setHeight(32);
+		downLayout.setPrompt("Next Entity");
+		downLayout.addMember(downArrowImg);
+		headerLayout.addMember(downLayout);
+
+		return headerLayout;
 	}
 
 	private static Label createWindowTitle(String title) {

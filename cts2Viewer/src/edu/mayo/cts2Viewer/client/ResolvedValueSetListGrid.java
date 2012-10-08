@@ -6,6 +6,7 @@ import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ListGridFieldType;
+import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -41,6 +42,7 @@ public class ResolvedValueSetListGrid extends ListGrid {
 		setCanHover(true);
 		setHoverWidth(100);
 		setHoverWrap(false);
+		setSelectionType(SelectionStyle.SINGLE);
 
 		setShowRecordComponents(true);
 		setShowRecordComponentsByCell(true);

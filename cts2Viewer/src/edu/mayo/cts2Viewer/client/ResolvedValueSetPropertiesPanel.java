@@ -10,6 +10,8 @@ import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
 
+import edu.mayo.cts2Viewer.client.events.EntityChangedEvent;
+import edu.mayo.cts2Viewer.client.events.EntityChangedEventHandler;
 import edu.mayo.cts2Viewer.client.events.ResolvedValueSetInfoReceivedEvent;
 import edu.mayo.cts2Viewer.client.events.ResolvedValueSetInfoReceivedEventHandler;
 import edu.mayo.cts2Viewer.client.utils.UiHelper;
@@ -98,6 +100,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 		addListGridRecordClickedHandler();
 		createResolvedValueSetInfoReceivedEvent();
+		createEntityChangedEvent();
 	}
 
 	public void updatePanel(String serviceName, String valueSetName, String formalName, String link) {
@@ -139,6 +142,54 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	}
 
 	/**
+	 * Find the next or previous record to select based on the users
+	 * interaction.
+	 * 
+	 * @param direction
+	 */
+	public void selectRecord(int direction) {
+
+		Record selectedRecord = i_resolvedValueSetListGrid.getSelectedRecord();
+
+		String designation = selectedRecord.getAttribute("designation");
+		String nameSpace = selectedRecord.getAttribute("nameSpace");
+		String name = selectedRecord.getAttribute("name");
+
+		ListGridRecord[] records = i_resolvedValueSetListGrid.getRecords();
+		int i;
+		for (i = 0; i < records.length; i++) {
+			if (records[i].getAttribute("designation").equalsIgnoreCase(designation)
+			        && records[i].getAttribute("nameSpace").equalsIgnoreCase(nameSpace)
+			        && records[i].getAttribute("name").equalsIgnoreCase(name)) {
+				break;
+			}
+		}
+
+		i_resolvedValueSetListGrid.deselectRecord(i);
+
+		// Determine which direction to move
+		if (direction == EntityChangedEvent.PREVIOUS) {
+			// Previous
+			if (i == 0) {
+				i_resolvedValueSetListGrid.selectRecord(records.length - 1);
+			} else {
+				i_resolvedValueSetListGrid.selectRecord(--i);
+			}
+		} else {
+			// Next
+			// check if we are at the end of the list
+			if (i == records.length - 1) {
+				i_resolvedValueSetListGrid.selectRecord(0);
+			} else {
+				i_resolvedValueSetListGrid.selectRecord(++i);
+			}
+		}
+
+		showEntityInfo(i_resolvedValueSetListGrid.getRecord(i));
+
+	}
+
+	/**
 	 * Clear out all of the ListGrids and panels
 	 */
 	public void clearPanels() {
@@ -154,18 +205,22 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			@Override
 			public void onRecordClick(RecordClickEvent event) {
 				Record record = event.getRecord();
-				if (record != null) {
-					String href = record.getAttribute("href");
-					String name = record.getAttribute("name");
-					String description = record.getAttribute("designation");
-
-					EntityWindow entityWindow = EntityWindow.getInstance(i_serverCombo.getValueAsString(), href, name,
-					        description);
-					entityWindow.show();
-				}
+				showEntityInfo(record);
 			}
 		});
 
+	}
+
+	private void showEntityInfo(Record record) {
+		if (record != null) {
+			String href = record.getAttribute("href");
+			String name = record.getAttribute("name");
+			String description = record.getAttribute("designation");
+
+			EntityWindow entityWindow = EntityWindow.getInstance(i_serverCombo.getValueAsString(), href, name,
+			        description);
+			entityWindow.show();
+		}
 	}
 
 	/**
@@ -196,6 +251,19 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 				        }
 			        }
 		        });
+	}
+
+	private void createEntityChangedEvent() {
+
+		Cts2Viewer.EVENT_BUS.addHandler(EntityChangedEvent.TYPE, new EntityChangedEventHandler() {
+
+			@Override
+			public void onEntityChanged(EntityChangedEvent event) {
+				selectRecord(event.getChangeType());
+
+			}
+		});
+
 	}
 
 }
