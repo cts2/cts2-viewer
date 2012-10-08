@@ -1,7 +1,5 @@
 package edu.mayo.cts2Viewer.client;
 
-import java.util.logging.Logger;
-
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ContentsType;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -23,7 +21,6 @@ import edu.mayo.cts2Viewer.client.events.EntityChangedEvent;
  */
 public class EntityWindow extends Window {
 
-	private static final Logger logger = Logger.getLogger(EntityWindow.class.getName());
 	private static final String TITLE = "Entity Details";
 
 	private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
@@ -120,13 +117,6 @@ public class EntityWindow extends Window {
 
 		String upArrow = "arrow_up.png";
 		Img upArrowImg = new Img(upArrow, 32, 32);
-		upArrowImg.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				System.out.println("Up");
-			}
-		});
 
 		HLayout upLayout = new HLayout();
 		upLayout.setWidth(32);
