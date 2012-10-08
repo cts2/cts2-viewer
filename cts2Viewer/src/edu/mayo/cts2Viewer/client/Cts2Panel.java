@@ -54,9 +54,8 @@ public class Cts2Panel extends VLayout {
 
 	static Logger lgr = Logger.getLogger(Cts2Panel.class.getName());
 
-	private static final String BACKGROUND_COLOR = "#eff0f2";
+	private static final String BACKGROUND_COLOR = "#F5F5F3";
 	private static final int WIDGET_WIDTH = 200;
-
 	private static final String SERVICE_TITLE = "<b>Service</b>";
 
 	private static final String ROWS_RETRIEVED_TITLE = "Rows Matching Criteria:";

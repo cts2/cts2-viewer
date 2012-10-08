@@ -1,8 +1,16 @@
 package edu.mayo.cts2Viewer.client;
 
+import com.google.gwt.user.client.Window;
 import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.MouseOutEvent;
+import com.smartgwt.client.widgets.events.MouseOutHandler;
+import com.smartgwt.client.widgets.events.MouseOverEvent;
+import com.smartgwt.client.widgets.events.MouseOverHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 
 /**
@@ -11,22 +19,47 @@ import com.smartgwt.client.widgets.layout.HLayout;
 public class MasterHeader extends HLayout {
 
 	private static final int MASTHEAD_HEIGHT = 58;
+	private static final String MASTERHEADER_BACKGROUND = "#F5F5F3";
 	private static final String TITLE = "Value Sets Service";
+	private static final String HREF_LOGO = "http://mayoclinic.org";
 
 	private Label i_titleLabel;
 
 	public MasterHeader() {
 		super();
 
+		setBackgroundColor(MASTERHEADER_BACKGROUND);
+
 		// initialize the MasterHeader layout container
 		this.addStyleName("cts2-MasterHeader");
 		this.setHeight(MASTHEAD_HEIGHT);
 
 		// initialize the Logo image
-		String logoImage = "cts2_logo.png";
-		Img logoImg = new Img(logoImage, 104, 46);
-		logoImg.setImageWidth(104);
-		logoImg.setImageHeight(46);
+		String logoImage = "logo-mc.gif";
+		final Img logoImg = new Img(logoImage, 197, 42);
+		logoImg.addStyleName("cts2-MasterHeader-Logo");
+
+		logoImg.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.open(HREF_LOGO, "_blank", "");
+			}
+		});
+		logoImg.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				logoImg.setCursor(Cursor.HAND);
+			}
+		});
+		logoImg.addMouseOutHandler(new MouseOutHandler() {
+
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				logoImg.setCursor(Cursor.AUTO);
+			}
+		});
 
 		// initialize the Name label
 		Label i_titleLabel = new Label();
@@ -38,8 +71,10 @@ public class MasterHeader extends HLayout {
 		// initialize the West layout container
 		HLayout westLayout = new HLayout();
 		westLayout.setHeight(MASTHEAD_HEIGHT);
-		westLayout.setWidth("20%");
-		// westLayout.addMember(logoImg);
+		westLayout.setWidth("30%");
+		westLayout.setMargin(8);
+		westLayout.addMember(logoImg);
+
 		// westLayout.addMember(name);
 
 		// initialize the Center layout container
@@ -58,7 +93,7 @@ public class MasterHeader extends HLayout {
 		HLayout eastLayout = new HLayout();
 		eastLayout.setAlign(Alignment.RIGHT);
 		eastLayout.setHeight(MASTHEAD_HEIGHT);
-		eastLayout.setWidth("20%");
+		eastLayout.setWidth("30%");
 		eastLayout.addMember(signedInUser);
 
 		// add the West and East layout containers to the MasterHeader layout
