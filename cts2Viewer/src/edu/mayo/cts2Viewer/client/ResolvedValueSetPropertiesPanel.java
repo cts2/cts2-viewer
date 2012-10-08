@@ -173,7 +173,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			if (i == 0) {
 				i_resolvedValueSetListGrid.selectRecord(records.length - 1);
 			} else {
-				i_resolvedValueSetListGrid.selectRecord(--i);
+				i_resolvedValueSetListGrid.selectRecord(i - 1);
 			}
 		} else {
 			// Next
@@ -181,11 +181,11 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			if (i == records.length - 1) {
 				i_resolvedValueSetListGrid.selectRecord(0);
 			} else {
-				i_resolvedValueSetListGrid.selectRecord(++i);
+				i_resolvedValueSetListGrid.selectRecord(i + 1);
 			}
 		}
 
-		showEntityInfo(i_resolvedValueSetListGrid.getRecord(i));
+		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord());
 
 	}
 
@@ -217,8 +217,8 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			String name = record.getAttribute("name");
 			String description = record.getAttribute("designation");
 
-			EntityWindow entityWindow = EntityWindow.getInstance(i_serverCombo.getValueAsString(), href, name,
-			        description);
+			EntityWindow entityWindow = EntityWindow.getInstance();
+			entityWindow.setWindowData(i_serverCombo.getValueAsString(), href, name, description);
 			entityWindow.show();
 		}
 	}

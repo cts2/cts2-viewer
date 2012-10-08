@@ -24,8 +24,6 @@ public class ResolvedValueSetListGrid extends ListGrid {
 	private final ResolvedValueSetXmlDS i_resolvedValueSetXmlDS;
 	private String i_resolvedValueSet;
 
-	private final int count = 0;
-
 	public ResolvedValueSetListGrid() {
 		super();
 

@@ -40,12 +40,10 @@ public class EntityWindow extends Window {
 	private static String i_description;
 	private static String i_server;
 
-	public static EntityWindow getInstance(String server, String href, String name, String desc) {
+	public static EntityWindow getInstance() {
 		if (i_entityWindow == null) {
 			i_entityWindow = new EntityWindow();
 		}
-		i_entityWindow.setWindowData(server, href, name, desc);
-
 		return i_entityWindow;
 	}
 
@@ -90,7 +88,7 @@ public class EntityWindow extends Window {
 		return pane;
 	}
 
-	private void setWindowData(String server, String href, String name, String desc) {
+	public void setWindowData(String server, String href, String name, String desc) {
 		i_href = href;
 		i_entityName = name;
 		i_description = desc;

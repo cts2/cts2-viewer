@@ -251,8 +251,6 @@ public class Cts2Panel extends VLayout {
 		int height = Cts2Viewer.s_showAll ? 62 : 55;
 		VLayout buttonLayout = new VLayout();
 
-		// buttonLayout.setHeight(55);
-		// buttonLayout.setHeight(62);
 		buttonLayout.setHeight(height);
 		buttonLayout.setMargin(7);
 		buttonLayout.setAlign(VerticalAlignment.BOTTOM);
@@ -269,6 +267,7 @@ public class Cts2Panel extends VLayout {
 			public void onClick(ClickEvent event) {
 				i_searchItem.clearValue();
 				i_clearButton.setDisabled(true);
+				EntityWindow.getInstance().hide();
 				getValueSets("");
 				i_valueSetPropertiesPanel.clearValueSetInfo();
 				i_resolvedValueSetPropertiesPanel.clearPanels();
@@ -523,12 +522,15 @@ public class Cts2Panel extends VLayout {
 
 				// TODO CME - filter what characters are allowed. Don't allow
 				// up/down arrows.
-				// System.out.println(keyName);
 
 				// ignore the arrow keys
 				if (i_searchItem.isValidSearchText()) {
 					setClearButtonEnablement();
 					getValueSets(i_searchItem.getValueAsString());
+
+					EntityWindow.getInstance().hide();
+					i_valueSetPropertiesPanel.clearValueSetInfo();
+					i_resolvedValueSetPropertiesPanel.clearPanels();
 				}
 			}
 		});
