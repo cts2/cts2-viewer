@@ -46,6 +46,7 @@ import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
 import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEventHandler;
 import edu.mayo.cts2Viewer.client.utils.UiHelper;
 import edu.mayo.cts2Viewer.shared.Credentials;
+import edu.mayo.cts2Viewer.shared.ServerProperties;
 
 /*
  * Panel to hold data for the main area
@@ -80,6 +81,7 @@ public class Cts2Panel extends VLayout {
 	private String i_lastValidServer;
 
 	private LoginInfoPanel i_loginInfoPanel;
+	protected ServerProperties i_serverProperties;
 
 	public Cts2Panel() {
 		super();
@@ -299,7 +301,7 @@ public class Cts2Panel extends VLayout {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				checkCredentials();
+				getServerProperties();
 			}
 		});
 
@@ -359,56 +361,72 @@ public class Cts2Panel extends VLayout {
 	}
 
 	/**
-	 * Check if credentials are needed for this server selection.
+	 * Get the newly selected server. Check if credentials are needed for this
+	 * server selection.
 	 */
-	protected void checkCredentials() {
+	protected void getServerProperties() {
 
-		// final String selectedServer = i_serverCombo.getValueAsString();
 		final String selectedServer = getSelectedServer();
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+
 		try {
-			service.getCredentialsRequired(selectedServer, new AsyncCallback<Boolean>() {
+			service.getServerProperties(selectedServer, new AsyncCallback<ServerProperties>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
 					// reset server selection
 					i_serverCombo.setValue(i_lastValidServer);
-					SC.warn("Unable to determine if server credentials are needed.");
+					SC.warn("Unable to retrieve the selected server properties.");
 				}
 
 				@Override
-				public void onSuccess(Boolean credentialsRequired) {
-					if (credentialsRequired) {
-						// Check if we have cached the credentials in
-						// Authentication before asking user to login again.
-						Credentials credentials = Authentication.getInstance().getCredentials(selectedServer);
+				public void onSuccess(ServerProperties serverProperties) {
+					i_serverProperties = serverProperties;
 
-						if (credentials != null) {
-							updateWithLoggedInUser(credentials);
+					// determine if the selected server requires a login
+					determineIfSelectedServerIsSecure(selectedServer, serverProperties);
 
-						} else {
-							// fire the login event to show the login panel
-							Cts2Viewer.EVENT_BUS.fireEvent(new LoginRequestEvent(selectedServer));
+					System.out.println(serverProperties.isShowFilters());
 
-							// Listen for the login successful event and then
-							// continue
-						}
-
-					} else {
-						// clear out the logged in user for this server
-						i_loginInfoPanel.clearUser();
-
-						// update the last valid server
-						i_lastValidServer = i_serverCombo.getValueAsString();
-
-						updateServiceSelection();
-					}
+					// TODO - We can check the serverProperties to see if we
+					// need to show the filters or not
 				}
 			});
 
 		} catch (Exception e) {
-			SC.warn("Unable to determine if server credentials are needed.");
+			SC.warn("Unable to get selected service properties.");
+		}
+	}
+
+	/**
+	 * If a selected server requires a login, then display it.
+	 * 
+	 * @param selectedServer
+	 * @param serverProperties
+	 */
+	private void determineIfSelectedServerIsSecure(String selectedServer, ServerProperties serverProperties) {
+
+		if (i_serverProperties.isSecure()) {
+			// Check if we have cached the credentials in
+			// Authentication before asking user to login again.
+			Credentials credentials = Authentication.getInstance().getCredentials(selectedServer);
+
+			if (credentials != null) {
+				updateWithLoggedInUser(credentials);
+
+			} else {
+				// fire the login event to show the login panel
+				Cts2Viewer.EVENT_BUS.fireEvent(new LoginRequestEvent(selectedServer));
+			}
+
+		} else {
+			// clear out the logged in user for this server
+			i_loginInfoPanel.clearUser();
+
+			// update the last valid server
+			i_lastValidServer = i_serverCombo.getValueAsString();
+			updateServiceSelection();
 		}
 	}
 
@@ -456,6 +474,8 @@ public class Cts2Panel extends VLayout {
 
 				// i_loginInfoPanel.clearUser();
 				Authentication.getInstance().removeCredential(credentials.getServer());
+
+				i_serverProperties = null;
 
 				// reset the server selection and the server selection
 				i_lastValidServer = SELECT_SERVER_MSG;

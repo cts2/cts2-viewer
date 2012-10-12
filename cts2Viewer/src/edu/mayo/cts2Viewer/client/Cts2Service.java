@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
+import edu.mayo.cts2Viewer.shared.ServerProperties;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
 /**
@@ -32,4 +33,6 @@ public interface Cts2Service extends RemoteService {
 	String getEntity(String serviceName, String url);
 
 	Boolean logout(Credentials credentials);
+
+	ServerProperties getServerProperties(String serviceName) throws IllegalArgumentException;
 }

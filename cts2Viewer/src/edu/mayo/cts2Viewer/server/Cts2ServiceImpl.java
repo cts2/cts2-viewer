@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2RestRequestParameters;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
@@ -27,13 +28,15 @@ import edu.mayo.cts2Viewer.client.Cts2Service;
 import edu.mayo.cts2Viewer.server.properties.PropertiesHelper;
 import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
+import edu.mayo.cts2Viewer.shared.ServerProperties;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
 /**
  * The server side implementation of the RPC service.
  */
-@SuppressWarnings("serial")
 public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service {
+
+	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Cts2ServiceImpl.class.getName());
 
@@ -49,7 +52,6 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 		try {
 			initCM(serviceName);
-
 			cm.getCurrentContext().resultLimit = RESULT_LIMIT;
 
 			if (CTS2Utils.isNull(searchText)) {
@@ -382,6 +384,27 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	public Boolean logout(Credentials credentials) {
 		cm.removeCurrentContext();
 		return new Boolean(true);
+	}
+
+	@Override
+	public ServerProperties getServerProperties(String serviceName) throws IllegalArgumentException {
+
+		ServerProperties serverProperties = new ServerProperties();
+
+		try {
+			// get all of the server properties needed by the client here.
+			initCM(serviceName);
+
+			serverProperties.setSecure(cm.getCurrentContext().secure);
+
+			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2RestRequestParameters.muenabled);
+			serverProperties.setShowFilters(Boolean.getBoolean(muEnabledStr));
+		} catch (Exception e) {
+
+			logger.log(Level.SEVERE, "Error retrieving server properties for " + serviceName + ".  " + e);
+		}
+
+		return serverProperties;
 	}
 
 }

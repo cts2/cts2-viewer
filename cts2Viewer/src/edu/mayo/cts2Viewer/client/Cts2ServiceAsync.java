@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ResolvedValueSetInfo;
+import edu.mayo.cts2Viewer.shared.ServerProperties;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
 /**
@@ -32,4 +33,8 @@ public interface Cts2ServiceAsync {
 	void getEntity(String serviceName, String url, AsyncCallback<String> callback) throws IllegalArgumentException;
 
 	void logout(Credentials credentials, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void getServerProperties(String serviceName, AsyncCallback<ServerProperties> callback)
+	        throws IllegalArgumentException;
+
 }
