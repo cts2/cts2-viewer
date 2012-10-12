@@ -242,12 +242,20 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 					        String codeSystemHref = rvsi.getCodeSystemHref();
 					        String codeSystem = rvsi.getCodeSystem();
 
-					        i_valueSetDefinitionValue.setContents(UiHelper.getLink(valueSetDefinitionHref,
-					                valueSetDefinition));
-					        i_codeSystemVersionValue.setContents(UiHelper.getLink(codeSystemVersionHref,
-					                codeSystemVersion));
-					        i_codeSystemValue.setContents(UiHelper.getLink(codeSystemHref, codeSystem));
-
+					        // if showAll=true, then we are in expert mode. Show
+					        // the links. Otherwise, just show the information
+							// without links.
+					        if (Cts2Viewer.s_showAll) {
+						        i_valueSetDefinitionValue.setContents(UiHelper.getLink(valueSetDefinitionHref,
+						                valueSetDefinition));
+						        i_codeSystemVersionValue.setContents(UiHelper.getLink(codeSystemVersionHref,
+						                codeSystemVersion));
+						        i_codeSystemValue.setContents(UiHelper.getLink(codeSystemHref, codeSystem));
+					        } else {
+						        i_valueSetDefinitionValue.setContents(valueSetDefinition);
+						        i_codeSystemVersionValue.setContents(codeSystemVersion);
+						        i_codeSystemValue.setContents(codeSystem);
+					        }
 				        }
 			        }
 		        });
