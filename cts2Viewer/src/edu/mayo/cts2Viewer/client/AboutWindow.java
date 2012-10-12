@@ -16,7 +16,7 @@ public class AboutWindow extends Window {
 
 	private static final int HEIGHT = 330;
 	private static final int WIDTH = 400;
-	private static final String TITLE = "About CTS2 Value Sets";
+	private static final String TITLE = "About CTS2 Value Sets Viewer";
 
 	protected Button i_okButton;
 
@@ -69,7 +69,7 @@ public class AboutWindow extends Window {
 
 		StringBuilder data = new StringBuilder();
 
-		data.append("<b>CTS2 Value Sets</b> </br>");
+		data.append("<b>CTS2 Value Sets Viewer</b> </br>");
 		data.append("<hr>");
 		data.append("<b>Version: 1.0 </b></br>");
 		data.append("<b>Built Using <a href=\"http://www.smartclient.com/\" \"target=\"_blank\">SmartGWT</a> </b></br>");
@@ -77,10 +77,10 @@ public class AboutWindow extends Window {
 		data.append("<b>Credits: </b></br>");
 		data.append("<DIV style=\"color:sienna;margin-left:20px;\">");
 		data.append("Scott Bauer </br>");
-		data.append("Christopher Chute, M.D.</br>");
+		data.append("Christopher Chute, M.D., Dr. P.H.</br>");
 		data.append("Cory Endle </br>");
 		data.append("Kevin Peterson </br>");
-		data.append("Sara Ryan </br>");
+		data.append("Sarah Ryan </br>");
 		data.append("Deepak Sharma </br>");
 		data.append("Harold Solbrig </br>");
 		data.append("Craig Stancl </br>");
