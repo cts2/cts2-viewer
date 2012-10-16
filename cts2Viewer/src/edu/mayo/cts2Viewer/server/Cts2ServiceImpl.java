@@ -398,7 +398,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			serverProperties.setSecure(cm.getCurrentContext().secure);
 
 			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2RestRequestParameters.muenabled);
-			serverProperties.setShowFilters(Boolean.getBoolean(muEnabledStr));
+			serverProperties.setShowFilters(Boolean.valueOf(muEnabledStr));
 		} catch (Exception e) {
 
 			logger.log(Level.SEVERE, "Error retrieving server properties for " + serviceName + ".  " + e);

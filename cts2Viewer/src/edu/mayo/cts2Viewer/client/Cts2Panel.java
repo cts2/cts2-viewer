@@ -293,7 +293,6 @@ public class Cts2Panel extends VLayout {
 		i_serverCombo.setTitle(SERVICE_TITLE);
 		i_serverCombo.setType("comboBox");
 		i_serverCombo.setWidth(WIDGET_WIDTH);
-		// i_serverCombo.setHeight(WIDGET_HEIGHT);
 		i_serverCombo.setWrapTitle(false);
 		i_serverCombo.setAttribute("browserSpellCheck", false);
 
@@ -301,11 +300,11 @@ public class Cts2Panel extends VLayout {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				getServerProperties();
+				getServerProperties(getSelectedServer(), true);
 			}
 		});
 
-		retrieveServerOptions();
+		retrieveServers();
 		return i_serverCombo;
 	}
 
@@ -318,12 +317,9 @@ public class Cts2Panel extends VLayout {
 		i_defaultServerTextItem = new StaticTextItem();
 		i_defaultServerTextItem.setTitle(SERVICE_TITLE);
 		i_defaultServerTextItem.setWidth(WIDGET_WIDTH);
-		// i_defaultServerTextItem.setHeight(WIDGET_HEIGHT);
-
 		i_defaultServerTextItem.setWrapTitle(false);
 
-		retrieveDefaultServerOption();
-
+		retrieveDefaultServer();
 		return i_defaultServerTextItem;
 	}
 
@@ -364,9 +360,7 @@ public class Cts2Panel extends VLayout {
 	 * Get the newly selected server. Check if credentials are needed for this
 	 * server selection.
 	 */
-	protected void getServerProperties() {
-
-		final String selectedServer = getSelectedServer();
+	protected void getServerProperties(final String selectedServer, final boolean checkIsSecure) {
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 
@@ -384,10 +378,10 @@ public class Cts2Panel extends VLayout {
 				public void onSuccess(ServerProperties serverProperties) {
 					i_serverProperties = serverProperties;
 
-					// determine if the selected server requires a login
-					determineIfSelectedServerIsSecure(selectedServer, serverProperties);
-
-					System.out.println(serverProperties.isShowFilters());
+					if (checkIsSecure) {
+						// determine if the selected server requires a login
+						determineIfSelectedServerIsSecure(selectedServer, serverProperties);
+					}
 
 					// TODO - We can check the serverProperties to see if we
 					// need to show the filters or not
@@ -633,7 +627,7 @@ public class Cts2Panel extends VLayout {
 	/**
 	 * Make RPC call to retrieve the server(s) to connect to.
 	 */
-	private void retrieveServerOptions() {
+	private void retrieveServers() {
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 		try {
 			service.getAvailableServices(new AsyncCallback<LinkedHashMap<String, String>>() {
@@ -675,7 +669,7 @@ public class Cts2Panel extends VLayout {
 	/**
 	 * Make RPC call to retrieve the default server to connect to.
 	 */
-	private void retrieveDefaultServerOption() {
+	private void retrieveDefaultServer() {
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 		try {
 			service.getDefaultService(new AsyncCallback<String>() {
@@ -693,9 +687,11 @@ public class Cts2Panel extends VLayout {
 					if (!Cts2Viewer.s_showAll) {
 						i_loginInfoPanel.setDefaultServer(i_defaultServer);
 						i_loginInfoPanel.addWidgets();
+
+						// get the server properties of the default server.
+						getServerProperties(i_defaultServer, false);
 					}
 				}
-
 			});
 		} catch (Exception e) {
 			lgr.log(Level.WARNING, "Unable to retrieve servers to connect to.");
