@@ -1,6 +1,8 @@
 package edu.mayo.cts2Viewer.client.datasource;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -114,9 +116,16 @@ public class ValueSetsXmlDS extends DataSource {
 
 		final String searchText = criteria.getAttribute("searchText");
 		final String serviceName = criteria.getAttribute("serviceName");
+		final Map<String, String> filters = new HashMap<String, String>(criteria.getAttributes().length - 2);
+
+		for (String attrib : criteria.getAttributes()) {
+			if (!attrib.equals("searchText") && !attrib.equals("serviceName")) {
+				filters.put(attrib, criteria.getAttribute(attrib));
+			}
+		}
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-		service.getValueSets(serviceName, searchText, new AsyncCallback<String>() {
+		service.getValueSets(serviceName, searchText, filters, new AsyncCallback<String>() {
 
 			@Override
 			public void onSuccess(String result) {

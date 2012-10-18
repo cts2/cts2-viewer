@@ -1,6 +1,7 @@
 package edu.mayo.cts2Viewer.client;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSCallback;
@@ -175,7 +176,7 @@ public class ValueSetsListGrid extends ListGrid {
 	 * 
 	 * @param searchText
 	 */
-	public void getData(String serviceName, String searchText) {
+	public void getData(String serviceName, String searchText, Map<String, String> filters) {
 
 		if (!Cts2Viewer.s_showAll && Authentication.getInstance().getCredentials(serviceName) == null
 		        || serviceName.equals(Cts2Panel.SELECT_SERVER_MSG)) {
@@ -193,6 +194,10 @@ public class ValueSetsListGrid extends ListGrid {
 			Criteria criteria = new Criteria();
 			criteria.addCriteria("searchText", searchText);
 			criteria.addCriteria("serviceName", serviceName);
+
+			for (String filterComponent : filters.keySet()) {
+				criteria.addCriteria(filterComponent, filters.get(filterComponent));
+			}
 
 			i_valueSetsXmlDS.fetchData(criteria, new DSCallback() {
 

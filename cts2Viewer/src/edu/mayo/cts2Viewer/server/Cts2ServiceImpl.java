@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
 import org.w3c.dom.Document;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -47,14 +49,28 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	 * Get ValueSets that match the criteria
 	 */
 	@Override
-	public String getValueSets(String serviceName, String searchText) throws IllegalArgumentException {
+	public String getValueSets(String serviceName, String searchText, Map<String, String> filters) throws IllegalArgumentException {
 		String results = "";
 
 		try {
 			initCM(serviceName);
-			cm.getCurrentContext().resultLimit = RESULT_LIMIT;
+			RESTContext context = cm.getCurrentContext();
+			context.resultLimit = RESULT_LIMIT;
 
-			if (CTS2Utils.isNull(searchText)) {
+			/* clear the parameter list */
+			for (String param : context.getUserParameterList()) {
+				context.removeUserParameter(param);
+			}
+
+			/* populate the parameter list with the new filters */
+			for (String filter : filters.keySet()) {
+				String value = filters.get(filter);
+				if (value != null && !value.trim().equals("")) {
+					context.setUserParameter(filter, filters.get(filter));
+				}
+			}
+
+			if (CTS2Utils.isNull(searchText) && filters.size() == 0) {
 				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
 			} else {
 				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
@@ -395,7 +411,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			// get all of the server properties needed by the client here.
 			initCM(serviceName);
 
-			serverProperties.setSecure(cm.getCurrentContext().secure);
+			serverProperties.setRequireCredentials(Boolean.valueOf(cm.getCurrentContext().getUserParameterValue("requireCreds")));
 
 			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2RestRequestParameters.muenabled);
 			serverProperties.setShowFilters(Boolean.valueOf(muEnabledStr));

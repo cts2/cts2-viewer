@@ -11,15 +11,15 @@ public class ServerProperties implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean i_isSecure;
+	private boolean i_requireCredentials;
 	private boolean i_showFilters;
 
-	public boolean isSecure() {
-		return i_isSecure;
+	public boolean isRequireCredentials() {
+		return i_requireCredentials;
 	}
 
-	public void setSecure(boolean isSecure) {
-		this.i_isSecure = isSecure;
+	public void setRequireCredentials(boolean isSecure) {
+		this.i_requireCredentials = isSecure;
 	}
 
 	public boolean isShowFilters() {

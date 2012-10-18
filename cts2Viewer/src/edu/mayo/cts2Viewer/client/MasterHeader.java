@@ -12,6 +12,10 @@ import com.smartgwt.client.widgets.events.MouseOutHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
+import edu.mayo.cts2Viewer.client.events.LogOutRequestEvent;
+import edu.mayo.cts2Viewer.client.events.LogOutRequestEventHandler;
+import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEvent;
+import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEventHandler;
 
 /**
  * Master Header panel that appears on the top of the page.
@@ -24,9 +28,12 @@ public class MasterHeader extends HLayout {
 	private static final String HREF_LOGO = "http://mayoclinic.org";
 
 	private Label i_titleLabel;
+	private Label signedInUser;
 
 	public MasterHeader() {
 		super();
+		createLoginHandler();
+		createLogoutHandler();
 
 		setBackgroundColor(MASTERHEADER_BACKGROUND);
 
@@ -85,9 +92,8 @@ public class MasterHeader extends HLayout {
 		centerLayout.addMember(i_titleLabel);
 
 		// initialize the Signed In User label
-		Label signedInUser = new Label();
-		signedInUser.addStyleName("cts2-MasterHeader-Title");
-		// signedInUser.setContents("<b>User Name Here</b><br />upTick");
+		signedInUser = new Label();
+		signedInUser.addStyleName("cts2-MasterHeader-SignedInUser");
 
 		// initialize the East layout container
 		HLayout eastLayout = new HLayout();
@@ -101,5 +107,23 @@ public class MasterHeader extends HLayout {
 		this.addMember(westLayout);
 		this.addMember(centerLayout);
 		this.addMember(eastLayout);
+	}
+
+	private void createLogoutHandler() {
+		Cts2Viewer.EVENT_BUS.addHandler(LogOutRequestEvent.TYPE, new LogOutRequestEventHandler() {
+			@Override
+			public void onLogOutRequest(LogOutRequestEvent logOutRequestEvent) {
+				signedInUser.setContents("");
+			}
+		});
+	}
+
+	private void createLoginHandler() {
+		Cts2Viewer.EVENT_BUS.addHandler(LoginSuccessfulEvent.TYPE, new LoginSuccessfulEventHandler() {
+			@Override
+			public void onLoginSuccessful(LoginSuccessfulEvent loginSuccessfulEvent) {
+				signedInUser.setContents("Logged in as <b>" + loginSuccessfulEvent.getCredentials().getUser() + "</b>");
+			}
+		});
 	}
 }

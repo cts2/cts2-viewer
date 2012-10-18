@@ -1,6 +1,7 @@
 package edu.mayo.cts2Viewer.client;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,8 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import edu.mayo.cts2Viewer.client.authentication.Authentication;
 import edu.mayo.cts2Viewer.client.authentication.LoginInfoPanel;
 import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
+import edu.mayo.cts2Viewer.client.events.FilterUpdatedEvent;
+import edu.mayo.cts2Viewer.client.events.FilterUpdatedEventHandler;
 import edu.mayo.cts2Viewer.client.events.LogOutRequestEvent;
 import edu.mayo.cts2Viewer.client.events.LogOutRequestEventHandler;
 import edu.mayo.cts2Viewer.client.events.LoginCancelledEvent;
@@ -44,6 +47,7 @@ import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEvent;
 import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEventHandler;
 import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
 import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEventHandler;
+import edu.mayo.cts2Viewer.client.utils.FilterPanel;
 import edu.mayo.cts2Viewer.client.utils.UiHelper;
 import edu.mayo.cts2Viewer.shared.Credentials;
 import edu.mayo.cts2Viewer.shared.ServerProperties;
@@ -56,7 +60,7 @@ public class Cts2Panel extends VLayout {
 	static Logger lgr = Logger.getLogger(Cts2Panel.class.getName());
 
 	private static final String BACKGROUND_COLOR = "#F5F5F3";
-	private static final int WIDGET_WIDTH = 200;
+	private static final int WIDGET_WIDTH = 150;
 	private static final String SERVICE_TITLE = "<b>Service</b>";
 
 	private static final String ROWS_RETRIEVED_TITLE = "Rows Matching Criteria:";
@@ -82,6 +86,7 @@ public class Cts2Panel extends VLayout {
 
 	private LoginInfoPanel i_loginInfoPanel;
 	protected ServerProperties i_serverProperties;
+	private FilterPanel i_filterPanel;
 
 	public Cts2Panel() {
 		super();
@@ -138,6 +143,7 @@ public class Cts2Panel extends VLayout {
 		createLoginSuccessfulEvent();
 		createLoginCancelEvent();
 		createLogOutEvent();
+		createFilterUpdatedReceivedEvent();
 	}
 
 	private VLayout createLeftSideComponentsLayout() {
@@ -212,9 +218,9 @@ public class Cts2Panel extends VLayout {
 		return sectionStack;
 	}
 
-	private VLayout createSearchWidgetLayout() {
+	private HLayout createSearchWidgetLayout() {
 
-		VLayout layout = new VLayout();
+		HLayout layout = new HLayout();
 		layout.setWidth100();
 		layout.setHeight(50);
 
@@ -262,6 +268,7 @@ public class Cts2Panel extends VLayout {
 		// add a button to clear the search form.
 		i_clearButton = new IButton("Clear");
 		i_clearButton.setHeight(20);
+		i_clearButton.setWidth(50);
 		i_clearButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -269,7 +276,7 @@ public class Cts2Panel extends VLayout {
 				i_searchItem.clearValue();
 				i_clearButton.setDisabled(true);
 				EntityWindow.getInstance().hide();
-				getValueSets("");
+				getValueSets("", i_filterPanel.getFilters());
 				i_valueSetPropertiesPanel.clearValueSetInfo();
 				i_resolvedValueSetPropertiesPanel.clearPanels();
 			}
@@ -278,6 +285,9 @@ public class Cts2Panel extends VLayout {
 
 		searchLayout.addMember(buttonLayout);
 		layout.addMember(searchLayout);
+		i_filterPanel = new FilterPanel();
+		i_filterPanel.setVisible(false);
+		layout.addMember(i_filterPanel);
 
 		return layout;
 	}
@@ -326,7 +336,16 @@ public class Cts2Panel extends VLayout {
 	private void updateServiceSelection() {
 		i_valueSetPropertiesPanel.clearValueSetInfo();
 		i_resolvedValueSetPropertiesPanel.clearPanels();
-		getValueSets(i_searchItem.getValueAsString());
+
+		if (i_serverProperties == null) {
+			i_filterPanel.setVisible(false);
+		}
+		else {
+			i_filterPanel.setVisible(i_serverProperties.isShowFilters());
+		}
+		i_filterPanel.draw();
+
+		getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 	}
 
 	/**
@@ -360,7 +379,7 @@ public class Cts2Panel extends VLayout {
 	 * Get the newly selected server. Check if credentials are needed for this
 	 * server selection.
 	 */
-	protected void getServerProperties(final String selectedServer, final boolean checkIsSecure) {
+	protected void getServerProperties(final String selectedServer, final boolean checkRequiresCredentials) {
 
 		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 
@@ -378,13 +397,11 @@ public class Cts2Panel extends VLayout {
 				public void onSuccess(ServerProperties serverProperties) {
 					i_serverProperties = serverProperties;
 
-					if (checkIsSecure) {
+					if (checkRequiresCredentials) {
 						// determine if the selected server requires a login
-						determineIfSelectedServerIsSecure(selectedServer, serverProperties);
+						determineIfSelectedServerRequiresCredentials(selectedServer, serverProperties);
 					}
-
-					// TODO - We can check the serverProperties to see if we
-					// need to show the filters or not
+					i_filterPanel.setVisible(serverProperties != null && serverProperties.isShowFilters());
 				}
 			});
 
@@ -399,9 +416,9 @@ public class Cts2Panel extends VLayout {
 	 * @param selectedServer
 	 * @param serverProperties
 	 */
-	private void determineIfSelectedServerIsSecure(String selectedServer, ServerProperties serverProperties) {
+	private void determineIfSelectedServerRequiresCredentials(String selectedServer, ServerProperties serverProperties) {
 
-		if (i_serverProperties.isSecure()) {
+		if (i_serverProperties.isRequireCredentials()) {
 			// Check if we have cached the credentials in
 			// Authentication before asking user to login again.
 			Credentials credentials = Authentication.getInstance().getCredentials(selectedServer);
@@ -479,6 +496,15 @@ public class Cts2Panel extends VLayout {
 		});
 	}
 
+	private void createFilterUpdatedReceivedEvent() {
+		Cts2Viewer.EVENT_BUS.addHandler(FilterUpdatedEvent.TYPE, new FilterUpdatedEventHandler() {
+			@Override
+			public void onFilterUpdate(FilterUpdatedEvent filterUpdatedEvent) {
+				getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
+			}
+			});
+	}
+
 	/**
 	 * Listen for the event that ValueSets were retrieved.
 	 */
@@ -515,12 +541,12 @@ public class Cts2Panel extends VLayout {
 		});
 	}
 
-	protected void getValueSets(String searchText) {
+	protected void getValueSets(String searchText, Map<String, String> filters) {
 
 		if (Cts2Viewer.s_showAll) {
-			i_valueSetsListGrid.getData(i_serverCombo.getValueAsString(), searchText);
+			i_valueSetsListGrid.getData(i_serverCombo.getValueAsString(), searchText, filters);
 		} else {
-			i_valueSetsListGrid.getData(i_defaultServer, searchText);
+			i_valueSetsListGrid.getData(i_defaultServer, searchText, filters);
 		}
 	}
 
@@ -539,7 +565,7 @@ public class Cts2Panel extends VLayout {
 				// ignore the arrow keys
 				if (i_searchItem.isValidSearchText()) {
 					setClearButtonEnablement();
-					getValueSets(i_searchItem.getValueAsString());
+					getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 
 					EntityWindow.getInstance().hide();
 					i_valueSetPropertiesPanel.clearValueSetInfo();
