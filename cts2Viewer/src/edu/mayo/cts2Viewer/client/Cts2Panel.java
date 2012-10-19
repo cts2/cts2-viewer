@@ -60,20 +60,20 @@ public class Cts2Panel extends VLayout {
 
 	static Logger lgr = Logger.getLogger(Cts2Panel.class.getName());
 
+	public static final String SELECT_SERVER_MSG = "<Select a Server>";
+
+	protected ServerProperties i_serverProperties;
+
 	private static final String BACKGROUND_COLOR = "#F5F5F3";
 	private static final int WIDGET_WIDTH = 150;
 	private static final String SERVICE_TITLE = "<b>Service</b>";
-
 	private static final String ROWS_RETRIEVED_TITLE = "Rows Matching Criteria:";
 	private static final String TITLE = "Value Sets";
 	private static final String TITLE_VS_INFO = "Value Set Properties";
 	private static final String TITLE_SEARCH_RESULTS = "Search Results";
 
-	public static final String SELECT_SERVER_MSG = "<Select a Server>";
-
 	private ValueSetsListGrid i_valueSetsListGrid;
 	private ValueSetPropertiesPanel i_valueSetPropertiesPanel;
-
 	private ResolvedValueSetPropertiesPanel i_resolvedValueSetPropertiesPanel;
 	private SearchTextItem i_searchItem;
 	private IButton i_clearButton;
@@ -81,14 +81,12 @@ public class Cts2Panel extends VLayout {
 	private ComboBoxItem i_serverCombo;
 	private StaticTextItem i_defaultServerTextItem;
 	private String i_defaultServer;
-
 	private DownloadPanel i_downloadPanel;
 	private String i_lastValidServer;
-
 	private LoginInfoPanel i_loginInfoPanel;
-	protected ServerProperties i_serverProperties;
 	private FilterPanel i_filterPanel;
 	private Map<String, ServerProperties> serverPropertiesMap;
+	private boolean loggedIn = false;
 
 	public Cts2Panel() {
 		super();
@@ -339,7 +337,8 @@ public class Cts2Panel extends VLayout {
 	private void updateServiceSelection() {
 		i_valueSetPropertiesPanel.clearValueSetInfo();
 		i_resolvedValueSetPropertiesPanel.clearPanels();
-
+		i_filterPanel.setVisible(i_serverProperties != null && i_serverProperties.isShowFilters());
+		setSearchEnablement();
 		getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 	}
 
@@ -410,6 +409,7 @@ public class Cts2Panel extends VLayout {
 		if (checkRequiresCredentials) {
 			determineIfSelectedServerRequiresCredentials(server, i_serverProperties);
 		}
+		setSearchEnablement();
 	}
 
 	/**
@@ -466,7 +466,7 @@ public class Cts2Panel extends VLayout {
 
 			@Override
 			public void onLoginSuccessful(LoginSuccessfulEvent loginSuccessfulEvent) {
-
+				loggedIn = true;
 				Credentials credentials = loginSuccessfulEvent.getCredentials();
 				Authentication.getInstance().addAuthenticatedCredential(credentials);
 
@@ -483,6 +483,7 @@ public class Cts2Panel extends VLayout {
 
 			@Override
 			public void onLogOutRequest(LogOutRequestEvent logOutRequestEvent) {
+				loggedIn = false;
 				Credentials credentials = logOutRequestEvent.getCredential();
 				logoutFromServer(credentials);
 
@@ -490,9 +491,11 @@ public class Cts2Panel extends VLayout {
 				Authentication.getInstance().removeCredential(credentials.getServer());
 
 				// reset the server selection and the server selection
-				i_lastValidServer = SELECT_SERVER_MSG;
-				i_serverCombo.setValue(i_lastValidServer);
-				i_filterPanel.setVisible(false);
+				if (Cts2Viewer.s_showAll) {
+					i_lastValidServer = SELECT_SERVER_MSG;
+					i_serverCombo.setValue(i_lastValidServer);
+					getServerProperties(i_lastValidServer, true);
+				}
 				updateServiceSelection();
 			}
 		});
@@ -723,6 +726,18 @@ public class Cts2Panel extends VLayout {
 			});
 		} catch (Exception e) {
 			lgr.log(Level.WARNING, "Unable to retrieve servers to connect to.");
+		}
+	}
+
+	private void setSearchEnablement() {
+		boolean requireCreds = i_serverProperties.isRequireCredentials();
+		if (!requireCreds || (requireCreds && loggedIn)) {
+			i_searchItem.enable();
+			i_filterPanel.enable();
+		}
+		else {
+			i_searchItem.disable();
+			i_filterPanel.disable();
 		}
 	}
 
