@@ -388,6 +388,7 @@ public class Cts2Panel extends VLayout {
 					public void onFailure(Throwable caught) {
 						// reset server selection
 						i_serverCombo.setValue(i_lastValidServer);
+						getServerProperties(i_lastValidServer, true);
 						SC.warn("Unable to retrieve the selected server properties.");
 					}
 
@@ -452,6 +453,7 @@ public class Cts2Panel extends VLayout {
 			public void onCancelRequest(LoginCancelledEvent loginCancelledEvent) {
 				// reset the server selection
 				i_serverCombo.setValue(i_lastValidServer);
+				getServerProperties(i_lastValidServer, true);
 			}
 		});
 	}
