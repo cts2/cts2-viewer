@@ -24,7 +24,7 @@ public class MasterHeader extends HLayout {
 
 	private static final int MASTHEAD_HEIGHT = 58;
 	private static final String MASTERHEADER_BACKGROUND = "#F5F5F3";
-	private static final String TITLE = "Value Set Service";
+	private static final String TITLE = "Meaningful Use Quality Metric Value Set Service";
 	private static final String HREF_LOGO = "http://mayoclinic.org";
 
 	private Label i_titleLabel;
