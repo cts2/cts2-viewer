@@ -1,5 +1,6 @@
 package edu.mayo.cts2Viewer.client;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -87,6 +88,7 @@ public class Cts2Panel extends VLayout {
 	private LoginInfoPanel i_loginInfoPanel;
 	protected ServerProperties i_serverProperties;
 	private FilterPanel i_filterPanel;
+	private Map<String, ServerProperties> serverPropertiesMap;
 
 	public Cts2Panel() {
 		super();
@@ -95,6 +97,7 @@ public class Cts2Panel extends VLayout {
 
 	private void init() {
 		lgr.log(Level.INFO, "init Cts2Panel...");
+		serverPropertiesMap = new HashMap<String, ServerProperties>();
 
 		i_lastValidServer = SELECT_SERVER_MSG;
 
@@ -337,14 +340,6 @@ public class Cts2Panel extends VLayout {
 		i_valueSetPropertiesPanel.clearValueSetInfo();
 		i_resolvedValueSetPropertiesPanel.clearPanels();
 
-		if (i_serverProperties == null) {
-			i_filterPanel.setVisible(false);
-		}
-		else {
-			i_filterPanel.setVisible(i_serverProperties.isShowFilters());
-		}
-		i_filterPanel.draw();
-
 		getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 	}
 
@@ -381,32 +376,39 @@ public class Cts2Panel extends VLayout {
 	 */
 	protected void getServerProperties(final String selectedServer, final boolean checkRequiresCredentials) {
 
-		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+		if (serverPropertiesMap.containsKey(selectedServer)) {
+			setServerProperties(selectedServer, checkRequiresCredentials);
+		}
+		else {
+			Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+			try {
+				service.getServerProperties(selectedServer, new AsyncCallback<ServerProperties>() {
 
-		try {
-			service.getServerProperties(selectedServer, new AsyncCallback<ServerProperties>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					// reset server selection
-					i_serverCombo.setValue(i_lastValidServer);
-					SC.warn("Unable to retrieve the selected server properties.");
-				}
-
-				@Override
-				public void onSuccess(ServerProperties serverProperties) {
-					i_serverProperties = serverProperties;
-
-					if (checkRequiresCredentials) {
-						// determine if the selected server requires a login
-						determineIfSelectedServerRequiresCredentials(selectedServer, serverProperties);
+					@Override
+					public void onFailure(Throwable caught) {
+						// reset server selection
+						i_serverCombo.setValue(i_lastValidServer);
+						getServerProperties(i_lastValidServer, true);
+						SC.warn("Unable to retrieve the selected server properties.");
 					}
-					i_filterPanel.setVisible(serverProperties != null && serverProperties.isShowFilters());
-				}
-			});
 
-		} catch (Exception e) {
-			SC.warn("Unable to get selected service properties.");
+					@Override
+					public void onSuccess(ServerProperties serverProperties) {
+						serverPropertiesMap.put(selectedServer, serverProperties);
+						setServerProperties(selectedServer, checkRequiresCredentials);
+					}
+				});
+			} catch (Exception e) {
+				SC.warn("Unable to get selected service properties.");
+			}
+		}
+	}
+
+	private void setServerProperties(String server, boolean  checkRequiresCredentials) {
+		i_serverProperties = serverPropertiesMap.get(server);
+		i_filterPanel.setVisible(i_serverProperties != null && i_serverProperties.isShowFilters());
+		if (checkRequiresCredentials) {
+			determineIfSelectedServerRequiresCredentials(server, i_serverProperties);
 		}
 	}
 
@@ -451,6 +453,7 @@ public class Cts2Panel extends VLayout {
 			public void onCancelRequest(LoginCancelledEvent loginCancelledEvent) {
 				// reset the server selection
 				i_serverCombo.setValue(i_lastValidServer);
+				getServerProperties(i_lastValidServer, true);
 			}
 		});
 	}
@@ -486,11 +489,10 @@ public class Cts2Panel extends VLayout {
 				// i_loginInfoPanel.clearUser();
 				Authentication.getInstance().removeCredential(credentials.getServer());
 
-				i_serverProperties = null;
-
 				// reset the server selection and the server selection
 				i_lastValidServer = SELECT_SERVER_MSG;
 				i_serverCombo.setValue(i_lastValidServer);
+				i_filterPanel.setVisible(false);
 				updateServiceSelection();
 			}
 		});

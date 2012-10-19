@@ -1,22 +1,30 @@
 package edu.mayo.cts2Viewer.client.utils;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
+import edu.mayo.cts2Viewer.client.Cts2Service;
+import edu.mayo.cts2Viewer.client.Cts2ServiceAsync;
 import edu.mayo.cts2Viewer.client.Cts2Viewer;
 import edu.mayo.cts2Viewer.client.SearchTextItem;
 import edu.mayo.cts2Viewer.client.events.FilterUpdatedEvent;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class FilterPanel extends HLayout {
@@ -24,8 +32,8 @@ public class FilterPanel extends HLayout {
 	private static final int HEIGHT_BUTTON = 20;
 	private static final int WIDTH_BUTTON = 50;
 
-	private TextItem nqfNumberText;
-	private TextItem eMeasureIdText;
+	private ComboBoxItem nqfNumberCombo;
+	private ComboBoxItem eMeasureCombo;
 	private IButton clearFiltersButton;
 	private Map<String, String> filters;
 
@@ -37,8 +45,8 @@ public class FilterPanel extends HLayout {
 	private void initPanel() {
 		DynamicForm filterForm = new DynamicForm();
 
-		nqfNumberText = createFilterTextItem("nqfnumber", "NQF Number");
-		eMeasureIdText = createFilterTextItem("emeasureid", "eMeasure Id");
+		createNqfNumberCombo();
+		createEMeasureCombo();
 
 		clearFiltersButton = new IButton("Clear");
 		clearFiltersButton.setHeight(HEIGHT_BUTTON);
@@ -52,7 +60,7 @@ public class FilterPanel extends HLayout {
 		});
 		clearFiltersButton.disable();
 
-		filterForm.setFields(nqfNumberText, eMeasureIdText);
+		filterForm.setFields(nqfNumberCombo, eMeasureCombo);
 
 		setWidth(100);
 		setHeight(55);
@@ -73,31 +81,78 @@ public class FilterPanel extends HLayout {
 		return filters;
 	};
 
-	private SearchTextItem createFilterTextItem(final String filterComponent, String title) {
-		final SearchTextItem textItem = new SearchTextItem();
-		textItem.setTitle("<b>" + title + "</b>");
-		textItem.setHint("Enter Filter Text");
-		textItem.setWrapTitle(false);
-		textItem.setWidth("30px");
+	private void createNqfNumberCombo() {
+		final String filterComponent = "nqfnumber";
+		String title = "NQF Number";
+		nqfNumberCombo = new ComboBoxItem();
+		nqfNumberCombo.setDefaultToFirstOption(true);
+		nqfNumberCombo.setTitle("<b>" + title + "</b>");
+		nqfNumberCombo.setType("comboBox");
+		nqfNumberCombo.setWrapTitle(false);
+		nqfNumberCombo.setWidth("30px");
+		nqfNumberCombo.setAttribute("browserSpellCheck", false);
 
-		textItem.addKeyUpHandler(new KeyUpHandler() {
+		nqfNumberCombo.addChangedHandler(new ChangedHandler() {
 			@Override
-			public void onKeyUp(KeyUpEvent keyUpEvent) {
-				if (textItem.isValidSearchText()) {
-					filters.put(filterComponent, textItem.getValueAsString());
-					Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
-				}
-
+			public void onChanged(ChangedEvent changedEvent) {
+				filters.put(filterComponent, nqfNumberCombo.getValueAsString());
 				enableClearButton();
+				Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
 			}
 		});
 
-		return textItem;
+		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+		service.getNqfNumbers(new AsyncCallback<LinkedHashMap<String, String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+
+			}
+
+			@Override
+			public void onSuccess(LinkedHashMap<String, String> result) {
+				nqfNumberCombo.setValueMap(result);
+			}
+		});
+
 	}
 
+	private void createEMeasureCombo() {
+		final String filterComponent = "emeasureid";
+		String title = "eMeasure Id";
+		eMeasureCombo = new ComboBoxItem();
+		eMeasureCombo.setDefaultToFirstOption(true);
+		eMeasureCombo.setTitle("<b>" + title + "</b>");
+		eMeasureCombo.setType("comboBox");
+		eMeasureCombo.setWrapTitle(false);
+		eMeasureCombo.setWidth("30px");
+		eMeasureCombo.setAttribute("browserSpellCheck", false);
+
+		eMeasureCombo.addChangedHandler(new ChangedHandler() {
+			@Override
+			public void onChanged(ChangedEvent changedEvent) {
+				filters.put(filterComponent, eMeasureCombo.getValueAsString());
+				enableClearButton();
+				Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
+			}
+		});
+
+		Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+		service.geteMeasureIds(new AsyncCallback<LinkedHashMap<String, String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+
+			}
+
+			@Override
+			public void onSuccess(LinkedHashMap<String, String> result) {
+				eMeasureCombo.setValueMap(result);
+			}
+		});
+
+	}
 	private void clearForm() {
-		nqfNumberText.clearValue();
-		eMeasureIdText.clearValue();
+		nqfNumberCombo.clearValue();
+		eMeasureCombo.clearValue();
 		filters.clear();
 		enableClearButton();
 	}

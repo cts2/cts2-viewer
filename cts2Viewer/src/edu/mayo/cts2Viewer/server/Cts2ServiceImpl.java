@@ -1,7 +1,14 @@
 package edu.mayo.cts2Viewer.server;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -309,6 +316,43 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		}
 
 		return serverOptions;
+	}
+
+	@Override
+	public LinkedHashMap<String, String> getNqfNumbers() throws IOException {
+		LinkedHashMap<String, String> nqfNumbers = new LinkedHashMap<String, String>();
+		nqfNumbers.put("", "Any NQF Number");
+		nqfNumbers.putAll(loadMap(PropertiesHelper.getInstance().getNqfNumbersPath()));
+		return nqfNumbers;
+	}
+
+	@Override
+	public LinkedHashMap<String, String> geteMeasureIds() throws IOException {
+		LinkedHashMap<String, String> eMeasureIds = new LinkedHashMap<String, String>();
+		eMeasureIds.put("", "Any eMeasure Id");
+		eMeasureIds.putAll(loadMap(PropertiesHelper.getInstance().getEmeasureIdsPath()));
+		return eMeasureIds;
+	}
+
+	private LinkedHashMap<String, String> loadMap(String path) throws IOException {
+		BufferedReader reader = null;
+		LinkedHashMap<String, String> idMap = new LinkedHashMap<String, String>();
+		try {
+			String line = "";
+			reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(path)));
+			while ((line = reader.readLine()) != null) {
+				if (!line.trim().equals("")) {
+					idMap.put(line, line);
+				}
+			}
+
+		} catch (IOException ioe) {
+
+		} finally {
+			if (reader != null)
+				reader.close();
+		}
+		return idMap;
 	}
 
 	@Override

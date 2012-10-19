@@ -1,5 +1,6 @@
 package edu.mayo.cts2Viewer.client;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,4 +37,9 @@ public interface Cts2Service extends RemoteService {
 	Boolean logout(Credentials credentials);
 
 	ServerProperties getServerProperties(String serviceName) throws IllegalArgumentException;
+
+	LinkedHashMap<String, String> getNqfNumbers() throws IOException;
+
+	LinkedHashMap<String, String> geteMeasureIds() throws IOException;
+
 }
