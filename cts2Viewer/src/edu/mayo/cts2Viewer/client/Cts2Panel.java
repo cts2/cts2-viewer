@@ -327,7 +327,7 @@ public class Cts2Panel extends VLayout {
 	private StaticTextItem createDefaultServerTextItem() {
 		i_defaultServerTextItem = new StaticTextItem();
 		i_defaultServerTextItem.setTitle(SERVICE_TITLE);
-		i_defaultServerTextItem.setWidth(WIDGET_WIDTH);
+		i_defaultServerTextItem.setWidth(255);
 		i_defaultServerTextItem.setWrapTitle(false);
 
 		retrieveDefaultServer();
@@ -713,7 +713,8 @@ public class Cts2Panel extends VLayout {
 				@Override
 				public void onSuccess(String defaultServer) {
 					i_defaultServer = defaultServer;
-					i_defaultServerTextItem.setValue("<b>" + i_defaultServer + "</b>");
+					String title = i_defaultServer.equals("MayoCTS2") ? "Meaningful Use Quality Metric CTS2 Value Sets" : i_defaultServer;
+					i_defaultServerTextItem.setValue("<b>" + title + "</b>");
 
 					if (!Cts2Viewer.s_showAll) {
 						i_loginInfoPanel.setDefaultServer(i_defaultServer);
