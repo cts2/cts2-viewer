@@ -306,7 +306,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		}
 
 		for (String service : services) {
-			if (selectedService.endsWith(service)) {
+			if (selectedService != null && selectedService.endsWith(service)) {
 				serverOptions.put(service, service + CTS2Utils.SELECTED_TAG);
 			} else {
 				serverOptions.put(service, service);
