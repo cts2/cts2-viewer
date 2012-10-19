@@ -86,6 +86,7 @@ public class Cts2Panel extends VLayout {
 	private LoginInfoPanel i_loginInfoPanel;
 	private FilterPanel i_filterPanel;
 	private Map<String, ServerProperties> serverPropertiesMap;
+	private boolean loggedIn = false;
 
 	public Cts2Panel() {
 		super();
@@ -337,7 +338,7 @@ public class Cts2Panel extends VLayout {
 		i_valueSetPropertiesPanel.clearValueSetInfo();
 		i_resolvedValueSetPropertiesPanel.clearPanels();
 		i_filterPanel.setVisible(i_serverProperties != null && i_serverProperties.isShowFilters());
-
+		setSearchEnablement();
 		getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 	}
 
@@ -408,6 +409,7 @@ public class Cts2Panel extends VLayout {
 		if (checkRequiresCredentials) {
 			determineIfSelectedServerRequiresCredentials(server, i_serverProperties);
 		}
+		setSearchEnablement();
 	}
 
 	/**
@@ -464,7 +466,7 @@ public class Cts2Panel extends VLayout {
 
 			@Override
 			public void onLoginSuccessful(LoginSuccessfulEvent loginSuccessfulEvent) {
-
+				loggedIn = true;
 				Credentials credentials = loginSuccessfulEvent.getCredentials();
 				Authentication.getInstance().addAuthenticatedCredential(credentials);
 
@@ -481,6 +483,7 @@ public class Cts2Panel extends VLayout {
 
 			@Override
 			public void onLogOutRequest(LogOutRequestEvent logOutRequestEvent) {
+				loggedIn = false;
 				Credentials credentials = logOutRequestEvent.getCredential();
 				logoutFromServer(credentials);
 
@@ -723,6 +726,18 @@ public class Cts2Panel extends VLayout {
 			});
 		} catch (Exception e) {
 			lgr.log(Level.WARNING, "Unable to retrieve servers to connect to.");
+		}
+	}
+
+	private void setSearchEnablement() {
+		boolean requireCreds = i_serverProperties.isRequireCredentials();
+		if (!requireCreds || (requireCreds && loggedIn)) {
+			i_searchItem.enable();
+			i_filterPanel.enable();
+		}
+		else {
+			i_searchItem.disable();
+			i_filterPanel.disable();
 		}
 	}
 
