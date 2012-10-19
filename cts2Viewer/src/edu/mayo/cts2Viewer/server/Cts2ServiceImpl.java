@@ -1,14 +1,11 @@
 package edu.mayo.cts2Viewer.server;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,7 +62,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			context.resultLimit = RESULT_LIMIT;
 
 			/* clear the parameter list */
-			for (String param : context.getUserParameterList()) {
+			Set<String> params = new HashSet<String>(context.getUserParameterList());
+			for (String param : params) {
 				context.removeUserParameter(param);
 			}
 
@@ -83,7 +81,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error retrieving ValueSets" + e);
+			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
 		}
 
 		return results;
