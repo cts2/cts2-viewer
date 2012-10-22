@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -56,24 +57,28 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	public String getValueSets(String serviceName, String searchText, Map<String, String> filters) throws IllegalArgumentException {
 		String results = "";
 
+		initCM(serviceName);
+		RESTContext context = cm.getCurrentContext();
+		context.resultLimit = RESULT_LIMIT;
+
+		/* clear the parameter list */
+		Set<String> params = new HashSet<String>(context.getUserParameterList());
+		HashMap<String, String> originalParams = new HashMap<String, String>(params.size());
+
+		for (String param : params) {
+			originalParams.put(param, context.getUserParameterValue(param));
+			context.removeUserParameter(param);
+		}
+
+		/* populate the parameter list with the new filters */
+		for (String filter : filters.keySet()) {
+			String value = filters.get(filter);
+			if (value != null && !value.trim().equals("")) {
+				context.setUserParameter(filter, filters.get(filter));
+			}
+		}
+
 		try {
-			initCM(serviceName);
-			RESTContext context = cm.getCurrentContext();
-			context.resultLimit = RESULT_LIMIT;
-
-			/* clear the parameter list */
-			Set<String> params = new HashSet<String>(context.getUserParameterList());
-			for (String param : params) {
-				context.removeUserParameter(param);
-			}
-
-			/* populate the parameter list with the new filters */
-			for (String filter : filters.keySet()) {
-				String value = filters.get(filter);
-				if (value != null && !value.trim().equals("")) {
-					context.setUserParameter(filter, filters.get(filter));
-				}
-			}
 
 			if (CTS2Utils.isNull(searchText) && filters.size() == 0) {
 				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
@@ -82,6 +87,11 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
+		} finally {
+			/* Restore parameter list */
+			for (String param : originalParams.keySet()) {
+				context.setUserParameter(param, originalParams.get(param));
+			}
 		}
 
 		return results;
