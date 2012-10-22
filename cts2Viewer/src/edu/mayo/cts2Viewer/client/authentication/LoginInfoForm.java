@@ -43,7 +43,7 @@ public class LoginInfoForm extends VLayout {
 		setHeight100();
 		setMembersMargin(15);
 		setMargin(10);
-		setAlign(Alignment.CENTER);
+		setAlign(VerticalAlignment.BOTTOM);
 
 		createLoginForm(null);
 
@@ -58,13 +58,13 @@ public class LoginInfoForm extends VLayout {
 
 		i_form.setLayoutAlign(Alignment.RIGHT);
 		i_form.setWidth100();
-		i_form.setHeight(10);
+		i_form.setHeight(20);
 
 		i_loginLinkItem = new LinkItem("loginLinkItem");
 		i_loginLinkItem.setLinkTitle("<b>" + TEXT_LOG_IN + "</b>");
 		i_loginLinkItem.setShowTitle(false);
 		i_loginLinkItem.setWidth(47);
-		i_loginLinkItem.setVAlign(VerticalAlignment.CENTER);
+		i_loginLinkItem.setVAlign(VerticalAlignment.BOTTOM);
 		i_loginLinkItem.setAlign(Alignment.RIGHT);
 
 		i_loginLinkItem.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
