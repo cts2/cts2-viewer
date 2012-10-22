@@ -111,8 +111,6 @@ public class Cts2Viewer implements EntryPoint {
 		createLoginRequestEvent();
 		createLoginCancelEvent();
 		createLoginSuccessfulEvent();
-
-		initWindowClosingConfirmationDialog();
 	}
 
 	/**
@@ -190,19 +188,4 @@ public class Cts2Viewer implements EntryPoint {
 		i_overallLayout.addMember(callbackFrame);
 	}
 
-	/**
-	 * Display a confirmation dialog to leave our site when the user refreshes
-	 * or goes to another URL.
-	 */
-	protected void initWindowClosingConfirmationDialog() {
-		Window.addWindowClosingHandler(new ClosingHandler() {
-			@Override
-			public void onWindowClosing(ClosingEvent event) {
-				// This message doesn't show, but by adding this close handler,
-				// we get the default dialog to display and confirm that the
-				// user does want to leave our site.
-				event.setMessage("Are you sure you want to leave?");
-			}
-		});
-	}
 }

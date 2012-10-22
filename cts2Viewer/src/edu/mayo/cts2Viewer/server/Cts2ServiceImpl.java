@@ -1,7 +1,11 @@
 package edu.mayo.cts2Viewer.server;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,7 +62,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			context.resultLimit = RESULT_LIMIT;
 
 			/* clear the parameter list */
-			for (String param : context.getUserParameterList()) {
+			Set<String> params = new HashSet<String>(context.getUserParameterList());
+			for (String param : params) {
 				context.removeUserParameter(param);
 			}
 
@@ -76,7 +81,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error retrieving ValueSets" + e);
+			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
 		}
 
 		return results;
@@ -301,7 +306,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		}
 
 		for (String service : services) {
-			if (selectedService.endsWith(service)) {
+			if (selectedService != null && selectedService.endsWith(service)) {
 				serverOptions.put(service, service + CTS2Utils.SELECTED_TAG);
 			} else {
 				serverOptions.put(service, service);
@@ -309,6 +314,43 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		}
 
 		return serverOptions;
+	}
+
+	@Override
+	public LinkedHashMap<String, String> getNqfNumbers() throws IOException {
+		LinkedHashMap<String, String> nqfNumbers = new LinkedHashMap<String, String>();
+		nqfNumbers.put("", "Any NQF Number");
+		nqfNumbers.putAll(loadMap(PropertiesHelper.getInstance().getNqfNumbersPath()));
+		return nqfNumbers;
+	}
+
+	@Override
+	public LinkedHashMap<String, String> geteMeasureIds() throws IOException {
+		LinkedHashMap<String, String> eMeasureIds = new LinkedHashMap<String, String>();
+		eMeasureIds.put("", "Any eMeasure Id");
+		eMeasureIds.putAll(loadMap(PropertiesHelper.getInstance().getEmeasureIdsPath()));
+		return eMeasureIds;
+	}
+
+	private LinkedHashMap<String, String> loadMap(String path) throws IOException {
+		BufferedReader reader = null;
+		LinkedHashMap<String, String> idMap = new LinkedHashMap<String, String>();
+		try {
+			String line = "";
+			reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(path)));
+			while ((line = reader.readLine()) != null) {
+				if (!line.trim().equals("")) {
+					idMap.put(line, line);
+				}
+			}
+
+		} catch (IOException ioe) {
+
+		} finally {
+			if (reader != null)
+				reader.close();
+		}
+		return idMap;
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public class LoginInfoForm extends VLayout {
 
 		i_form.setLayoutAlign(Alignment.RIGHT);
 		i_form.setWidth100();
-		i_form.setHeight(20);
+		i_form.setHeight(10);
 
 		i_loginLinkItem = new LinkItem("loginLinkItem");
 		i_loginLinkItem.setLinkTitle("<b>" + TEXT_LOG_IN + "</b>");
@@ -80,7 +80,7 @@ public class LoginInfoForm extends VLayout {
 		i_logoutLinkItem = new LinkItem("logoutLinkItem");
 		i_logoutLinkItem.setLinkTitle("<b>" + TEXT_LOG_OUT + "</b>");
 		i_logoutLinkItem.setShowTitle(false);
-		i_logoutLinkItem.setWidth(55);
+		i_logoutLinkItem.setWidth(50);
 		i_logoutLinkItem.setAlign(Alignment.RIGHT);
 		i_logoutLinkItem.setVAlign(VerticalAlignment.CENTER);
 

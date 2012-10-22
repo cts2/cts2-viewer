@@ -4,16 +4,16 @@
 /* This is for all links */
 a:link  {
   color: #0000D6;
-  font-family: Tahoma, Verdana, sans-serif;
-  font-size: 13px;
-  font-weight: normal;
+  /*font-family: Tahoma, Verdana, sans-serif;*/
+  /*font-size: 13px;
+  font-weight: normal;*/
 }
 
 /* This is for all staticTextItems */
 .staticTextItem {
-  font-family: Tahoma, Verdana, sans-serif;
-  font-size: 13px;
-  font-weight: normal;
+ /* font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: normal;*/
 }
 
 .cts2-ToolStripMenu {

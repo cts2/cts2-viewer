@@ -38,4 +38,7 @@ public interface Cts2ServiceAsync {
 	void getServerProperties(String serviceName, AsyncCallback<ServerProperties> callback)
 	        throws IllegalArgumentException;
 
+	void getNqfNumbers(AsyncCallback<LinkedHashMap<String, String>> async);
+
+	void geteMeasureIds(AsyncCallback<LinkedHashMap<String, String>> async);
 }
