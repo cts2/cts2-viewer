@@ -1,5 +1,9 @@
 package edu.mayo.cts2Viewer.client.utils;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -8,24 +12,15 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
-import com.smartgwt.client.widgets.form.fields.TextItem;
-import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
-import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
-import com.smartgwt.client.widgets.form.fields.events.KeyUpEvent;
-import com.smartgwt.client.widgets.form.fields.events.KeyUpHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
+
 import edu.mayo.cts2Viewer.client.Cts2Service;
 import edu.mayo.cts2Viewer.client.Cts2ServiceAsync;
 import edu.mayo.cts2Viewer.client.Cts2Viewer;
-import edu.mayo.cts2Viewer.client.SearchTextItem;
 import edu.mayo.cts2Viewer.client.events.FilterUpdatedEvent;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class FilterPanel extends HLayout {
 
@@ -35,7 +30,7 @@ public class FilterPanel extends HLayout {
 	private ComboBoxItem nqfNumberCombo;
 	private ComboBoxItem eMeasureCombo;
 	private IButton clearFiltersButton;
-	private Map<String, String> filters;
+	private final Map<String, String> filters;
 
 	public FilterPanel() {
 		filters = new HashMap<String, String>();
@@ -150,6 +145,7 @@ public class FilterPanel extends HLayout {
 		});
 
 	}
+
 	private void clearForm() {
 		nqfNumberCombo.clearValue();
 		eMeasureCombo.clearValue();
@@ -168,10 +164,11 @@ public class FilterPanel extends HLayout {
 			}
 		}
 
-		if (enable)
+		if (enable) {
 			clearFiltersButton.enable();
-		else
+		} else {
 			clearFiltersButton.disable();
+		}
 	}
 
 }

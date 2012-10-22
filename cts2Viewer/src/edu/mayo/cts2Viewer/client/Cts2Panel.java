@@ -37,6 +37,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import edu.mayo.cts2Viewer.client.authentication.Authentication;
 import edu.mayo.cts2Viewer.client.authentication.LoginInfoPanel;
 import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
+import edu.mayo.cts2Viewer.client.events.DefaultServerRetrievedEvent;
 import edu.mayo.cts2Viewer.client.events.FilterUpdatedEvent;
 import edu.mayo.cts2Viewer.client.events.FilterUpdatedEventHandler;
 import edu.mayo.cts2Viewer.client.events.LogOutRequestEvent;
@@ -112,10 +113,7 @@ public class Cts2Panel extends VLayout {
 		titleLayout.setWidth100();
 		titleLayout.setAlign(Alignment.CENTER);
 		titleLayout.setMargin(10);
-		// titleLayout.setBackgroundColor(BACKGROUND_COLOR);
-
 		titleLayout.addMember(titleLabel);
-		// addMember(titleLayout);
 
 		// layout for any content
 		HLayout contentLayout = new HLayout();
@@ -258,10 +256,10 @@ public class Cts2Panel extends VLayout {
 
 		int height = Cts2Viewer.s_showAll ? 62 : 55;
 		VLayout buttonLayout = new VLayout();
-
 		buttonLayout.setHeight(height);
 		buttonLayout.setMargin(7);
 		buttonLayout.setAlign(VerticalAlignment.BOTTOM);
+		buttonLayout.setWidth(60);
 
 		i_loginInfoPanel = new LoginInfoPanel();
 		buttonLayout.addMember(i_loginInfoPanel);
@@ -377,8 +375,7 @@ public class Cts2Panel extends VLayout {
 
 		if (serverPropertiesMap.containsKey(selectedServer)) {
 			setServerProperties(selectedServer, checkRequiresCredentials);
-		}
-		else {
+		} else {
 			Cts2ServiceAsync service = GWT.create(Cts2Service.class);
 			try {
 				service.getServerProperties(selectedServer, new AsyncCallback<ServerProperties>() {
@@ -403,7 +400,7 @@ public class Cts2Panel extends VLayout {
 		}
 	}
 
-	private void setServerProperties(String server, boolean  checkRequiresCredentials) {
+	private void setServerProperties(String server, boolean checkRequiresCredentials) {
 		i_serverProperties = serverPropertiesMap.get(server);
 		i_filterPanel.setVisible(i_serverProperties != null && i_serverProperties.isShowFilters());
 		if (checkRequiresCredentials) {
@@ -507,7 +504,7 @@ public class Cts2Panel extends VLayout {
 			public void onFilterUpdate(FilterUpdatedEvent filterUpdatedEvent) {
 				getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 			}
-			});
+		});
 	}
 
 	/**
@@ -713,10 +710,15 @@ public class Cts2Panel extends VLayout {
 				@Override
 				public void onSuccess(String defaultServer) {
 					i_defaultServer = defaultServer;
-					String title = i_defaultServer.equals("MayoCTS2") ? "Meaningful Use Quality Metric CTS2 Value Sets" : i_defaultServer;
+					String title = i_defaultServer.equals("MayoCTS2") ? "Meaningful Use Quality Metric CTS2 Value Sets"
+					        : i_defaultServer;
 					i_defaultServerTextItem.setValue("<b>" + title + "</b>");
 
 					if (!Cts2Viewer.s_showAll) {
+
+						// fire the server retrieved event
+						Cts2Viewer.EVENT_BUS.fireEvent(new DefaultServerRetrievedEvent(i_defaultServer));
+
 						i_loginInfoPanel.setDefaultServer(i_defaultServer);
 						i_loginInfoPanel.addWidgets();
 
@@ -732,11 +734,10 @@ public class Cts2Panel extends VLayout {
 
 	private void setSearchEnablement() {
 		boolean requireCreds = i_serverProperties.isRequireCredentials();
-		if (!requireCreds || (requireCreds && loggedIn)) {
+		if (!requireCreds || requireCreds && loggedIn) {
 			i_searchItem.enable();
 			i_filterPanel.enable();
-		}
-		else {
+		} else {
 			i_searchItem.disable();
 			i_filterPanel.disable();
 		}
