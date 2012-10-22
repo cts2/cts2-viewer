@@ -12,6 +12,8 @@ import com.smartgwt.client.widgets.events.MouseOutHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
+
+import edu.mayo.cts2Viewer.client.authentication.LoginInfoForm;
 import edu.mayo.cts2Viewer.client.events.LogOutRequestEvent;
 import edu.mayo.cts2Viewer.client.events.LogOutRequestEventHandler;
 import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEvent;
@@ -28,7 +30,9 @@ public class MasterHeader extends HLayout {
 	private static final String HREF_LOGO = "http://mayoclinic.org";
 
 	private Label i_titleLabel;
-	private Label signedInUser;
+	private final Label signedInUser;
+
+	private final LoginInfoForm i_loginForm;
 
 	public MasterHeader() {
 		super();
@@ -95,12 +99,15 @@ public class MasterHeader extends HLayout {
 		signedInUser = new Label();
 		signedInUser.addStyleName("cts2-MasterHeader-SignedInUser");
 
+		i_loginForm = new LoginInfoForm();
+
 		// initialize the East layout container
 		HLayout eastLayout = new HLayout();
 		eastLayout.setAlign(Alignment.RIGHT);
 		eastLayout.setHeight(MASTHEAD_HEIGHT);
 		eastLayout.setWidth("30%");
-		eastLayout.addMember(signedInUser);
+		// eastLayout.addMember(signedInUser);
+		eastLayout.addMember(i_loginForm);
 
 		// add the West and East layout containers to the MasterHeader layout
 		// container

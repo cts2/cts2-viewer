@@ -1,6 +1,21 @@
 /** Add css rules here for your application. */
 
 
+/* This is for all links */
+a:link  {
+  color: #0000D6;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+/* This is for all staticTextItems */
+.staticTextItem {
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+}
+
 .cts2-ToolStripMenu {
   background-image: url(images/application_menu.png);
   background-repeat: repeat-x; 
@@ -25,16 +40,16 @@
   padding-left: 8px;
   padding-right: 8px;	*/
 }
-
+/*
 .cts2-MastHead-SignedInUser {
   color: #0000D6;
   font-family: Tahoma, Verdana, sans-serif;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: normal;
   overflow: hidden;
   padding-right: 4px;
   text-align: right;
-}
+}*/
 
 .cts2-MasterHeader-Title {
   /*color: #FFFFFF;

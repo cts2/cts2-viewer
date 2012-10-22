@@ -36,6 +36,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import edu.mayo.cts2Viewer.client.authentication.Authentication;
 import edu.mayo.cts2Viewer.client.authentication.LoginInfoPanel;
 import edu.mayo.cts2Viewer.client.datasource.ValueSetsXmlDS;
+import edu.mayo.cts2Viewer.client.events.DefaultServerRetrievedEvent;
 import edu.mayo.cts2Viewer.client.events.FilterUpdatedEvent;
 import edu.mayo.cts2Viewer.client.events.FilterUpdatedEventHandler;
 import edu.mayo.cts2Viewer.client.events.LogOutRequestEvent;
@@ -339,8 +340,7 @@ public class Cts2Panel extends VLayout {
 
 		if (i_serverProperties == null) {
 			i_filterPanel.setVisible(false);
-		}
-		else {
+		} else {
 			i_filterPanel.setVisible(i_serverProperties.isShowFilters());
 		}
 		i_filterPanel.draw();
@@ -502,7 +502,7 @@ public class Cts2Panel extends VLayout {
 			public void onFilterUpdate(FilterUpdatedEvent filterUpdatedEvent) {
 				getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 			}
-			});
+		});
 	}
 
 	/**
@@ -711,6 +711,10 @@ public class Cts2Panel extends VLayout {
 					i_defaultServerTextItem.setValue("<b>" + i_defaultServer + "</b>");
 
 					if (!Cts2Viewer.s_showAll) {
+
+						// fire the server retrieved event
+						Cts2Viewer.EVENT_BUS.fireEvent(new DefaultServerRetrievedEvent(i_defaultServer));
+
 						i_loginInfoPanel.setDefaultServer(i_defaultServer);
 						i_loginInfoPanel.addWidgets();
 
