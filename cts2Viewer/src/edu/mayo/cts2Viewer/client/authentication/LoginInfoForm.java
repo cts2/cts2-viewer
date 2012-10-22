@@ -18,7 +18,7 @@ import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEventHandler;
 import edu.mayo.cts2Viewer.shared.Credentials;
 
 /**
- * VLayout that contains a DynamicForm for holding the login/logout widgets.
+ * VLayout that contains a DynamicForm for holding the login/logout components.
  */
 public class LoginInfoForm extends VLayout {
 
