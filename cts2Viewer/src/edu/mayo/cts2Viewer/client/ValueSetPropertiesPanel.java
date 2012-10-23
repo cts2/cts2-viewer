@@ -28,8 +28,8 @@ public class ValueSetPropertiesPanel extends VLayout {
 	private Label i_descriptionTitle;
 	private Label i_descriptionValue;
 
-	private Label i_contactTitle;
-	private Label i_contactValue;
+	private Label i_developerTitle;
+	private Label i_developerValue;
 
 	public ValueSetPropertiesPanel() {
 		super();
@@ -62,9 +62,9 @@ public class ValueSetPropertiesPanel extends VLayout {
 		i_stateValue = UiHelper.createValueLabel("");
 		vsLayout.addMember(UiHelper.createNameValueLayout(i_stateTitle, i_stateValue));
 
-		i_contactTitle = UiHelper.createTitleLabel(VS_TITLE_WIDTH, "Contact:");
-		i_contactValue = UiHelper.createValueLabel("");
-		vsLayout.addMember(UiHelper.createNameValueLayout(i_contactTitle, i_contactValue));
+		i_developerTitle = UiHelper.createTitleLabel(VS_TITLE_WIDTH, "Developer:");
+		i_developerValue = UiHelper.createValueLabel("");
+		vsLayout.addMember(UiHelper.createNameValueLayout(i_developerTitle, i_developerValue));
 
 		addMember(vsLayout);
 
@@ -82,7 +82,7 @@ public class ValueSetPropertiesPanel extends VLayout {
 		i_resourceNameValue.setContents("");
 		i_formalNameValue.setContents("");
 		i_descriptionValue.setContents("");
-		i_contactValue.setContents("");
+		i_developerValue.setContents("");
 	}
 
 	public void updatePanel(String serviceName, String valueSet, String link) {
@@ -106,16 +106,14 @@ public class ValueSetPropertiesPanel extends VLayout {
 					i_formalNameValue.setContents(vsi.getFormalName());
 					i_descriptionValue.setContents(vsi.getDescriptionValue());
 
-					String title = vsi.getRole() != null ? vsi.getRole() : "";
 					String source = vsi.getSource() != null ? vsi.getSource() : "";
 					String sourceUri = vsi.getSourceUri() != null ? vsi.getSourceUri() : "";
-					i_contactTitle.setContents("<b>" + title + "</b>");
 
 					// don't create a link if the uri is not present.
 					if (sourceUri != null && sourceUri.length() > 0) {
-						i_contactValue.setContents(UiHelper.getLink(sourceUri, source));
+						i_developerValue.setContents(UiHelper.getLink(sourceUri, source));
 					} else {
-						i_contactValue.setContents(source);
+						i_developerValue.setContents(source);
 					}
 				}
 			}
