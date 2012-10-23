@@ -450,7 +450,10 @@ public class Cts2Panel extends VLayout {
 			public void onCancelRequest(LoginCancelledEvent loginCancelledEvent) {
 				// reset the server selection
 				i_serverCombo.setValue(i_lastValidServer);
-				getServerProperties(i_lastValidServer, true);
+
+				if (!i_lastValidServer.equals(SELECT_SERVER_MSG)) {
+					getServerProperties(i_lastValidServer, true);
+				}
 			}
 		});
 	}

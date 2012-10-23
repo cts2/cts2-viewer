@@ -3,7 +3,8 @@
 
 /* This is for all links */
 a:link  {
-  color: #0000D6;
+  color: #0A59A4;
+  font-family: Arial, sans-serif;
   /*font-family: Tahoma, Verdana, sans-serif;*/
   /*font-size: 13px;
   font-weight: normal;*/
@@ -11,8 +12,8 @@ a:link  {
 
 /* This is for all staticTextItems */
 .staticTextItem {
- /* font-family: Tahoma, Verdana, sans-serif;
-  font-size: 12px;
+  font-family: Arial, sans-serif;
+  /*font-size: 12px;
   font-weight: normal;*/
 }
 
