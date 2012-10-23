@@ -291,7 +291,9 @@ public class LoginWindow extends Window {
 
 	private Label createWindowTitle(String server) {
 
-		Label windowTitleLabel = new Label("<b>Login for " + server + "</b>");
+		String titleServer = server.equals("MayoCTS2") ? "CTS2 Service" : server;
+
+		Label windowTitleLabel = new Label("<b>Login for " + titleServer + "</b>");
 		windowTitleLabel.setWidth100();
 		windowTitleLabel.setHeight(25);
 		windowTitleLabel.setAlign(Alignment.CENTER);
