@@ -45,9 +45,24 @@ public class MasterHeader extends HLayout {
 		this.addStyleName("cts2-MasterHeader");
 		this.setHeight(MASTHEAD_HEIGHT);
 
-		// initialize the title image
-		String titleImage = "headerTitle.png";
-		final Img titleImg = new Img(titleImage, 561, 39);
+		// initialize the title image - we will use two different images based
+		// on whether or not the showAll parameter is set.
+		String titleImage;
+		final Img titleImg;
+		int headerWidth;
+		int headerheight;
+
+		if (Cts2Viewer.s_showAll) {
+			headerWidth = 213;
+			headerheight = 35;
+			titleImage = "headerTitleShort.png";
+		} else {
+			headerWidth = 541;
+			headerheight = 35;
+			titleImage = "headerTitleLong.png";
+		}
+
+		titleImg = new Img(titleImage, headerWidth, headerheight);
 
 		// initialize the Logo image
 		String logoImage = "logo-mc.gif";
@@ -93,6 +108,7 @@ public class MasterHeader extends HLayout {
 
 		VLayout centerVLayout = new VLayout();
 		centerVLayout.setHeight100();
+		centerVLayout.setWidth(headerWidth);
 		centerVLayout.setAlign(VerticalAlignment.CENTER);
 		centerVLayout.setAlign(Alignment.CENTER);
 		centerVLayout.addMember(titleImg);
