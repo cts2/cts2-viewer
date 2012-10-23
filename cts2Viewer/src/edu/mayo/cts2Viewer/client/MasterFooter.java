@@ -75,9 +75,7 @@ public class MasterFooter extends HLayout {
 		addMember(westLayout);
 
 		String logoImage = "cts2Logo_ecosystem.png";
-		final Img logoImg = new Img(logoImage, 184, 30);
-		// logoImg.setImageWidth(184);
-		// logoImg.setImageHeight(30);
+		final Img logoImg = new Img(logoImage, 248, 29);
 		logoImg.addStyleName("cts2-MasterFooter-Logo");
 
 		logoImg.addClickHandler(new ClickHandler() {
