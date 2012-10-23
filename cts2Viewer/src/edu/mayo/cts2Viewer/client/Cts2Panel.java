@@ -505,6 +505,9 @@ public class Cts2Panel extends VLayout {
 		Cts2Viewer.EVENT_BUS.addHandler(FilterUpdatedEvent.TYPE, new FilterUpdatedEventHandler() {
 			@Override
 			public void onFilterUpdate(FilterUpdatedEvent filterUpdatedEvent) {
+				EntityWindow.getInstance().hide();
+				i_valueSetPropertiesPanel.clearValueSetInfo();
+				i_resolvedValueSetPropertiesPanel.clearPanels();
 				getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 			}
 		});
@@ -713,8 +716,7 @@ public class Cts2Panel extends VLayout {
 				@Override
 				public void onSuccess(String defaultServer) {
 					i_defaultServer = defaultServer;
-					String title = i_defaultServer.equals("MayoCTS2") ? "Meaningful Use Quality Measure CTS2 Value Sets"
-					        : i_defaultServer;
+					String title = i_defaultServer.equals("MayoCTS2") ? "CTS2 Service" : i_defaultServer;
 					i_defaultServerTextItem.setValue("<b>" + title + "</b>");
 
 					if (!Cts2Viewer.s_showAll) {
