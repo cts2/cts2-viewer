@@ -505,6 +505,9 @@ public class Cts2Panel extends VLayout {
 		Cts2Viewer.EVENT_BUS.addHandler(FilterUpdatedEvent.TYPE, new FilterUpdatedEventHandler() {
 			@Override
 			public void onFilterUpdate(FilterUpdatedEvent filterUpdatedEvent) {
+				EntityWindow.getInstance().hide();
+				i_valueSetPropertiesPanel.clearValueSetInfo();
+				i_resolvedValueSetPropertiesPanel.clearPanels();
 				getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 			}
 		});
