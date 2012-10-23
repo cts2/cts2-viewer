@@ -57,7 +57,7 @@ public class MasterHeader extends HLayout {
 			headerheight = 35;
 			titleImage = "headerTitleShort.png";
 		} else {
-			headerWidth = 541;
+			headerWidth = 569;
 			headerheight = 35;
 			titleImage = "headerTitleLong.png";
 		}

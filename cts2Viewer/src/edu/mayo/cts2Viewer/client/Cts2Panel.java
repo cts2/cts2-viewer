@@ -713,7 +713,7 @@ public class Cts2Panel extends VLayout {
 				@Override
 				public void onSuccess(String defaultServer) {
 					i_defaultServer = defaultServer;
-					String title = i_defaultServer.equals("MayoCTS2") ? "Meaningful Use Quality Metric CTS2 Value Sets"
+					String title = i_defaultServer.equals("MayoCTS2") ? "Meaningful Use Quality Measure CTS2 Value Sets"
 					        : i_defaultServer;
 					i_defaultServerTextItem.setValue("<b>" + title + "</b>");
 
