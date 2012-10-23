@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
 import org.w3c.dom.Document;
 
@@ -61,7 +62,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		RESTContext context = cm.getCurrentContext();
 		context.resultLimit = RESULT_LIMIT;
 
-		/* clear the parameter list */
+		/* clear the parameter list 
 		Set<String> params = new HashSet<String>(context.getUserParameterList());
 		HashMap<String, String> originalParams = new HashMap<String, String>(params.size());
 
@@ -70,6 +71,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			context.removeUserParameter(param);
 		}
 
+		*/
+		
 		/* populate the parameter list with the new filters */
 		for (String filter : filters.keySet()) {
 			String value = filters.get(filter);
@@ -89,9 +92,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
 		} finally {
 			/* Restore parameter list */
-			for (String param : originalParams.keySet()) {
-				context.setUserParameter(param, originalParams.get(param));
-			}
+			//for (String param : originalParams.keySet()) {
+			//	context.setUserParameter(param, originalParams.get(param));
+			//}
 		}
 
 		return results;
@@ -463,9 +466,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			// get all of the server properties needed by the client here.
 			initCM(serviceName);
 
-			serverProperties.setRequireCredentials(Boolean.valueOf(cm.getCurrentContext().getUserParameterValue("requireCreds")));
+			serverProperties.setRequireCredentials(Boolean.valueOf(cm.getCurrentContext().getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS)));
 
-			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2RestRequestParameters.muenabled);
+			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2Config.MUENABLED);
 			serverProperties.setShowFilters(Boolean.valueOf(muEnabledStr));
 		} catch (Exception e) {
 
