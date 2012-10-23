@@ -21,7 +21,7 @@ public class MasterFooter extends HLayout {
 
 	private static final int MASTER_FOOTER_HEIGHT = 30;
 	private static final String HREF_LOGO = "http://informatics.mayo.edu/cts2/index.php/Value_Set_REST_API_and_Implementation_Examples";
-	private static final String HREF_NLM = "http://www.nlm.nih.gov/";
+	private static final String HREF_NLM = "http://www.nlm.nih.gov/healthit/vsac.html";
 
 	public MasterFooter() {
 		super();
