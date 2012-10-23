@@ -24,9 +24,10 @@ import edu.mayo.cts2Viewer.shared.Credentials;
  */
 public class LoginInfoPanel extends HLayout {
 
-	private static final String HELPTEXT = "This service requires a valid username/password to view the value sets.";
+	private static final String HELPTEXT = "This service requires a valid username/password to view the value sets.\n\nTo log in or log out, click on the link in the upper right corner.";
 
 	private static final int HEIGHT_BUTTON = 20;
+	private static final int WIDTH_BUTTON = 50;
 	private static final int LABEL_WIDTH = 100;
 	private static final String BUTTON_TITLE_LOG_OUT = "Logout";
 	private static final String BUTTON_TITLE_LOG_IN = "Log in";
@@ -60,6 +61,7 @@ public class LoginInfoPanel extends HLayout {
 
 		i_logoutButton = new IButton(BUTTON_TITLE_LOG_OUT);
 		i_logoutButton.setHeight(HEIGHT_BUTTON);
+		i_logoutButton.setWidth(WIDTH_BUTTON);
 		i_logoutButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -73,6 +75,7 @@ public class LoginInfoPanel extends HLayout {
 
 		i_loginButton = new IButton(BUTTON_TITLE_LOG_IN);
 		i_loginButton.setHeight(HEIGHT_BUTTON);
+		i_loginButton.setWidth(WIDTH_BUTTON);
 		i_loginButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -91,16 +94,16 @@ public class LoginInfoPanel extends HLayout {
 
 		// add widgets based on if we are showing all servers, or just one.
 		if (Cts2Viewer.s_showAll) {
-			addMember(i_logoutButton);
+			// addMember(i_logoutButton);
 			addMember(i_helpButtonForm);
-			addMember(i_loggedInUser);
+			// addMember(i_loggedInUser);
 
 			// set hidden initially
 			setVisibility(Visibility.HIDDEN);
 		} else {
-			addMember(i_loginButton);
+			// addMember(i_loginButton);
 			addMember(i_helpButtonForm);
-			addMember(i_loggedInUser);
+			// addMember(i_loggedInUser);
 
 			setVisibility(Visibility.VISIBLE);
 		}
@@ -138,9 +141,9 @@ public class LoginInfoPanel extends HLayout {
 
 		removeMembers(getMembers());
 
-		addMember(i_logoutButton);
+		// addMember(i_logoutButton);
 		addMember(i_helpButtonForm);
-		addMember(i_loggedInUser);
+		// addMember(i_loggedInUser);
 
 		redraw();
 	}

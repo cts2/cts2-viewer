@@ -50,8 +50,8 @@ public class EntityWindow extends Window {
 	private EntityWindow() {
 		super();
 
-		setWidth(700);
-		setHeight(400);
+		setWidth(750);
+		setHeight(600);
 
 		// set a thinner window edge.
 		setEdgeSize(4);
@@ -61,7 +61,6 @@ public class EntityWindow extends Window {
 		centerInPage();
 
 		i_titleLabel = createWindowTitle("");
-		// addItem(i_titleLabel);
 		addItem(createHeader());
 
 		i_htmlPane = createHTMLPane();
@@ -83,6 +82,7 @@ public class EntityWindow extends Window {
 		pane.setWidth100();
 		pane.setHeight100();
 		pane.setMargin(5);
+		pane.setScrollbarSize(0);
 		pane.setContentsType(ContentsType.PAGE);
 
 		return pane;

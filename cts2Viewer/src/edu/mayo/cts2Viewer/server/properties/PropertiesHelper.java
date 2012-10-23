@@ -12,6 +12,8 @@ import java.util.logging.Logger;
  */
 public class PropertiesHelper {
 	private static final String SERVER_PROPERTIES_FILE = "CTS2Profiles.properties";
+	private static final String NQF_NUMBERS_FILE = "nqfNumbers";
+	private static final String EMEASURE_IDS_FILE = "eMeasureIds";
 
 	private static Logger logger = Logger.getLogger(PropertiesHelper.class.getName());
 	private static PropertiesHelper i_propertiesHelper;
@@ -34,6 +36,24 @@ public class PropertiesHelper {
 		String path = this.getClass().getPackage().getName();
 		path = path.replaceAll("[.]", File.separator);
 		path = path + File.separator + SERVER_PROPERTIES_FILE;
+		logger.log(Level.INFO, "Path = " + path);
+
+		return path;
+	}
+
+	public String getNqfNumbersPath() {
+		String path = this.getClass().getPackage().getName();
+		path = path.replaceAll("[.]", File.separator);
+		path = path + File.separator + NQF_NUMBERS_FILE;
+		logger.log(Level.INFO, "Path = " + path);
+
+		return path;
+	}
+
+	public String getEmeasureIdsPath() {
+		String path = this.getClass().getPackage().getName();
+		path = path.replaceAll("[.]", File.separator);
+		path = path + File.separator + EMEASURE_IDS_FILE;
 		logger.log(Level.INFO, "Path = " + path);
 
 		return path;
