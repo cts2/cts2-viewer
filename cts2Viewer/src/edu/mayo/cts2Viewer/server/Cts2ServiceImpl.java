@@ -487,6 +487,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2Config.MUENABLED);
 			serverProperties.setShowFilters(Boolean.valueOf(muEnabledStr));
+			
+			String entityTransformService = cm.getCurrentContext().transforms.get("entity");
+			serverProperties.setEntityTransformService(entityTransformService);
 		} catch (Exception e) {
 
 			logger.log(Level.SEVERE, "Error retrieving server properties for " + serviceName + ".  " + e);

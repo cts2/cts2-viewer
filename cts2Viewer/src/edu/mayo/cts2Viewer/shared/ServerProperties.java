@@ -13,6 +13,15 @@ public class ServerProperties implements Serializable {
 
 	private boolean i_requireCredentials;
 	private boolean i_showFilters;
+	private String entityTransformService;
+
+	public String getEntityTransformService() {
+		return entityTransformService;
+	}
+
+	public void setEntityTransformService(String entityTransformService) {
+		this.entityTransformService = entityTransformService;
+	}
 
 	public boolean isRequireCredentials() {
 		return i_requireCredentials;

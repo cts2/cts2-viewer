@@ -28,12 +28,12 @@ public class EntityWindow extends Window {
 
 	private static final String TITLE = "Entity Details";
 
-	private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
+	//private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
 	private static final String BYPASS_OPTION = "?bypass=1";
 
 	private static EntityWindow i_entityWindow;
-	private final Label i_titleLabel;
-	private final HTMLPane i_htmlPane;
+	private Label i_titleLabel;
+	private HTMLPane i_htmlPane;
 
 	private static String i_href;
 	private static String i_entityName;
@@ -59,13 +59,18 @@ public class EntityWindow extends Window {
 		setShowMinimizeButton(false);
 		setIsModal(false);
 		centerInPage();
+	}
 
+	private void addWindowContent(HTMLPane htmlPane)
+	{
+		removeMembers(getMembers());
+		
 		i_titleLabel = createWindowTitle("");
 		addItem(createHeader());
 
-		i_htmlPane = createHTMLPane();
-		i_htmlPane.setHeight("*");
-		addItem(i_htmlPane);
+//		i_htmlPane = createHTMLPane(ContentsType.PAGE);
+//		i_htmlPane.setHeight("100%");
+		addItem(htmlPane);
 
 		addItem(addCloseButton());
 		addCloseClickHandler(new CloseClickHandler() {
@@ -76,19 +81,19 @@ public class EntityWindow extends Window {
 			}
 		});
 	}
-
-	private HTMLPane createHTMLPane() {
+	
+	private HTMLPane createHTMLPane(ContentsType type) {
 		HTMLPane pane = new HTMLPane();
 		pane.setWidth100();
 		pane.setHeight100();
 		pane.setMargin(5);
 		pane.setScrollbarSize(0);
-		pane.setContentsType(ContentsType.PAGE);
+		pane.setContentsType(type);
 
 		return pane;
 	}
 
-	public void setWindowData(String server, String href, String name, String desc) {
+	public void setWindowData(String server, String serviceUrl, String href, String name, String desc) {
 		i_href = href;
 		i_entityName = name;
 		i_description = desc;
@@ -100,15 +105,51 @@ public class EntityWindow extends Window {
 		String titleFormatted = "<b style=\"color: #000000;font-family: Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;text-decoration:none\">"
 		        + windowTitle + "</b>";
 
-		i_titleLabel.setContents(titleFormatted);
+		
 
-		getEntityInformation(i_server, i_href, name);
+		getEntityInformation(i_server, serviceUrl, i_href, name);
+		i_titleLabel.setContents(titleFormatted);
 	}
 
-	private void getEntityInformation(String serviceName, final String entityUrl, String id) {
+	private void getEntityInformation(String serviceName, String serviceURL, final String entityUrl, String id) 
+	{
+		if ((serviceURL == null)||("".equals(serviceURL.trim())))
+			serviceURL = "";
+		
+		if ((entityUrl != null)&&(!("".equals(entityUrl.trim()))))
+		{
+			String completeUrl = serviceURL + entityUrl + BYPASS_OPTION;
+			//i_htmlPane.clear();
+			
+			try
+			{
+				if (contains(i_htmlPane))
+					removeMember(i_htmlPane);
+			}
+			catch(Exception e) {}
+			
+			i_htmlPane = createHTMLPane(ContentsType.PAGE);
+			addMember(i_htmlPane);
+			i_htmlPane.setContentsURL(completeUrl);
+		}
+		else
+		{
+			String msg = "<b>Entity Details are unavailable.</b>";
+			//i_htmlPane.clear();
+			
+			try
+			{
+				if (contains(i_htmlPane))
+					removeMember(i_htmlPane);
+			}
+			catch(Exception e) {}
 
-		String completeUrl = BASE_URL + entityUrl + BYPASS_OPTION;
-		i_htmlPane.setContentsURL(completeUrl);
+			i_htmlPane = createHTMLPane(ContentsType.FRAGMENT);
+			addMember(i_htmlPane);
+			i_htmlPane.setContents(msg);
+		}
+		//i_htmlPane.redraw();
+		addWindowContent(i_htmlPane);
 	}
 
 	private HLayout createHeader() {

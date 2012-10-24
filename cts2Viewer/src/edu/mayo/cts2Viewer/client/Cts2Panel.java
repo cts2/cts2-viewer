@@ -413,6 +413,7 @@ public class Cts2Panel extends VLayout {
 		if (checkRequiresCredentials) {
 			determineIfSelectedServerRequiresCredentials(server, i_serverProperties);
 		}
+		i_resolvedValueSetPropertiesPanel.setEntityTransformService(i_serverProperties.getEntityTransformService());
 		setSearchEnablement();
 	}
 

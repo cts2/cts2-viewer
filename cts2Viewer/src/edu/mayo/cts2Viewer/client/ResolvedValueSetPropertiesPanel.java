@@ -43,6 +43,16 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	private SectionStack i_resolvedValueSetSectionStack;
 	private SectionStackSection i_sectionResolvedValueSetMembers;
 	private SectionStackSection i_sectionResolvedValueSetInfo;
+	
+	private String entityTransformService = null;
+
+	public String getEntityTransformService() {
+		return entityTransformService;
+	}
+
+	public void setEntityTransformService(String entityTransformService) {
+		this.entityTransformService = entityTransformService;
+	}
 
 	public ResolvedValueSetPropertiesPanel(ComboBoxItem serverCombo) {
 		super();
@@ -185,7 +195,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			}
 		}
 
-		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord());
+		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord(), entityTransformService);
 
 	}
 
@@ -205,20 +215,20 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			@Override
 			public void onRecordClick(RecordClickEvent event) {
 				Record record = event.getRecord();
-				showEntityInfo(record);
+				showEntityInfo(record, entityTransformService);
 			}
 		});
 
 	}
 
-	private void showEntityInfo(Record record) {
+	private void showEntityInfo(Record record, String serviceUrl) {
 		if (record != null) {
 			String href = record.getAttribute("href");
 			String name = record.getAttribute("name");
 			String description = record.getAttribute("designation");
 
 			EntityWindow entityWindow = EntityWindow.getInstance();
-			entityWindow.setWindowData(i_serverCombo.getValueAsString(), href, name, description);
+			entityWindow.setWindowData(i_serverCombo.getValueAsString(), serviceUrl, href, name, description);
 			entityWindow.show();
 		}
 	}
