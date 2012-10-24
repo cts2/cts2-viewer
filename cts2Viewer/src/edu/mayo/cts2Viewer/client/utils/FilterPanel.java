@@ -146,7 +146,7 @@ public class FilterPanel extends HLayout {
 
 	}
 
-	private void clearForm() {
+	public void clearForm() {
 		nqfNumberCombo.clearValue();
 		eMeasureCombo.clearValue();
 		filters.clear();

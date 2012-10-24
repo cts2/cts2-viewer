@@ -274,10 +274,8 @@ public class Cts2Panel extends VLayout {
 			public void onClick(ClickEvent event) {
 				i_searchItem.clearValue();
 				i_clearButton.setDisabled(true);
-				EntityWindow.getInstance().hide();
 				getValueSets("", i_filterPanel.getFilters());
-				i_valueSetPropertiesPanel.clearValueSetInfo();
-				i_resolvedValueSetPropertiesPanel.clearPanels();
+				clearPanels();
 			}
 		});
 		buttonLayout.addMember(i_clearButton);
@@ -333,8 +331,7 @@ public class Cts2Panel extends VLayout {
 	}
 
 	private void updateServiceSelection() {
-		i_valueSetPropertiesPanel.clearValueSetInfo();
-		i_resolvedValueSetPropertiesPanel.clearPanels();
+		clearPanels();
 		i_filterPanel.setVisible(i_serverProperties != null && i_serverProperties.isShowFilters());
 		setSearchEnablement();
 		getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
@@ -496,18 +493,29 @@ public class Cts2Panel extends VLayout {
 					i_serverCombo.setValue(i_lastValidServer);
 					getServerProperties(i_lastValidServer, true);
 				}
+				clearPanels();
+				clearSearch();
 				updateServiceSelection();
 			}
 		});
+	}
+
+	private void clearPanels() {
+		EntityWindow.getInstance().hide();
+		i_valueSetPropertiesPanel.clearValueSetInfo();
+		i_resolvedValueSetPropertiesPanel.clearPanels();
+	}
+
+	private void clearSearch() {
+		i_filterPanel.clearForm();
+		i_searchItem.setValue("");
 	}
 
 	private void createFilterUpdatedReceivedEvent() {
 		Cts2Viewer.EVENT_BUS.addHandler(FilterUpdatedEvent.TYPE, new FilterUpdatedEventHandler() {
 			@Override
 			public void onFilterUpdate(FilterUpdatedEvent filterUpdatedEvent) {
-				EntityWindow.getInstance().hide();
-				i_valueSetPropertiesPanel.clearValueSetInfo();
-				i_resolvedValueSetPropertiesPanel.clearPanels();
+				clearPanels();
 				getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
 			}
 		});
@@ -574,10 +582,7 @@ public class Cts2Panel extends VLayout {
 				if (i_searchItem.isValidSearchText()) {
 					setClearButtonEnablement();
 					getValueSets(i_searchItem.getValueAsString(), i_filterPanel.getFilters());
-
-					EntityWindow.getInstance().hide();
-					i_valueSetPropertiesPanel.clearValueSetInfo();
-					i_resolvedValueSetPropertiesPanel.clearPanels();
+					clearPanels();
 				}
 			}
 		});
