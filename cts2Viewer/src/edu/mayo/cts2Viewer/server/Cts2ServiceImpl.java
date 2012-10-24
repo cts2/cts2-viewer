@@ -48,7 +48,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 	private static final int RESULT_LIMIT = 100;
 	private static final String ANY_NQF_NUMBER_TEXT = "Any NQF Number";
-	private static final String ANY_EMEASURE_ID_TEXT = "Any eMeasure Id";
+	private static final String ANY_EMEASURE_ID_TEXT = "Any Measure ID";
 	private ConvenienceMethods cm = null;
 
 	/**
@@ -327,10 +327,27 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	}
 
 	@Override
-	public LinkedHashMap<String, String> geteMeasureIds() throws IOException {
-		LinkedHashMap<String, String> eMeasureIds = new LinkedHashMap<String, String>();
-		eMeasureIds.put("", ANY_EMEASURE_ID_TEXT);
-		eMeasureIds.putAll(loadMap(PropertiesHelper.getInstance().getEmeasureIdsPath()));
+	public LinkedHashMap<Integer, String> geteMeasureIds() throws IOException {
+		LinkedHashMap<Integer, String> eMeasureIds = new LinkedHashMap<Integer, String>();
+		eMeasureIds.put(-1, ANY_EMEASURE_ID_TEXT);
+		BufferedReader reader = null;
+		try {
+			String line = "";
+			reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader()
+			  .getResourceAsStream(PropertiesHelper.getInstance().getEmeasureIdsPath())));
+			while ((line = reader.readLine()) != null) {
+				if (!line.trim().equals("")) {
+					eMeasureIds.put(Integer.parseInt(line), line);
+				}
+			}
+
+		} catch (IOException ioe) {
+
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
 		return eMeasureIds;
 	}
 

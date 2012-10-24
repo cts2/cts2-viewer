@@ -40,6 +40,6 @@ public interface Cts2Service extends RemoteService {
 
 	LinkedHashMap<String, String> getNqfNumbers() throws IOException;
 
-	LinkedHashMap<String, String> geteMeasureIds() throws IOException;
+	LinkedHashMap<Integer, String> geteMeasureIds() throws IOException;
 
 }

@@ -40,5 +40,5 @@ public interface Cts2ServiceAsync {
 
 	void getNqfNumbers(AsyncCallback<LinkedHashMap<String, String>> async);
 
-	void geteMeasureIds(AsyncCallback<LinkedHashMap<String, String>> async);
+	void geteMeasureIds(AsyncCallback<LinkedHashMap<Integer, String>> async);
 }
