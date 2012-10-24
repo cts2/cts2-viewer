@@ -438,6 +438,11 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 		} catch (Exception e) {
 			valid = new Boolean(false);
+
+		}
+
+		// log an invalid login attempt.
+		if (!valid) {
 			logger.log(Level.WARNING, "User " + credentials.getUser() + " on server " + credentials.getServer()
 			        + " entered invalid credentials.");
 		}
