@@ -13,7 +13,6 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 import edu.mayo.cts2Viewer.client.datasource.ValueSetInfoXmlDS;
 import edu.mayo.cts2Viewer.client.events.ValueSetInfoReceivedEvent;
-import edu.mayo.cts2Viewer.client.utils.UiHelper;
 import edu.mayo.cts2Viewer.shared.ValueSetInfo;
 
 public class ValueSetInfoListGrid extends ListGrid {
@@ -44,15 +43,18 @@ public class ValueSetInfoListGrid extends ListGrid {
 
 			@Override
 			public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-				String uri = record.getAttribute("uri");
+				record.getAttribute("uri");
 				String name = record.getAttribute("name");
 
+				// Remove the links for now...
+
 				// if uri is not present, don't create a link
-				if (uri != null && uri.length() > 0) {
-					return UiHelper.getLink(uri, name);
-				} else {
-					return name;
-				}
+				// if (uri != null && uri.length() > 0) {
+				// return UiHelper.getLink(uri, name);
+				// } else {
+				// return name;
+				// }
+				return name;
 			}
 		});
 
