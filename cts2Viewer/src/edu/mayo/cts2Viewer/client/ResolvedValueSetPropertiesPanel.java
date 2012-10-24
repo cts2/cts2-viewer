@@ -70,11 +70,11 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 		resolvedVsLayout
 		        .addMember(UiHelper.createNameValueLayout(i_valueSetDefinitionTitle, i_valueSetDefinitionValue));
 
-		i_codeSystemVersionTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Code System Name:");
+		i_codeSystemVersionTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Code System Version:");
 		i_codeSystemVersionValue = UiHelper.createValueLabel("");
 		resolvedVsLayout.addMember(UiHelper.createNameValueLayout(i_codeSystemVersionTitle, i_codeSystemVersionValue));
 
-		i_codeSystemTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Code System:");
+		i_codeSystemTitle = UiHelper.createTitleLabel(RVS_TITLE_WIDTH, "Code System Name:");
 		i_codeSystemValue = UiHelper.createValueLabel("");
 		resolvedVsLayout.addMember(UiHelper.createNameValueLayout(i_codeSystemTitle, i_codeSystemValue));
 
@@ -244,7 +244,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 					        // if showAll=true, then we are in expert mode. Show
 					        // the links. Otherwise, just show the information
-							// without links.
+					        // without links.
 					        if (Cts2Viewer.s_showAll) {
 						        i_valueSetDefinitionValue.setContents(UiHelper.getLink(valueSetDefinitionHref,
 						                valueSetDefinition));
