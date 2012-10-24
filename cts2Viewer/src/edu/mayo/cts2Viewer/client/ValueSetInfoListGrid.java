@@ -4,6 +4,8 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSCallback;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.data.SortSpecifier;
+import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
@@ -58,6 +60,11 @@ public class ValueSetInfoListGrid extends ListGrid {
 		valueField.setWrap(false);
 
 		setFields(/* uriField, */nameField, valueField);
+
+		// set the initial sort
+		SortSpecifier[] sortspec = new SortSpecifier[1];
+		sortspec[0] = new SortSpecifier("name", SortDirection.ASCENDING);
+		setInitialSort(sortspec);
 
 		setAutoFetchData(false);
 		setCanEdit(false);
