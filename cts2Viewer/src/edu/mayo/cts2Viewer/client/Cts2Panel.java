@@ -333,7 +333,7 @@ public class Cts2Panel extends VLayout {
 	private StaticTextItem createDefaultServerTextItem() {
 		i_defaultServerTextItem = new StaticTextItem();
 		i_defaultServerTextItem.setTitle(SERVICE_TITLE);
-		i_defaultServerTextItem.setWidth(255);
+		i_defaultServerTextItem.setWidth(WIDGET_WIDTH);
 		i_defaultServerTextItem.setWrapTitle(false);
 
 		retrieveDefaultServer();
