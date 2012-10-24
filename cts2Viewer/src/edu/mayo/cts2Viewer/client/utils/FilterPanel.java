@@ -50,7 +50,6 @@ public class FilterPanel extends HLayout {
 			@Override
 			public void onClick(ClickEvent clickEvent) {
 				clearForm();
-				Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
 			}
 		});
 		clearFiltersButton.disable();
@@ -90,7 +89,8 @@ public class FilterPanel extends HLayout {
 		nqfNumberCombo.addChangedHandler(new ChangedHandler() {
 			@Override
 			public void onChanged(ChangedEvent changedEvent) {
-				filters.put(filterComponent, nqfNumberCombo.getValueAsString());
+				String value = nqfNumberCombo.getValueAsString();
+				filters.put(filterComponent, value);
 				enableClearButton();
 				Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
 			}
@@ -106,6 +106,8 @@ public class FilterPanel extends HLayout {
 			@Override
 			public void onSuccess(LinkedHashMap<String, String> result) {
 				nqfNumberCombo.setValueMap(result);
+				nqfNumberCombo.setValue("");
+				filters.put(filterComponent, "");
 			}
 		});
 
@@ -125,7 +127,8 @@ public class FilterPanel extends HLayout {
 		eMeasureCombo.addChangedHandler(new ChangedHandler() {
 			@Override
 			public void onChanged(ChangedEvent changedEvent) {
-				filters.put(filterComponent, eMeasureCombo.getValueAsString());
+				String value = eMeasureCombo.getValueAsString();
+				filters.put(filterComponent, value);
 				enableClearButton();
 				Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
 			}
@@ -141,16 +144,21 @@ public class FilterPanel extends HLayout {
 			@Override
 			public void onSuccess(LinkedHashMap<String, String> result) {
 				eMeasureCombo.setValueMap(result);
+				eMeasureCombo.setValue("");
+				filters.put(filterComponent, "");
 			}
 		});
 
 	}
 
 	public void clearForm() {
-		nqfNumberCombo.clearValue();
-		eMeasureCombo.clearValue();
-		filters.clear();
+		nqfNumberCombo.setValue("");
+		eMeasureCombo.setValue("");
+		for (String key : filters.keySet()) {
+			filters.put(key, "");
+		}
 		enableClearButton();
+		Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
 	}
 
 	private void enableClearButton() {

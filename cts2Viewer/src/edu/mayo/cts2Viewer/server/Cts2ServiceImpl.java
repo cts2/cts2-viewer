@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +23,7 @@ import javax.xml.xpath.XPathFactory;
 
 import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
+import edu.mayo.cts2Viewer.client.utils.FilterPanel;
 import org.w3c.dom.Document;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -49,6 +51,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	private static Logger logger = Logger.getLogger(Cts2ServiceImpl.class.getName());
 
 	private static final int RESULT_LIMIT = 100;
+	private static final String ANY_NQF_NUMBER_TEXT = "Any NQF Number";
+	private static final String ANY_EMEASURE_ID_TEXT = "Any eMeasure Id";
 	private ConvenienceMethods cm = null;
 
 	/**
@@ -62,39 +66,28 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		RESTContext context = cm.getCurrentContext();
 		context.resultLimit = RESULT_LIMIT;
 
-		/* clear the parameter list 
-		Set<String> params = new HashSet<String>(context.getUserParameterList());
-		HashMap<String, String> originalParams = new HashMap<String, String>(params.size());
-
-		for (String param : params) {
-			originalParams.put(param, context.getUserParameterValue(param));
-			context.removeUserParameter(param);
-		}
-
-		*/
-		
 		/* populate the parameter list with the new filters */
+		int numFilters = 0;
 		for (String filter : filters.keySet()) {
 			String value = filters.get(filter);
 			if (value != null && !value.trim().equals("")) {
-				context.setUserParameter(filter, filters.get(filter));
+				context.setUserParameter(filter, value);
+				numFilters++;
+			}
+			else {
+				context.removeUserParameter(filter);
 			}
 		}
 
 		try {
 
-			if (CTS2Utils.isNull(searchText) && filters.size() == 0) {
+			if (CTS2Utils.isNull(searchText) && numFilters == 0) {
 				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
 			} else {
 				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
-		} finally {
-			/* Restore parameter list */
-			//for (String param : originalParams.keySet()) {
-			//	context.setUserParameter(param, originalParams.get(param));
-			//}
 		}
 
 		return results;
@@ -332,7 +325,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	@Override
 	public LinkedHashMap<String, String> getNqfNumbers() throws IOException {
 		LinkedHashMap<String, String> nqfNumbers = new LinkedHashMap<String, String>();
-		nqfNumbers.put("", "Any NQF Number");
+		nqfNumbers.put("", ANY_NQF_NUMBER_TEXT);
 		nqfNumbers.putAll(loadMap(PropertiesHelper.getInstance().getNqfNumbersPath()));
 		return nqfNumbers;
 	}
@@ -340,14 +333,14 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	@Override
 	public LinkedHashMap<String, String> geteMeasureIds() throws IOException {
 		LinkedHashMap<String, String> eMeasureIds = new LinkedHashMap<String, String>();
-		eMeasureIds.put("", "Any eMeasure Id");
+		eMeasureIds.put("", ANY_EMEASURE_ID_TEXT);
 		eMeasureIds.putAll(loadMap(PropertiesHelper.getInstance().getEmeasureIdsPath()));
 		return eMeasureIds;
 	}
 
-	private LinkedHashMap<String, String> loadMap(String path) throws IOException {
+	private TreeMap<String, String> loadMap(String path) throws IOException {
 		BufferedReader reader = null;
-		LinkedHashMap<String, String> idMap = new LinkedHashMap<String, String>();
+		TreeMap<String, String> idMap = new TreeMap<String, String>();
 		try {
 			String line = "";
 			reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(path)));
