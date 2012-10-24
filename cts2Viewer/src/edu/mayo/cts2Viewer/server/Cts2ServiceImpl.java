@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,15 +19,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
-import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
-import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
-import edu.mayo.cts2Viewer.client.utils.FilterPanel;
 import org.w3c.dom.Document;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
-import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2RestRequestParameters;
+import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
@@ -59,7 +55,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	 * Get ValueSets that match the criteria
 	 */
 	@Override
-	public String getValueSets(String serviceName, String searchText, Map<String, String> filters) throws IllegalArgumentException {
+	public String getValueSets(String serviceName, String searchText, Map<String, String> filters)
+	        throws IllegalArgumentException {
 		String results = "";
 
 		initCM(serviceName);
@@ -73,8 +70,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			if (value != null && !value.trim().equals("")) {
 				context.setUserParameter(filter, value);
 				numFilters++;
-			}
-			else {
+			} else {
 				context.removeUserParameter(filter);
 			}
 		}
@@ -343,7 +339,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		TreeMap<String, String> idMap = new TreeMap<String, String>();
 		try {
 			String line = "";
-			reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(path)));
+			reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader()
+			        .getResourceAsStream(path)));
 			while ((line = reader.readLine()) != null) {
 				if (!line.trim().equals("")) {
 					idMap.put(line, line);
@@ -353,8 +350,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		} catch (IOException ioe) {
 
 		} finally {
-			if (reader != null)
+			if (reader != null) {
 				reader.close();
+			}
 		}
 		return idMap;
 	}
@@ -432,8 +430,11 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			cm.getCurrentContext().password = credentials.getPassword();
 
 			cm.getCurrentContext().resultLimit = 1;
-			cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
-			valid = new Boolean(true);
+
+			String result = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
+
+			// if the result is null, then the login failed.
+			valid = result == null ? new Boolean(false) : new Boolean(true);
 
 		} catch (Exception e) {
 			valid = new Boolean(false);
@@ -459,7 +460,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			// get all of the server properties needed by the client here.
 			initCM(serviceName);
 
-			serverProperties.setRequireCredentials(Boolean.valueOf(cm.getCurrentContext().getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS)));
+			serverProperties.setRequireCredentials(Boolean.valueOf(cm.getCurrentContext().getUserParameterValue(
+			        CTS2Config.REQUIRES_CREDENTIALS)));
 
 			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2Config.MUENABLED);
 			serverProperties.setShowFilters(Boolean.valueOf(muEnabledStr));
