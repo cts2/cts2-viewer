@@ -75,17 +75,20 @@ public class AboutWindow extends Window {
 		// data.append("<b>Built Using <a href=\"http://www.smartclient.com/\" \"target=\"_blank\">SmartGWT</a> </b></br>");
 		data.append("<b>Built Using SmartGWT</b></br>");
 
-		data.append("<b>Credits: </b></br>");
-		data.append("<DIV style=\"color:sienna;margin-left:20px;\">");
-		data.append("Scott Bauer </br>");
-		data.append("Christopher Chute, M.D., Dr. P.H.</br>");
-		data.append("Cory Endle </br>");
-		data.append("Kevin Peterson </br>");
-		data.append("Sarah Ryan </br>");
-		data.append("Deepak Sharma </br>");
-		data.append("Harold Solbrig </br>");
-		data.append("Craig Stancl </br>");
-		data.append("</DIV>");
+		data.append("</br><b>Questions or Comments?  Email us at <a id=\"htpLinks\" href=\"mailto:cts2@informatics.mayo.edu\">cts2@informatics.mayo.edu</a></b></br>");
+
+		/*
+		 * data.append("<b>Credits: </b></br>");
+		 * 
+		 * data.append("<DIV style=\"color:sienna;margin-left:20px;\">");
+		 * data.append("Scott Bauer </br>");
+		 * data.append("Christopher Chute, M.D., Dr. P.H.</br>");
+		 * data.append("Cory Endle </br>"); data.append("Kevin Peterson </br>");
+		 * data.append("Sarah Ryan </br>"); data.append("Deepak Sharma </br>");
+		 * data.append("Harold Solbrig </br>");
+		 * data.append("Craig Stancl </br>"); data.append("Dale Suesse </br>");
+		 * data.append("</DIV>");
+		 */
 
 		htmlpane.setContents(data.toString());
 		return htmlpane;
