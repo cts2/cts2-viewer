@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
@@ -132,10 +133,10 @@ public class CTS2DownloadServlet extends HttpServlet {
 			
 			try
 			{
+				initCM(request.getParameter("serviceName"));
 				response.setContentType(contentTypeForSingleFileDownload);
 				String fileText = createValueSetContent(extTypes[0], valueSets[0]);
 				
-				initCM(request.getParameter("serviceName"));
 				String singleFileName = valueSets[0] + exts[0];
 				
 				response.setHeader("Content-Length", String.valueOf(fileText.getBytes().length));
@@ -184,15 +185,37 @@ public class CTS2DownloadServlet extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private String createValueSetContent(String type, String valueSetName) {
+	private String createValueSetContent(String type, String valueSetName) 
+	{
 		String msg = null;
-		try {
-			return cm.getValueSetMembers(valueSetName, getFormatFromString(type));
-		} catch (Exception e) {
+		
+		String existingValue = cm.getCurrentContext().getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
+		
+		try 
+		{
+			ServiceResultFormat requestedFormat = getFormatFromString(type);
+			
+			if ((requestedFormat == ServiceResultFormat.CSV)||(requestedFormat == ServiceResultFormat.SVS))
+			{
+				// These transforms use xslt server for transforms.
+				// XSLT server does not need authorization details. so set the flag false.
+				// if you send user name/password when it does not need, it fails.
+				cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
+			}
+
+			String valueSetContent = cm.getValueSetMembers(valueSetName, requestedFormat);
+			cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
+			
+			return ((CTS2Utils.isNull(valueSetContent))?"":valueSetContent);
+			
+		} 
+		catch (Exception e) 
+		{
 			msg = e.getMessage();
-			logger.log(Level.SEVERE, "createValueSetContent failed: " + e);
+			logger.log(Level.SEVERE, "createValueSetContent failed: " + msg);
 		}
 
+		cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
 		return "Failed to get content for value set '" + valueSetName + "'\n" + msg;
 	}
 
