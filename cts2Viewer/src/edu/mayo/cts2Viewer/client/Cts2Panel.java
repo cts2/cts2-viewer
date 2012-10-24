@@ -544,8 +544,15 @@ public class Cts2Panel extends VLayout {
 						i_rowsRetrievedLabel.setContents(ROWS_RETRIEVED_TITLE + " <b>" + numEntries + "</b>");
 					}
 
+					boolean showCount = false;
+					for (String val : i_filterPanel.getFilters().values()) {
+						if (!val.trim().equals("")) {
+							showCount = true;
+							break;
+						}
+					}
 					String searchText = i_searchItem.getValueAsString();
-					if (searchText != null && searchText.length() > 0) {
+					if (showCount || (searchText != null && searchText.length() > 0)) {
 
 					} else {
 						i_rowsRetrievedLabel.setContents("");
