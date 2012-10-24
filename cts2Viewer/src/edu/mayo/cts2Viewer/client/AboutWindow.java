@@ -72,7 +72,8 @@ public class AboutWindow extends Window {
 		data.append("<b>CTS2 Value Sets Viewer</b> </br>");
 		data.append("<hr>");
 		data.append("<b>Version: 1.0 </b></br>");
-		data.append("<b>Built Using <a href=\"http://www.smartclient.com/\" \"target=\"_blank\">SmartGWT</a> </b></br>");
+		// data.append("<b>Built Using <a href=\"http://www.smartclient.com/\" \"target=\"_blank\">SmartGWT</a> </b></br>");
+		data.append("<b>Built Using SmartGWT</b></br>");
 
 		data.append("<b>Credits: </b></br>");
 		data.append("<DIV style=\"color:sienna;margin-left:20px;\">");
