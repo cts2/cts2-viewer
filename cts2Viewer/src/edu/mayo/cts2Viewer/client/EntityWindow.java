@@ -28,11 +28,12 @@ public class EntityWindow extends Window {
 
 	private static final String TITLE = "Entity Details";
 	private static final String BYPASS_OPTION = "?bypass=1";
-	private static final String UNAVAILABLE_HTML = "<span style=\"color:#0A59A4;font-size:1.3em;font-weight:bold\">Entity details are unavailable.</span>";
+	private static final String UNAVAILABLE_HTML = "<!doctype html><html><head></head><body><span style=\"color:#0A59A4;font-size:1.3em;font-weight:bold\">Entity details are unavailable.</span></body></html>";
 	private static EntityWindow i_entityWindow;
 
 	private final Label i_titleLabel;
-	private final HTMLPane i_htmlPane;
+	private HTMLPane i_htmlPane;
+	private HLayout i_buttonPane;
 
 	public static EntityWindow getInstance() {
 		if (i_entityWindow == null) {
@@ -58,10 +59,11 @@ public class EntityWindow extends Window {
 		addItem(createHeader());
 
 		i_htmlPane = createHTMLPane();
-		i_htmlPane.setHeight("*");
+		i_htmlPane.setContentsType(ContentsType.PAGE);
 		addItem(i_htmlPane);
 
-		addItem(addCloseButton());
+		i_buttonPane = createClosePane();
+		addItem(i_buttonPane);
 		addCloseClickHandler(new CloseClickHandler() {
 
 			@Override
@@ -73,11 +75,10 @@ public class EntityWindow extends Window {
 
 	private HTMLPane createHTMLPane() {
 		HTMLPane pane = new HTMLPane();
-		pane.setWidth100();
-		pane.setHeight100();
+		pane.setWidth("100%");
+		pane.setHeight("100%");
 		pane.setMargin(5);
 		pane.setScrollbarSize(0);
-		pane.setContentsType(ContentsType.PAGE);
 
 		return pane;
 	}
@@ -93,13 +94,22 @@ public class EntityWindow extends Window {
 	}
 
 	private void getEntityInformation(String serviceUrl, final String entityUrl) {
+		removeItem(i_htmlPane);
+		removeItem(i_buttonPane);
+		i_htmlPane = createHTMLPane();
+		i_buttonPane = createClosePane();
+
 		if (serviceUrl != null && !serviceUrl.trim().equals("") && entityUrl != null && !entityUrl.trim().equals("")) {
 			String completeUrl = serviceUrl + entityUrl + BYPASS_OPTION;
+			i_htmlPane.setContentsType(ContentsType.PAGE);
 			i_htmlPane.setContentsURL(completeUrl);
 		}
 		else {
+			i_htmlPane.setContentsType(ContentsType.PAGE);
 			i_htmlPane.setContents(UNAVAILABLE_HTML);
 		}
+		addItem(i_htmlPane);
+		addItem(i_buttonPane);
 	}
 
 	private HLayout createHeader() {
@@ -192,7 +202,7 @@ public class EntityWindow extends Window {
 		return windowTitleLabel;
 	}
 
-	private HLayout addCloseButton() {
+	private HLayout createClosePane() {
 		HLayout buttonLayout = new HLayout();
 		buttonLayout.setWidth100();
 		buttonLayout.setHeight(30);
