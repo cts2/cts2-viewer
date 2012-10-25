@@ -494,6 +494,7 @@ public class Cts2Panel extends VLayout {
 				loggedIn = false;
 				Credentials credentials = logOutRequestEvent.getCredential();
 				logoutFromServer(credentials);
+				i_loginInfoPanel.clearUser();
 
 				// i_loginInfoPanel.clearUser();
 				Authentication.getInstance().removeCredential(credentials.getServer());
@@ -749,11 +750,9 @@ public class Cts2Panel extends VLayout {
 					i_defaultServerTextItem.setValue("<b>" + title + "</b>");
 
 					if (!Cts2Viewer.s_showAll) {
-
 						// fire the server retrieved event
 						Cts2Viewer.EVENT_BUS.fireEvent(new DefaultServerRetrievedEvent(i_defaultServer));
 
-						i_loginInfoPanel.setDefaultServer(i_defaultServer);
 						i_loginInfoPanel.addWidgets();
 
 						// get the server properties of the default server.
