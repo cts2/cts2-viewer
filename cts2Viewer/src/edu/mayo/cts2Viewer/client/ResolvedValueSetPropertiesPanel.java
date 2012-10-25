@@ -228,7 +228,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			String description = record.getAttribute("designation");
 
 			EntityWindow entityWindow = EntityWindow.getInstance();
-			entityWindow.setWindowData(i_serverCombo.getValueAsString(), serviceUrl, href, name, description);
+			entityWindow.setWindowData(serviceUrl, href, name, description);
 			entityWindow.show();
 		}
 	}

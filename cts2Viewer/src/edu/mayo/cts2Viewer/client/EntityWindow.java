@@ -27,18 +27,12 @@ import edu.mayo.cts2Viewer.client.events.EntityChangedEvent;
 public class EntityWindow extends Window {
 
 	private static final String TITLE = "Entity Details";
-
-	//private static String BASE_URL = "http://informatics.mayo.edu/cts2/services/xsltserver/transform?encoding=text/html&xsltname=namedEntity.xsl&xmlurl=";
 	private static final String BYPASS_OPTION = "?bypass=1";
-
+	private static final String UNAVAILABLE_HTML = "<span style=\"color:#0A59A4;font-size:1.3em;font-weight:bold\">Entity details are unavailable.</span>";
 	private static EntityWindow i_entityWindow;
-	private Label i_titleLabel;
-	private HTMLPane i_htmlPane;
 
-	private static String i_href;
-	private static String i_entityName;
-	private static String i_description;
-	private static String i_server;
+	private final Label i_titleLabel;
+	private final HTMLPane i_htmlPane;
 
 	public static EntityWindow getInstance() {
 		if (i_entityWindow == null) {
@@ -59,18 +53,13 @@ public class EntityWindow extends Window {
 		setShowMinimizeButton(false);
 		setIsModal(false);
 		centerInPage();
-	}
 
-	private void addWindowContent(HTMLPane htmlPane)
-	{
-		removeMembers(getMembers());
-		
 		i_titleLabel = createWindowTitle("");
 		addItem(createHeader());
 
-//		i_htmlPane = createHTMLPane(ContentsType.PAGE);
-//		i_htmlPane.setHeight("100%");
-		addItem(htmlPane);
+		i_htmlPane = createHTMLPane();
+		i_htmlPane.setHeight("*");
+		addItem(i_htmlPane);
 
 		addItem(addCloseButton());
 		addCloseClickHandler(new CloseClickHandler() {
@@ -81,75 +70,36 @@ public class EntityWindow extends Window {
 			}
 		});
 	}
-	
-	private HTMLPane createHTMLPane(ContentsType type) {
+
+	private HTMLPane createHTMLPane() {
 		HTMLPane pane = new HTMLPane();
 		pane.setWidth100();
 		pane.setHeight100();
 		pane.setMargin(5);
 		pane.setScrollbarSize(0);
-		pane.setContentsType(type);
+		pane.setContentsType(ContentsType.PAGE);
 
 		return pane;
 	}
 
-	public void setWindowData(String server, String serviceUrl, String href, String name, String desc) {
-		i_href = href;
-		i_entityName = name;
-		i_description = desc;
-		i_server = server;
-
+	public void setWindowData(String serviceUrl, String href, String name, String description) {
 		setTitle(TITLE);
-
-		String windowTitle = "Details for " + i_entityName + ": " + i_description;
+		String windowTitle = "Details for " + name + ": " + description;
 		String titleFormatted = "<b style=\"color: #000000;font-family: Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;text-decoration:none\">"
-		        + windowTitle + "</b>";
+		  + windowTitle + "</b>";
 
-		
-
-		getEntityInformation(i_server, serviceUrl, i_href, name);
 		i_titleLabel.setContents(titleFormatted);
+		getEntityInformation(serviceUrl, href);
 	}
 
-	private void getEntityInformation(String serviceName, String serviceURL, final String entityUrl, String id) 
-	{
-		if ((serviceURL == null)||("".equals(serviceURL.trim())))
-			serviceURL = "";
-		
-		if ((entityUrl != null)&&(!("".equals(entityUrl.trim()))))
-		{
-			String completeUrl = serviceURL + entityUrl + BYPASS_OPTION;
-			//i_htmlPane.clear();
-			
-			try
-			{
-				if (contains(i_htmlPane))
-					removeMember(i_htmlPane);
-			}
-			catch(Exception e) {}
-			
-			i_htmlPane = createHTMLPane(ContentsType.PAGE);
-			addMember(i_htmlPane);
+	private void getEntityInformation(String serviceUrl, final String entityUrl) {
+		if (serviceUrl != null && !serviceUrl.trim().equals("") && entityUrl != null && !entityUrl.trim().equals("")) {
+			String completeUrl = serviceUrl + entityUrl + BYPASS_OPTION;
 			i_htmlPane.setContentsURL(completeUrl);
 		}
-		else
-		{
-			String msg = "<b>Entity Details are unavailable.</b>";
-			//i_htmlPane.clear();
-			
-			try
-			{
-				if (contains(i_htmlPane))
-					removeMember(i_htmlPane);
-			}
-			catch(Exception e) {}
-
-			i_htmlPane = createHTMLPane(ContentsType.FRAGMENT);
-			addMember(i_htmlPane);
-			i_htmlPane.setContents(msg);
+		else {
+			i_htmlPane.setContents(UNAVAILABLE_HTML);
 		}
-		//i_htmlPane.redraw();
-		addWindowContent(i_htmlPane);
 	}
 
 	private HLayout createHeader() {
