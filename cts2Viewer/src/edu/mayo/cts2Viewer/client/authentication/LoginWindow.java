@@ -59,7 +59,7 @@ public class LoginWindow extends Window {
 		super();
 
 		setWidth(750);
-		setHeight(500);
+		setHeight(530);
 
 		// set a thinner window edge.
 		setEdgeSize(4);
@@ -104,6 +104,18 @@ public class LoginWindow extends Window {
 		i_mainLayout = new VLayout();
 		i_mainLayout.setAlign(Alignment.CENTER);
 
+		
+		// Add a message to the login IF we are using the default MayoCTS2
+		// server.
+		String registerMsg = "<center><b>Sign in using UMLS UTS Username/Password. If you do not have one, you may <a href=\"https://uts.nlm.nih.gov/license.html\" target=\"_blank\">register here</b></a>.</center>";
+
+		if (i_server.equals("MayoCTS2")) {
+			Label registerLabel = new Label(registerMsg);
+			registerLabel.setWidth100();
+			registerLabel.setHeight(25);
+			i_mainLayout.addMember(registerLabel);
+		}
+				
 		HLayout formLayout = new HLayout(30);
 		formLayout.setWidth100();
 		formLayout.setHeight(HEIGHT);
