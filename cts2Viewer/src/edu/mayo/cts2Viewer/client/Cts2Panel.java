@@ -636,6 +636,7 @@ public class Cts2Panel extends VLayout {
 	}
 
 	private void updateLinkedPanels(Record record) {
+		clearPanels();
 		if (record != null) {
 			String link = record.getAttribute("href");
 			String valueSetName = record.getAttribute("valueSetName");
