@@ -34,6 +34,7 @@ public class EntityWindow extends Window {
 	private final Label i_titleLabel;
 	private HTMLPane i_htmlPane;
 	private HLayout i_buttonPane;
+	private HLayout i_headerPane;
 
 	public static EntityWindow getInstance() {
 		if (i_entityWindow == null) {
@@ -56,7 +57,8 @@ public class EntityWindow extends Window {
 		centerInPage();
 
 		i_titleLabel = createWindowTitle("");
-		addItem(createHeader());
+		i_headerPane = createHeader();
+		addItem(i_headerPane);
 
 		i_htmlPane = createHTMLPane();
 		i_htmlPane.setContentsType(ContentsType.PAGE);
@@ -222,4 +224,12 @@ public class EntityWindow extends Window {
 		return buttonLayout;
 	}
 
+	public void enableNavigationArrows(boolean enable) {
+		if (enable) {
+			i_headerPane.show();
+		}
+		else {
+			i_headerPane.hide();
+		}
+	}
 }
