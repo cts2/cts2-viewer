@@ -27,6 +27,8 @@ public class FilterPanel extends HLayout {
 	private static final int HEIGHT_BUTTON = 20;
 	private static final int WIDTH_BUTTON = 50;
 	private static final int COMBO_WIDTH = 125;
+	private static final String NQF_FILTER_COMPONENT = "nqfnumber";
+	private static final String EMEASURE_FILTER_COMPONENT = "emeasureid";
 
 	private ComboBoxItem nqfNumberCombo;
 	private ComboBoxItem eMeasureCombo;
@@ -77,7 +79,7 @@ public class FilterPanel extends HLayout {
 	};
 
 	private void createNqfNumberCombo() {
-		final String filterComponent = "nqfnumber";
+		final String filterComponent = NQF_FILTER_COMPONENT;
 		String title = "NQF Number";
 		nqfNumberCombo = new ComboBoxItem();
 		nqfNumberCombo.setTitle("<b>" + title + "</b>");
@@ -115,7 +117,7 @@ public class FilterPanel extends HLayout {
 	}
 
 	private void createEMeasureCombo() {
-		final String filterComponent = "emeasureid";
+		final String filterComponent = EMEASURE_FILTER_COMPONENT;
 		String title = "Measure ID";
 		eMeasureCombo = new ComboBoxItem();
 		eMeasureCombo.setTitle("<b>" + title + "</b>");
@@ -129,6 +131,7 @@ public class FilterPanel extends HLayout {
 			@Override
 			public void onChanged(ChangedEvent changedEvent) {
 				String value = eMeasureCombo.getValueAsString();
+				value = value.equals("-1") ? "" : value;
 				filters.put(filterComponent, value);
 				enableClearButton();
 				Cts2Viewer.EVENT_BUS.fireEvent(new FilterUpdatedEvent());
