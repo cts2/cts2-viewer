@@ -1,10 +1,6 @@
 package edu.mayo.cts2Viewer.server.properties;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -31,12 +27,12 @@ public class PropertiesHelper {
 
 	public String getPropertiesDirectory() {
 
-		logger.log(Level.INFO, "Getting path to properties file from the classpath...");
+		//logger.log(Level.INFO, "Getting path to properties file from the classpath...");
 
 		String path = this.getClass().getPackage().getName();
 		path = path.replaceAll("[.]", File.separator);
 		path = path + File.separator + SERVER_PROPERTIES_FILE;
-		logger.log(Level.INFO, "Path = " + path);
+		//logger.log(Level.INFO, "Path = " + path);
 
 		return path;
 	}
@@ -45,7 +41,7 @@ public class PropertiesHelper {
 		String path = this.getClass().getPackage().getName();
 		path = path.replaceAll("[.]", File.separator);
 		path = path + File.separator + NQF_NUMBERS_FILE;
-		logger.log(Level.INFO, "Path = " + path);
+		//logger.log(Level.INFO, "Path = " + path);
 
 		return path;
 	}
@@ -54,29 +50,8 @@ public class PropertiesHelper {
 		String path = this.getClass().getPackage().getName();
 		path = path.replaceAll("[.]", File.separator);
 		path = path + File.separator + EMEASURE_IDS_FILE;
-		logger.log(Level.INFO, "Path = " + path);
+		//logger.log(Level.INFO, "Path = " + path);
 
 		return path;
-	}
-
-	private void getPropertiesFileTest(String path) {
-		Properties properties = new Properties();
-		logger.log(Level.INFO, "TESTING loading Properties...");
-		try {
-			// the properties file is in the same directory
-			InputStream inputStream = this.getClass().getResourceAsStream(SERVER_PROPERTIES_FILE);
-
-			properties.load(inputStream);
-			logger.log(Level.INFO, "Properties loaded");
-
-			String prop = properties.getProperty("profiles");
-			logger.log(Level.INFO, "Profiles = " + prop);
-
-			logger.log(Level.INFO, "TESTING loading Properties - SUCCESS");
-
-		} catch (IOException e) {
-			logger.log(Level.INFO, "TESTING loading Properties - FAILURE");
-			logger.log(Level.INFO, "IOException = " + e.toString());
-		}
 	}
 }

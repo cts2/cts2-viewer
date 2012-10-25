@@ -279,9 +279,10 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
 			}
 
-			if (CTS2Utils.isNull(serviceName)) {
-				logger.log(Level.WARNING,
-				        "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
+			if (CTS2Utils.isNull(serviceName)) 
+			{
+				//logger.log(Level.WARNING,
+				    //    "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
 				return;
 			}
 
