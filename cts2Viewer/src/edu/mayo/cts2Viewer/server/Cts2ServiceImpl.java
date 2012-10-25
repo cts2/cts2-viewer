@@ -124,8 +124,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		ResolvedValueSetInfo rvsi = new ResolvedValueSetInfo();
 
 		try {
-			initCM(serviceName);
-			results = cm.getValueSetMembers(valueSetName, ServiceResultFormat.XML);
+				initCM(serviceName);
+				results = cm.getValueSetMembers(valueSetName, ServiceResultFormat.XML);
 
 			if (results != null && results.length() > 0) {
 				rvsi = getResolvedValueSetGeneralInfo(results);
@@ -274,13 +274,15 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 	private void initCM(String serviceName) {
 		try {
-			if (this.cm == null) {
+			if (this.cm == null) 
+			{
 				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
 			}
 
-			if (CTS2Utils.isNull(serviceName)) {
-				logger.log(Level.WARNING,
-				        "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
+			if (CTS2Utils.isNull(serviceName)) 
+			{
+				//logger.log(Level.WARNING,
+				    //    "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
 				return;
 			}
 
@@ -440,6 +442,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 		// just do a simple search that will return quick.
 		String searchText = "abcd";
+
 		try {
 			initCM(credentials.getServer());
 
@@ -453,9 +456,10 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			// if the result is null, then the login failed.
 			valid = result == null ? new Boolean(false) : new Boolean(true);
 
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			valid = new Boolean(false);
-
+			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 
 		// log an invalid login attempt.
