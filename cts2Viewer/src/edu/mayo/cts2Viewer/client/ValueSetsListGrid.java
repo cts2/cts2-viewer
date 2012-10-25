@@ -28,6 +28,7 @@ import edu.mayo.cts2Viewer.client.events.ValueSetsReceivedEvent;
 public class ValueSetsListGrid extends ListGrid {
 
 	private static final String EMPTY_MESSAGE = "No value sets to display.";
+	private static final String ERROR_MESSAGE = "Value set service unavailable.";
 
 	private final ValueSetsXmlDS i_valueSetsXmlDS;
 	private String i_searchString;
@@ -203,12 +204,20 @@ public class ValueSetsListGrid extends ListGrid {
 
 				@Override
 				public void execute(DSResponse response, Object rawData, DSRequest request) {
-					// set to empty
+					
+					if ((response != null)&&(response.getAttribute("reason") != null))
+					{
+						setEmptyMessage("<b><font color=\"red\">" + ERROR_MESSAGE + "</font></b>");
+					}
+					else
+					{
+						setEmptyMessage(EMPTY_MESSAGE);						
+					}
+					
 					setData(new ListGridRecord[0]);
-
 					fetchData();
-					redraw();
 
+					redraw();
 					// let others know that the data has been retrieved.
 					Cts2Viewer.EVENT_BUS.fireEvent(new ValueSetsReceivedEvent());
 				}

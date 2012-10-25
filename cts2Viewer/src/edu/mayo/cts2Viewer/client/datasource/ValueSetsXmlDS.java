@@ -10,6 +10,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSCallback;
+import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.XMLTools;
@@ -140,6 +141,11 @@ public class ValueSetsXmlDS extends DataSource {
 			@Override
 			public void onFailure(Throwable caught) {
 				logger.log(Level.SEVERE, "Error searching Value Sets: " + caught);
+				setTestData((new Record[0]));
+				DSResponse myresp = new DSResponse();
+				myresp.setAttribute("reason", caught.getMessage());
+				// use the callback to let the widget know we got the error message.
+				callback.execute(myresp, null, null);
 			}
 		});
 
