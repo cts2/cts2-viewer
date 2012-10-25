@@ -29,8 +29,6 @@ import com.smartgwt.client.widgets.grid.events.CellSavedEvent;
 import com.smartgwt.client.widgets.grid.events.CellSavedHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionChangedHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -160,15 +158,7 @@ public class Cts2Panel extends VLayout {
 		componentsLayout.setShowResizeBar(true);
 
 		i_valueSetsListGrid = new ValueSetsListGrid();
-
-		i_valueSetsListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
-			@Override
-			public void onSelectionChanged(SelectionEvent selectionEvent) {
-				Record record = selectionEvent.getRecord();
-				updateLinkedPanels(record);
-			}
-		});
-
+		
 		componentsLayout.addMember(createSearchWidgetLayout());
 
 		i_downloadPanel = new DownloadPanel(i_serverCombo, i_valueSetsListGrid);
