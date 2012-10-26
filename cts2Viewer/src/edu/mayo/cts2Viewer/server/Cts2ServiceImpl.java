@@ -26,6 +26,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
 import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
+import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2RestRequestParameters;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
@@ -393,23 +394,29 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	}
 
 	@Override
-	public String getEntity(String serviceName, String url) {
-		try {
+	public String getEntity(String serviceName, String url) 
+	{
+		String existingValue = cm.getCurrentContext().getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
+		try 
+		{
 			if (CTS2Utils.isNull(url)) {
 				return "request url is null!!";
 			}
 
 			initCM(serviceName);
 
-			new URI(url).toString();
-			return cm.getVocabularyEntityByURI(url, ServiceResultFormat.XML);
-
-		} catch (SearchException e) {
+			cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
+			String result =  cm.getVocabularyEntityByURI(url, ServiceResultFormat.XML);
+			return result;
+		} catch (SearchException e) 
+		{
 			e.printStackTrace();
 			return e.getMessage();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return e.getMessage();
+		}
+		
+		finally
+		{
+			cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
 		}
 	}
 
