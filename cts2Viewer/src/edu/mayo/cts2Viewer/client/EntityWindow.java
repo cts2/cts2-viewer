@@ -1,5 +1,7 @@
 package edu.mayo.cts2Viewer.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ContentsType;
 import com.smartgwt.client.types.Cursor;
@@ -104,14 +106,28 @@ public class EntityWindow extends Window {
 		if (serviceUrl != null && !serviceUrl.trim().equals("") && entityUrl != null && !entityUrl.trim().equals("")) {
 			String completeUrl = serviceUrl + entityUrl + BYPASS_OPTION;
 			i_htmlPane.setContentsType(ContentsType.PAGE);
-			i_htmlPane.setContentsURL(completeUrl);
-		}
-		else {
-			i_htmlPane.setContentsType(ContentsType.PAGE);
-			i_htmlPane.setContents(UNAVAILABLE_HTML);
-		}
-		addItem(i_htmlPane);
-		addItem(i_buttonPane);
+			Cts2ServiceAsync service = GWT.create(Cts2Service.class);
+			service.getEntity(null, completeUrl, new AsyncCallback<String>() 
+			{
+					@Override
+					public void onFailure(Throwable caught) 
+					{
+						i_htmlPane.setContents(UNAVAILABLE_HTML);
+					}
+
+					@Override
+					public void onSuccess(String result) 
+					{
+						if (result == null)
+							i_htmlPane.setContents(UNAVAILABLE_HTML);
+						else
+							i_htmlPane.setContents(result);
+					}
+				});
+			}
+		
+			addItem(i_htmlPane);
+			addItem(i_buttonPane);
 	}
 
 	private HLayout createHeader() {
