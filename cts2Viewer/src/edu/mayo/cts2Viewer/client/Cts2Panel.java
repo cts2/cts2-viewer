@@ -267,7 +267,7 @@ public class Cts2Panel extends VLayout {
 		}
 		else {
 			height = 50;
-			margin = 3;
+			margin = 5;
 			vAlignment = VerticalAlignment.BOTTOM;
 		}
 				
