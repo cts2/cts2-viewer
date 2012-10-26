@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.data.Record;
@@ -254,12 +255,28 @@ public class Cts2Panel extends VLayout {
 		searchForm.setHeight(55);
 		searchLayout.addMember(searchForm);
 		
-		int height = Cts2Viewer.s_showAll ? 62 : 55;
+		int height;
+		int margin;
+		VerticalAlignment vAlignment;
+		
+		// settings different based on if showAll option is present.
+		if (Cts2Viewer.s_showAll) {
+			height = 62;
+			margin = 7;
+			vAlignment = VerticalAlignment.BOTTOM;
+		}
+		else {
+			height = 50;
+			margin = 3;
+			vAlignment = VerticalAlignment.BOTTOM;
+		}
+				
 		VLayout buttonLayout = new VLayout();
 		buttonLayout.setHeight(height);
-		buttonLayout.setMargin(7);
-		buttonLayout.setAlign(VerticalAlignment.BOTTOM);
+		buttonLayout.setMargin(margin);
+		buttonLayout.setAlign(vAlignment);
 		buttonLayout.setWidth(60);
+		buttonLayout.setBackgroundColor("orange");
 
 		i_loginInfoPanel = new LoginInfoPanel();
 		buttonLayout.addMember(i_loginInfoPanel);
