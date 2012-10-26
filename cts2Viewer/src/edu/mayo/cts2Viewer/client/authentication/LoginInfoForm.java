@@ -50,6 +50,11 @@ public class LoginInfoForm extends VLayout {
 		createLoginHandler();
 		createLogoutHandler();
 		createDefaultServerRetrievedEventHandler();
+		
+		// Don't show the login option.  It will pop up automatically based on the selected service.
+		if (Cts2Viewer.s_showAll) {
+			hide();
+		}
 	}
 
 	private void createLoginForm(String user) {
@@ -140,6 +145,11 @@ public class LoginInfoForm extends VLayout {
 			@Override
 			public void onLogOutRequest(LogOutRequestEvent logOutRequestEvent) {
 				clearForm();
+				
+				// Hide the form.  The logon will pop up automatically based on the selected service.
+				if (Cts2Viewer.s_showAll) {
+					hide();
+				}
 			}
 		});
 	}
@@ -150,6 +160,9 @@ public class LoginInfoForm extends VLayout {
 			public void onLoginSuccessful(LoginSuccessfulEvent loginSuccessfulEvent) {
 				i_credentials = loginSuccessfulEvent.getCredentials();
 				setFormForLoggedInUser();
+				
+				// Show the form.
+				show();
 			}
 		});
 	}

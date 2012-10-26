@@ -3,7 +3,8 @@ package edu.mayo.cts2Viewer.client;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 
 public class SearchTextItem extends TextItem {
-
+	
+	private static final int WIDGET_WIDTH = 150;
 	private String i_previousText = "";
 
 	public SearchTextItem() {
@@ -15,7 +16,7 @@ public class SearchTextItem extends TextItem {
 	private void init() {
 		setHint("Enter Search Text");
 		setShowHintInField(true);
-		setWidth(200);
+		setWidth(WIDGET_WIDTH);
 	}
 
 	/**
