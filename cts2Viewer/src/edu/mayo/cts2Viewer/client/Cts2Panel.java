@@ -276,7 +276,6 @@ public class Cts2Panel extends VLayout {
 		buttonLayout.setMargin(margin);
 		buttonLayout.setAlign(vAlignment);
 		buttonLayout.setWidth(60);
-		buttonLayout.setBackgroundColor("orange");
 
 		i_loginInfoPanel = new LoginInfoPanel();
 		buttonLayout.addMember(i_loginInfoPanel);
