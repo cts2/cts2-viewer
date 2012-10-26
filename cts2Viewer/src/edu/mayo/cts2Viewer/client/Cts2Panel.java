@@ -253,7 +253,7 @@ public class Cts2Panel extends VLayout {
 
 		searchForm.setHeight(55);
 		searchLayout.addMember(searchForm);
-
+		
 		int height = Cts2Viewer.s_showAll ? 62 : 55;
 		VLayout buttonLayout = new VLayout();
 		buttonLayout.setHeight(height);
