@@ -84,6 +84,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
+			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		return results;
