@@ -29,8 +29,6 @@ import com.smartgwt.client.widgets.grid.events.CellSavedEvent;
 import com.smartgwt.client.widgets.grid.events.CellSavedHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionUpdatedEvent;
-import com.smartgwt.client.widgets.grid.events.SelectionUpdatedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -618,16 +616,15 @@ public class Cts2Panel extends VLayout {
 				}
 			}
 		});
-
 		
 //		i_valueSetsListGrid.addSelectionUpdatedHandler(new SelectionUpdatedHandler() {
 //			
 //			@Override
 //			public void onSelectionUpdated(SelectionUpdatedEvent event) {
+//				System.out.println("onSelectionUpdated");
 //				Record record = i_valueSetsListGrid.getSelectedRecord();
-//
+//				
 //				if (record != null) {
-//
 //					
 //					// if the user clicked on the download field then don't
 //					// retrieve data.
