@@ -10,7 +10,6 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
-import edu.mayo.cts2Viewer.client.events.LoginRequestEvent;
 import edu.mayo.cts2Viewer.client.events.PanelChangeEvent;
 
 public class Cts2ToolStrip extends ToolStrip {
