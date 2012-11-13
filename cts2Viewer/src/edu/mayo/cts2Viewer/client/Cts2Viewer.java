@@ -11,8 +11,6 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.ClosingEvent;
-import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -34,7 +32,6 @@ import edu.mayo.cts2Viewer.client.events.PanelChangeEventHandler;
 public class Cts2Viewer implements EntryPoint {
 
 	private static final int NORTH_HEIGHT = 85;
-
 	private static Logger logger = Logger.getLogger(Cts2Viewer.class.getName());
 	private static final String SHOW_ALL = "showAll";
 
@@ -43,6 +40,10 @@ public class Cts2Viewer implements EntryPoint {
 
 	public static boolean s_showAll = false;
 
+	// keep track if this is the first time the cts2 panel is being 
+	// displayed.  This will help determine if the login should pop up.
+	private boolean i_firstTimeToDisplay = true;
+	
 	private VLayout i_overallLayout;
 	private HLayout i_northLayout;
 
@@ -79,7 +80,7 @@ public class Cts2Viewer implements EntryPoint {
 
 		i_contextAreaPanel = new ContextAreaPanel();
 		i_cts2Panel = new Cts2Panel();
-		
+
 		i_welcomePanel = new WelcomePanel();
 
 		// initialize the main layout container
@@ -130,11 +131,6 @@ public class Cts2Viewer implements EntryPoint {
 		} else {
 			s_showAll = false;
 		}
-
-	}
-
-	private void showMainPage() {
-		i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
 	}
 
 	private void showLogin(String server) {
@@ -150,6 +146,9 @@ public class Cts2Viewer implements EntryPoint {
 
 			@Override
 			public void onLoginRequest(LoginRequestEvent loginRequestEvent) {
+				// Make sure the cts2 viewer panel is set
+				i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
+
 				String server = loginRequestEvent.getServer();
 				showLogin(server);
 			}
@@ -164,7 +163,11 @@ public class Cts2Viewer implements EntryPoint {
 
 			@Override
 			public void onCancelRequest(LoginCancelledEvent loginCancelledEvent) {
-				showMainPage();
+
+				// Don't switch the page. We now have the main page and the view
+				// page.
+				// they can stay on the current page they are on if they cancel
+				// showMainPage();
 			}
 		});
 	}
@@ -187,16 +190,27 @@ public class Cts2Viewer implements EntryPoint {
 	 */
 	private void createPanelChangeEvent() {
 		EVENT_BUS.addHandler(PanelChangeEvent.TYPE, new PanelChangeEventHandler() {
-			
+
 			@Override
-			public void onPanelChanged(PanelChangeEvent event) 
-			{
-				switch(event.getChangeType())
+			public void onPanelChanged(PanelChangeEvent event) {
+				switch (event.getChangeType()) {
+				case VALUESET:
 				{
-					case VALUESET: i_contextAreaPanel.setCurrentContextArea(i_cts2Panel); break;
-					case WELCOME:i_contextAreaPanel.setCurrentContextArea(i_welcomePanel);
+					i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
+					
+					// automatically pop up the login window if there is only
+					// one server (showAll == false) and this is the first time on this page.
+					if(!s_showAll && i_firstTimeToDisplay) {
+						i_firstTimeToDisplay = false;
+						Cts2Viewer.EVENT_BUS.fireEvent(new LoginRequestEvent(i_cts2Panel.getDefaultServer()));
+					}
+					
+					break;
 				}
-				
+				case WELCOME:
+					i_contextAreaPanel.setCurrentContextArea(i_welcomePanel);
+				}
+
 			}
 		});
 	}

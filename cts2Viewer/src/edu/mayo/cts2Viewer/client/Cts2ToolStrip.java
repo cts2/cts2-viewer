@@ -35,7 +35,7 @@ public class Cts2ToolStrip extends ToolStrip {
 		setHeight(HEIGHT);
 
 		i_welcomesButton = new ToolStripButton();
-		i_welcomesButton.setTitle("Welcome");
+		i_welcomesButton.setTitle("<b>Welcome</b>");
 
 		i_welcomesButton.addClickHandler(new ClickHandler() {
 
@@ -50,7 +50,7 @@ public class Cts2ToolStrip extends ToolStrip {
 		addSeparator();
 
 		i_valueSetsButton = new ToolStripButton();
-		i_valueSetsButton.setTitle("Value Sets");
+		i_valueSetsButton.setTitle("<b>Value Sets</b>");
 
 		i_valueSetsButton.addClickHandler(new ClickHandler() {
 
@@ -96,7 +96,7 @@ public class Cts2ToolStrip extends ToolStrip {
 
 		menu.setItems(i_contentsItem, i_aboutItem);
 
-		ToolStripMenuButton menuButton = new ToolStripMenuButton("Help", menu);
+		ToolStripMenuButton menuButton = new ToolStripMenuButton("<b>Help</b>", menu);
 		menuButton.setWidth(100);
 		return menuButton;
 	}

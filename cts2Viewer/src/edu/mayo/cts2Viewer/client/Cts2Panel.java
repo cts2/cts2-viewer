@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.data.Record;
@@ -61,7 +60,7 @@ import edu.mayo.cts2Viewer.shared.ServerProperties;
 public class Cts2Panel extends VLayout {
 
 	static Logger lgr = Logger.getLogger(Cts2Panel.class.getName());
-
+	
 	public static final String SELECT_SERVER_MSG = "<Select a Server>";
 
 	protected ServerProperties i_serverProperties;
@@ -379,7 +378,7 @@ public class Cts2Panel extends VLayout {
 
 		return selectedServer;
 	}
-
+	
 	/**
 	 * Get the newly selected server. Check if credentials are needed for this
 	 * server selection.
@@ -807,5 +806,9 @@ public class Cts2Panel extends VLayout {
 	protected void setClearButtonEnablement() {
 		String currentText = i_searchItem.getValueAsString();
 		i_clearButton.setDisabled(currentText == null || currentText.length() == 0);
+	}
+	
+	public String getDefaultServer() {
+		return i_defaultServer;
 	}
 }
