@@ -10,6 +10,9 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
+import edu.mayo.cts2Viewer.client.events.LoginRequestEvent;
+import edu.mayo.cts2Viewer.client.events.PanelChangeEvent;
+
 public class Cts2ToolStrip extends ToolStrip {
 
 	private static final int HEIGHT = 27;
@@ -19,6 +22,7 @@ public class Cts2ToolStrip extends ToolStrip {
 	private static final String WINDOW_PROPERTIES = "width=900,height=800,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes,resizable=yes";
 
 	private final ToolStripButton i_valueSetsButton;
+	private final ToolStripButton i_welcomesButton;
 	private MenuItem i_contentsItem;
 	private MenuItem i_aboutItem;
 
@@ -30,20 +34,34 @@ public class Cts2ToolStrip extends ToolStrip {
 		setWidth(WIDTH);
 		setHeight(HEIGHT);
 
+		i_welcomesButton = new ToolStripButton();
+		i_welcomesButton.setTitle("Welcome");
+
+		i_welcomesButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) 
+			{
+				Cts2Viewer.EVENT_BUS.fireEvent(new PanelChangeEvent(PanelTypeEnum.WELCOME));
+			}
+		});
+
+		addButton(i_welcomesButton);
+		addSeparator();
+
 		i_valueSetsButton = new ToolStripButton();
 		i_valueSetsButton.setTitle("Value Sets");
 
 		i_valueSetsButton.addClickHandler(new ClickHandler() {
 
 			@Override
-			public void onClick(ClickEvent event) {
-				// if there are different pages/panels we would need to flip to
-				// the valueset one here
+			public void onClick(ClickEvent event) 
+			{
+				Cts2Viewer.EVENT_BUS.fireEvent(new PanelChangeEvent(PanelTypeEnum.VALUESET));
 			}
 		});
 
 		addButton(i_valueSetsButton);
-
 		addSeparator();
 
 		ToolStripMenuButton helpButton = getToolStripHelpButton();

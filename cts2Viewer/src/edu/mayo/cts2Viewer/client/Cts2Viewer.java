@@ -25,6 +25,8 @@ import edu.mayo.cts2Viewer.client.events.LoginRequestEvent;
 import edu.mayo.cts2Viewer.client.events.LoginRequestEventHandler;
 import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEvent;
 import edu.mayo.cts2Viewer.client.events.LoginSuccessfulEventHandler;
+import edu.mayo.cts2Viewer.client.events.PanelChangeEvent;
+import edu.mayo.cts2Viewer.client.events.PanelChangeEventHandler;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -48,6 +50,7 @@ public class Cts2Viewer implements EntryPoint {
 
 	private ContextAreaPanel i_contextAreaPanel;
 	private Cts2Panel i_cts2Panel;
+	private WelcomePanel i_welcomePanel;
 
 	// include our own css
 	interface GlobalResources extends ClientBundle {
@@ -76,6 +79,8 @@ public class Cts2Viewer implements EntryPoint {
 
 		i_contextAreaPanel = new ContextAreaPanel();
 		i_cts2Panel = new Cts2Panel();
+		
+		i_welcomePanel = new WelcomePanel();
 
 		// initialize the main layout container
 		i_overallLayout = new VLayout();
@@ -105,12 +110,13 @@ public class Cts2Viewer implements EntryPoint {
 		createDownloadCallbackFrame();
 
 		// Add the main layout to the root panel
-		i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
+		i_contextAreaPanel.setCurrentContextArea(i_welcomePanel);
 		RootLayoutPanel.get().add(i_overallLayout);
 
 		createLoginRequestEvent();
 		createLoginCancelEvent();
 		createLoginSuccessfulEvent();
+		createPanelChangeEvent();
 	}
 
 	/**
@@ -172,6 +178,25 @@ public class Cts2Viewer implements EntryPoint {
 			@Override
 			public void onLoginSuccessful(LoginSuccessfulEvent loginSuccessfulEvent) {
 				// i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
+			}
+		});
+	}
+
+	/**
+	 * Create a handler to listen for a panel Change request.
+	 */
+	private void createPanelChangeEvent() {
+		EVENT_BUS.addHandler(PanelChangeEvent.TYPE, new PanelChangeEventHandler() {
+			
+			@Override
+			public void onPanelChanged(PanelChangeEvent event) 
+			{
+				switch(event.getChangeType())
+				{
+					case VALUESET: i_contextAreaPanel.setCurrentContextArea(i_cts2Panel); break;
+					case WELCOME:i_contextAreaPanel.setCurrentContextArea(i_welcomePanel);
+				}
+				
 			}
 		});
 	}
