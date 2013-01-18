@@ -10,7 +10,7 @@ public class WelcomePanel extends VLayout
 {
 	static Logger lgr = Logger.getLogger(WelcomePanel.class.getName());
 	
-	private static final String BACKGROUND_COLOR = "#F5F5F3";
+	private static final String BACKGROUND_COLOR = "#FFFFFF";
 	private static final String WELCOME_URL = "data/welcome.html";
 	
 	public WelcomePanel() {
@@ -20,7 +20,7 @@ public class WelcomePanel extends VLayout
 
 	private void init() 
 	{
-		lgr.log(Level.INFO, "init WelcomePanel...");
+		lgr.log(Level.INFO, "init Welcome Panel...");
 		
 		// main layout to hold all of the value set info
 		setWidth100();
@@ -34,7 +34,7 @@ public class WelcomePanel extends VLayout
 		HTMLPane pane = new HTMLPane();
 		pane.setWidth100();
 		pane.setHeight100();
-		pane.setMargin(15);
+		pane.setMargin(25);
 		pane.setBackgroundColor(BACKGROUND_COLOR);
 
 		// The name of the html file for the welcome page.

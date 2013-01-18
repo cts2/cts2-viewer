@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 
+import edu.mayo.cts2Viewer.client.authentication.Authentication;
 import edu.mayo.cts2Viewer.client.authentication.LoginWindow;
 import edu.mayo.cts2Viewer.client.events.LoginCancelledEvent;
 import edu.mayo.cts2Viewer.client.events.LoginCancelledEventHandler;
@@ -39,10 +40,6 @@ public class Cts2Viewer implements EntryPoint {
 	public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
 
 	public static boolean s_showAll = false;
-
-	// keep track if this is the first time the cts2 panel is being 
-	// displayed.  This will help determine if the login should pop up.
-	private boolean i_firstTimeToDisplay = true;
 	
 	private VLayout i_overallLayout;
 	private HLayout i_northLayout;
@@ -200,8 +197,8 @@ public class Cts2Viewer implements EntryPoint {
 					
 					// automatically pop up the login window if there is only
 					// one server (showAll == false) and this is the first time on this page.
-					if(!s_showAll && i_firstTimeToDisplay) {
-						i_firstTimeToDisplay = false;
+					if(!s_showAll && 
+							Authentication.getInstance().getCredentials(i_cts2Panel.getDefaultServer()) == null) {
 						Cts2Viewer.EVENT_BUS.fireEvent(new LoginRequestEvent(i_cts2Panel.getDefaultServer()));
 					}
 					
