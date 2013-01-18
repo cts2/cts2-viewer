@@ -143,8 +143,6 @@ public class Cts2Viewer implements EntryPoint {
 
 			@Override
 			public void onLoginRequest(LoginRequestEvent loginRequestEvent) {
-				// Make sure the cts2 viewer panel is set
-				i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
 
 				String server = loginRequestEvent.getServer();
 				showLogin(server);
@@ -161,10 +159,10 @@ public class Cts2Viewer implements EntryPoint {
 			@Override
 			public void onCancelRequest(LoginCancelledEvent loginCancelledEvent) {
 
-				// Don't switch the page. We now have the main page and the view
-				// page.
-				// they can stay on the current page they are on if they cancel
-				// showMainPage();
+				// Only switch the page if we are showing the NLM service.
+				if (!Cts2Viewer.s_showAll) {
+					i_contextAreaPanel.setCurrentContextArea(i_welcomePanel);
+				}
 			}
 		});
 	}
@@ -177,7 +175,7 @@ public class Cts2Viewer implements EntryPoint {
 
 			@Override
 			public void onLoginSuccessful(LoginSuccessfulEvent loginSuccessfulEvent) {
-				// i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
+				 i_contextAreaPanel.setCurrentContextArea(i_cts2Panel);
 			}
 		});
 	}
