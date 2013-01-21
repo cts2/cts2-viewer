@@ -3,8 +3,6 @@ package edu.mayo.cts2Viewer.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,7 +24,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
 import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
-import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2RestRequestParameters;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.SearchException;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
@@ -47,7 +44,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 	private static Logger logger = Logger.getLogger(Cts2ServiceImpl.class.getName());
 
-	private static final int RESULT_LIMIT = 100;
+	//private static final int RESULT_LIMIT = 100;
 	private static final String ANY_NQF_NUMBER_TEXT = "Any NQF Number";
 	private static final String ANY_EMEASURE_ID_TEXT = "Any Measure ID";
 	private ConvenienceMethods cm = null;
@@ -60,9 +57,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	        throws IllegalArgumentException {
 		String results = "";
 
-		initCM(serviceName);
-		RESTContext context = cm.getCurrentContext();
-		context.resultLimit = RESULT_LIMIT;
+		RESTContext context = initCM(serviceName);
 
 		/* populate the parameter list with the new filters */
 		int numFilters = 0;
@@ -79,9 +74,9 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		try {
 
 			if (CTS2Utils.isNull(searchText) && numFilters == 0) {
-				results = cm.getAvailableValueSets(false, false, false, ServiceResultFormat.XML);
+				results = cm.getAvailableValueSets(false, false, false, context);
 			} else {
-				results = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
+				results = cm.getMatchingValueSets(searchText, false, false, false, context);
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error retrieving ValueSets: " + e);
@@ -101,11 +96,12 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		// RestExecuter restExecuter = RestExecuter.getInstance();
 		ValueSetInfo vsi = new ValueSetInfo();
 
-		try {
-			initCM(serviceName);
+		try 
+		{
+			RESTContext context = initCM(serviceName);
 			VocabularyId valueSetId = new VocabularyId();
 			valueSetId.name = valueSetName;
-			results = cm.getValueSetInformation(valueSetId, ServiceResultFormat.XML);
+			results = cm.getValueSetInformation(valueSetId, context);
 			vsi = getValueSetGeneralInfo(results);
 
 		} catch (Exception e) {
@@ -126,8 +122,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		ResolvedValueSetInfo rvsi = new ResolvedValueSetInfo();
 
 		try {
-				initCM(serviceName);
-				results = cm.getValueSetMembers(valueSetName, ServiceResultFormat.XML);
+				RESTContext context = initCM(serviceName);
+				results = cm.getValueSetMembers(valueSetName, context);
 
 			if (results != null && results.length() > 0) {
 				rvsi = getResolvedValueSetGeneralInfo(results);
@@ -274,7 +270,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		return rvsi;
 	}
 
-	private void initCM(String serviceName) {
+	private RESTContext initCM(String serviceName) {
 		try {
 			if (this.cm == null) 
 			{
@@ -285,15 +281,22 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			{
 				//logger.log(Level.WARNING,
 				    //    "(CTS2 Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
-				return;
+				return null;
 			}
 
-			if (CTS2Utils.isNull(cm.getCurrentProfileName()) || !cm.getCurrentProfileName().equals(serviceName)) {
-				cm.setCurrentProfileName(serviceName);
+			RESTContext context = cm.getContext(serviceName);
+			if (context != null)
+			{
+				context.setOutputFormat(ServiceResultFormat.XML);
+				//context.resultLimit = RESULT_LIMIT;
 			}
+			
+			return context;
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
+		
+		return null;
 	}
 
 	@Override
@@ -302,21 +305,22 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		Set<String> services = null;
 		String selectedService = null;
 
-		try {
-			initCM(null);
+		try 
+		{
+			RESTContext context = initCM(null);
 			services = cm.getAvailableProfiles();
-			selectedService = cm.getCurrentProfileName();
+			//selectedService = cm.getCurrentProfileName();
 
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 
 		for (String service : services) {
-			if (selectedService != null && selectedService.endsWith(service)) {
-				serverOptions.put(service, service + CTS2Utils.SELECTED_TAG);
-			} else {
+			//if (selectedService != null && selectedService.endsWith(service)) {
+			//	serverOptions.put(service, service + CTS2Utils.SELECTED_TAG);
+			//} else {
 				serverOptions.put(service, service);
-			}
+			//}
 		}
 
 		return serverOptions;
@@ -396,7 +400,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	@Override
 	public String getEntity(String serviceName, String url) 
 	{
-		String existingValue = cm.getCurrentContext().getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
+		RESTContext context = initCM(serviceName);
+		String existingValue = context.getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
 		try 
 		{
 			if (CTS2Utils.isNull(url)) {
@@ -405,8 +410,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 			initCM(serviceName);
 
-			cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
-			String result =  cm.getVocabularyEntityByURI(url, ServiceResultFormat.XML);
+			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
+			String result =  cm.getVocabularyEntityByURI(url, context);
 			return result;
 		} catch (SearchException e) 
 		{
@@ -416,7 +421,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		
 		finally
 		{
-			cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
+			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
 		}
 	}
 
@@ -430,8 +435,8 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		Boolean required;
 
 		try {
-			initCM(serviceName);
-			required = new Boolean(cm.getCurrentContext().secure);
+			RESTContext context = initCM(serviceName);
+			required = new Boolean(context.secure);
 		} catch (Exception e) {
 			required = new Boolean(true);
 			logger.log(Level.SEVERE, "Error determining if credentials are required" + e);
@@ -450,17 +455,18 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 		// just do a simple search that will return quick.
 		String searchText = "abcd";
-
+		RESTContext context = initCM(credentials.getServer());
+		int prevLimit = context.resultLimit;
+		
 		try {
-			initCM(credentials.getServer());
+			context.userName = credentials.getUser();
+			context.password = credentials.getPassword();
+			
+			context.resultLimit = 1;
 
-			cm.getCurrentContext().userName = credentials.getUser();
-			cm.getCurrentContext().password = credentials.getPassword();
+			String result = cm.getMatchingValueSets(searchText, false, false, false, context);
 
-			cm.getCurrentContext().resultLimit = 1;
-
-			String result = cm.getMatchingValueSets(searchText, false, false, false, ServiceResultFormat.XML);
-
+			
 			// if the result is null, then the login failed.
 			valid = result == null ? new Boolean(false) : new Boolean(true);
 
@@ -470,6 +476,10 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 
+		finally
+		{
+			context.resultLimit = prevLimit;
+		}
 		// log an invalid login attempt.
 		if (!valid) {
 			logger.log(Level.WARNING, "User " + credentials.getUser() + " on server " + credentials.getServer()
@@ -481,7 +491,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 	@Override
 	public Boolean logout(Credentials credentials) {
-		cm.removeCurrentContext();
+		//cm.removeCurrentContext();
 		return new Boolean(true);
 	}
 
@@ -492,15 +502,15 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 
 		try {
 			// get all of the server properties needed by the client here.
-			initCM(serviceName);
+			RESTContext context = initCM(serviceName);
 
-			serverProperties.setRequireCredentials(Boolean.valueOf(cm.getCurrentContext().getUserParameterValue(
+			serverProperties.setRequireCredentials(Boolean.valueOf(context.getUserParameterValue(
 			        CTS2Config.REQUIRES_CREDENTIALS)));
 
-			String muEnabledStr = cm.getCurrentContext().getUserParameterValue(CTS2Config.MUENABLED);
+			String muEnabledStr = context.getUserParameterValue(CTS2Config.MUENABLED);
 			serverProperties.setShowFilters(Boolean.valueOf(muEnabledStr));
 			
-			String entityTransformService = cm.getCurrentContext().transforms.get("entity");
+			String entityTransformService = context.transforms.get("entity");
 			serverProperties.setEntityTransformService(entityTransformService);
 		} catch (Exception e) {
 
