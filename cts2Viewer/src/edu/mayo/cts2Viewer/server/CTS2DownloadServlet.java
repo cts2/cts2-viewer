@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.mayo.bsi.cts.cts2connector.cts2search.CTS2Config;
 import edu.mayo.bsi.cts.cts2connector.cts2search.ConvenienceMethods;
+import edu.mayo.bsi.cts.cts2connector.cts2search.RESTContext;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.CTS2Utils;
 import edu.mayo.bsi.cts.cts2connector.cts2search.aux.ServiceResultFormat;
 import edu.mayo.cts2Viewer.server.properties.PropertiesHelper;
@@ -133,9 +134,9 @@ public class CTS2DownloadServlet extends HttpServlet {
 			
 			try
 			{
-				initCM(request.getParameter("serviceName"));
+				RESTContext context = initCM(request.getParameter("serviceName"));
 				response.setContentType(contentTypeForSingleFileDownload);
-				String fileText = createValueSetContent(extTypes[0], valueSets[0]);
+				String fileText = createValueSetContent(extTypes[0], valueSets[0], context);
 				
 				String singleFileName = valueSets[0] + exts[0];
 				
@@ -159,7 +160,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 			// response.setContentLength((int) algorithmFile.length());
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + zipFileName + "\"");
 	
-			initCM(request.getParameter("serviceName"));
+			RESTContext context = initCM(request.getParameter("serviceName"));
 	
 			try {
 				ServletOutputStream out = response.getOutputStream();
@@ -168,7 +169,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 				for (int m = 0; m < exts.length; m++) {
 					for (String vs : valueSets) {
 						zipout.putNextEntry(new ZipEntry(vs + exts[m]));
-						zipout.write(createValueSetContent(extTypes[m], vs).getBytes());
+						zipout.write(createValueSetContent(extTypes[m], vs, context).getBytes());
 						zipout.closeEntry();
 					}
 				}
@@ -185,12 +186,12 @@ public class CTS2DownloadServlet extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private String createValueSetContent(String type, String valueSetName) 
+	private String createValueSetContent(String type, String valueSetName, RESTContext context) 
 	{
 		String msg = null;
 		
-		String existingValue = cm.getCurrentContext().getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
-		int prevLimit = cm.getCurrentContext().resultLimit;
+		String existingValue = context.getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
+		int prevLimit = context.resultLimit;
 		
 		try 
 		{
@@ -201,14 +202,14 @@ public class CTS2DownloadServlet extends HttpServlet {
 				// These transforms use xslt server for transforms.
 				// XSLT server does not need authorization details. so set the flag false.
 				// if you send user name/password when it does not need, it fails.
-				cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
+				context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
 			}
 
 			
-			cm.getCurrentContext().resultLimit = cm.getCurrentContext().downloadResultLimit;
-			String valueSetContent = cm.getValueSetMembers(valueSetName, requestedFormat);
-			cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
-			cm.getCurrentContext().resultLimit = prevLimit;			
+			context.resultLimit = context.downloadPageSize;
+			String valueSetContent = cm.getValueSetMembers(valueSetName, context);
+			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
+			context.resultLimit = prevLimit;			
 			return ((CTS2Utils.isNull(valueSetContent))?"":valueSetContent);
 			
 		} 
@@ -218,8 +219,8 @@ public class CTS2DownloadServlet extends HttpServlet {
 			logger.log(Level.SEVERE, "createValueSetContent failed: " + msg);
 		}
 
-		cm.getCurrentContext().setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
-		cm.getCurrentContext().resultLimit = prevLimit;	
+		context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
+		context.resultLimit = prevLimit;	
 		return "Failed to get content for value set '" + valueSetName + "'\n" + msg;
 	}
 
@@ -243,28 +244,32 @@ public class CTS2DownloadServlet extends HttpServlet {
 		return ServiceResultFormat.XML;
 	}
 
-	private void initCM(String serviceName) 
-	{
-		try 
-		{
+	private RESTContext initCM(String serviceName) {
+		try {
 			if (this.cm == null) 
 			{
 				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
 			}
 
-			if (CTS2Utils.isNull(serviceName))
+			if (CTS2Utils.isNull(serviceName)) 
 			{
-				logger.log(Level.WARNING, "(CTS2 Download Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
-				return;
+				logger.log(Level.WARNING,
+						"(CTS2 Download Service):Requested CTS2 Service Name is either initializing, null or undefined! REST Context unchanged!");
+				return null;
 			}
-					
-			if ((CTS2Utils.isNull(cm.getCurrentProfileName()))||
-				(!cm.getCurrentProfileName().equals(serviceName))) 
-				cm.setCurrentProfileName(serviceName);
-		} 
-		catch (Exception ex) 
-		{
+
+			RESTContext context = cm.getContext(serviceName);
+			if (context != null)
+			{
+				context.setOutputFormat(ServiceResultFormat.XML);
+				//context.resultLimit = RESULT_LIMIT;
+			}
+			
+			return context;
+		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
+		
+		return null;
 	}
 }
