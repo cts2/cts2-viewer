@@ -105,11 +105,10 @@ public class LoginWindow extends Window {
 		i_mainLayout.setAlign(Alignment.CENTER);
 
 		
-		// Add a message to the login IF we are using the default MayoCTS2
-		// server.
+		// Add a message to the login IF we are using the default server.
 		String registerMsg = "<center><b>Sign in using UMLS UTS Username/Password. If you do not have one, you may <a href=\"https://uts.nlm.nih.gov/license.html\" target=\"_blank\">register here</b></a>.</center>";
 
-		if (i_server.equals("MayoCTS2")) {
+		if (i_server.equals(Cts2Viewer.DEFAULT_SERVER)) {
 			Label registerLabel = new Label(registerMsg);
 			registerLabel.setWidth100();
 			registerLabel.setHeight(25);
@@ -303,7 +302,7 @@ public class LoginWindow extends Window {
 
 	private Label createWindowTitle(String server) {
 
-		String titleServer = server.equals("MayoCTS2") ? "CTS2 Service" : server;
+		String titleServer = server; //server.equals(Cts2Viewer.DEFAULT_SERVER) ? "CTS2 Service" : server;
 
 		Label windowTitleLabel = new Label("<b>Login for " + titleServer + "</b>");
 		windowTitleLabel.setWidth100();

@@ -35,6 +35,8 @@ public class Cts2Viewer implements EntryPoint {
 	private static final int NORTH_HEIGHT = 85;
 	private static Logger logger = Logger.getLogger(Cts2Viewer.class.getName());
 	private static final String SHOW_ALL = "showAll";
+	
+	public static final String DEFAULT_SERVER = "NLM_VSAC";
 
 	// Event Bus to capture global events and act upon them.
 	public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);

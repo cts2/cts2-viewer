@@ -770,7 +770,7 @@ public class Cts2Panel extends VLayout {
 				@Override
 				public void onSuccess(String defaultServer) {
 					i_defaultServer = defaultServer;
-					String title = i_defaultServer.equals("MayoCTS2") ? "CTS2 Service" : i_defaultServer;
+					String title = defaultServer; //i_defaultServer.equals(Cts2Viewer.DEFAULT_SERVER) ? "CTS2 Service" : i_defaultServer;
 					i_defaultServerTextItem.setValue("<b>" + title + "</b>");
 
 					if (!Cts2Viewer.s_showAll) {
