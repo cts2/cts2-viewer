@@ -667,8 +667,10 @@ public class Cts2Panel extends VLayout {
 			String valueSetName = record.getAttribute("valueSetName");
 			String formalName = record.getAttribute("formalName");
 
-			i_valueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName, link);
-			i_resolvedValueSetPropertiesPanel.updatePanel(i_serverCombo.getValueAsString(), valueSetName,
+			String selectedServer = Cts2Viewer.s_showAll ? i_serverCombo.getValueAsString() : i_defaultServer;
+
+			i_valueSetPropertiesPanel.updatePanel(selectedServer, valueSetName, link);
+			i_resolvedValueSetPropertiesPanel.updatePanel(selectedServer, valueSetName,
 			  formalName, link);
 		}
 	}

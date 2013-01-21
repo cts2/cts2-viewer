@@ -95,10 +95,10 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 		String results = "";
 		// RestExecuter restExecuter = RestExecuter.getInstance();
 		ValueSetInfo vsi = new ValueSetInfo();
-
+		RESTContext context = initCM(serviceName);
+		
 		try 
 		{
-			RESTContext context = initCM(serviceName);
 			VocabularyId valueSetId = new VocabularyId();
 			valueSetId.name = valueSetName;
 			results = cm.getValueSetInformation(valueSetId, context);
