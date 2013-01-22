@@ -408,7 +408,7 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 				return "request url is null!!";
 			}
 
-			initCM(serviceName);
+			//initCM(serviceName);
 
 			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
 			String result =  cm.getVocabularyEntityByURI(url, context);
