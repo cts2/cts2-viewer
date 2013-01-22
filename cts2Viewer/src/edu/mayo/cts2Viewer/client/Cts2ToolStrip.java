@@ -28,7 +28,7 @@ public class Cts2ToolStrip extends ToolStrip {
 	public Cts2ToolStrip() {
 		super();
 
-		addStyleName("cts2-ToolStripMenu");
+		setStyleName("cts2-ToolStripMenu");
 
 		setWidth(WIDTH);
 		setHeight(HEIGHT);

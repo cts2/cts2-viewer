@@ -27,7 +27,7 @@ public class MasterFooter extends HLayout {
 		super();
 
 		// initialize the footer layout container
-		this.addStyleName("cts2-MasterFooter");
+		this.setStyleName("cts2-MasterFooter");
 		this.setHeight(MASTER_FOOTER_HEIGHT);
 
 		int nlmWidth = 330;
@@ -76,7 +76,7 @@ public class MasterFooter extends HLayout {
 
 		String logoImage = "cts2Logo_ecosystem.png";
 		final Img logoImg = new Img(logoImage, 248, 29);
-		logoImg.addStyleName("cts2-MasterFooter-Logo");
+		logoImg.setStyleName("cts2-MasterFooter-Logo");
 
 		logoImg.addClickHandler(new ClickHandler() {
 

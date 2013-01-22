@@ -42,7 +42,7 @@ public class MasterHeader extends HLayout {
 		setBackgroundColor(MASTERHEADER_BACKGROUND);
 
 		// initialize the MasterHeader layout container
-		this.addStyleName("cts2-MasterHeader");
+		this.setStyleName("cts2-MasterHeader");
 		this.setHeight(MASTHEAD_HEIGHT);
 
 		// initialize the title image - we will use two different images based
@@ -67,7 +67,7 @@ public class MasterHeader extends HLayout {
 		// initialize the Logo image
 		String logoImage = "logo-mc.gif";
 		final Img logoImg = new Img(logoImage, 197, 42);
-		logoImg.addStyleName("cts2-MasterHeader-Logo");
+		logoImg.setStyleName("cts2-MasterHeader-Logo");
 
 		logoImg.addClickHandler(new ClickHandler() {
 
@@ -117,7 +117,7 @@ public class MasterHeader extends HLayout {
 
 		// initialize the Signed In User label
 		signedInUser = new Label();
-		signedInUser.addStyleName("cts2-MasterHeader-SignedInUser");
+		signedInUser.setStyleName("cts2-MasterHeader-SignedInUser");
 
 		i_loginForm = new LoginInfoForm();
 
