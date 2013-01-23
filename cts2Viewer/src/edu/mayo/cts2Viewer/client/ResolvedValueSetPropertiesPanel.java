@@ -28,6 +28,8 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 	private ResolvedValueSetListGrid i_resolvedValueSetListGrid;
 
+	private String i_serviceName;
+	
 	private final ComboBoxItem i_serverCombo;
 
 	// Resolved Value Set Information
@@ -114,13 +116,15 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	}
 
 	public void updatePanel(String serviceName, String valueSetName, String formalName, String link) {
+		
+		i_serviceName = serviceName;
+		
 		// clear the Resolved Value Set info as the call to update this
 		// information takes a few seconds.
 		clearResolvedValueSetInfo();
 		updateResolevedValueSetSectionTitle(formalName, valueSetName);
 
-		i_resolvedValueSetListGrid.getData(serviceName, valueSetName);
-
+		i_resolvedValueSetListGrid.getData(i_serviceName, valueSetName);
 	}
 
 	/**
@@ -229,7 +233,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 			EntityWindow entityWindow = EntityWindow.getInstance();
 			entityWindow.enableNavigationArrows(i_resolvedValueSetListGrid.getTotalRows() > 1);
-			entityWindow.setWindowData(serviceUrl, href, name, description);
+			entityWindow.setWindowData(i_serviceName, serviceUrl, href, name, description);
 			entityWindow.show();
 		}
 	}
