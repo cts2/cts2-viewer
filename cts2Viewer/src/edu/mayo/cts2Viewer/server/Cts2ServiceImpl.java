@@ -401,14 +401,13 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	public String getEntity(String serviceName, String url) 
 	{
 		RESTContext context = initCM(serviceName);
+
 		String existingValue = context.getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
 		try 
 		{
 			if (CTS2Utils.isNull(url)) {
 				return "request url is null!!";
 			}
-
-			//initCM(serviceName);
 
 			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
 			String result =  cm.getVocabularyEntityByURI(url, context);

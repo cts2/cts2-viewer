@@ -107,27 +107,29 @@ public class EntityWindow extends Window {
 			String completeUrl = serviceUrl + entityUrl + BYPASS_OPTION;
 			i_htmlPane.setContentsType(ContentsType.PAGE);
 			Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-			service.getEntity(serviceName, completeUrl, new AsyncCallback<String>() 
-			{
-					@Override
-					public void onFailure(Throwable caught) 
-					{
-						i_htmlPane.setContents(UNAVAILABLE_HTML);
-					}
+			service.getEntity(serviceName, completeUrl, new AsyncCallback<String>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					i_htmlPane.setContents(UNAVAILABLE_HTML);
+				}
 
-					@Override
-					public void onSuccess(String result) 
-					{
-						if (result == null)
-							i_htmlPane.setContents(UNAVAILABLE_HTML);
-						else
-							i_htmlPane.setContents(result);
-					}
-				});
-			}
-		
-			addItem(i_htmlPane);
-			addItem(i_buttonPane);
+				@Override
+				public void onSuccess(String result) {
+					if (result == null)
+						i_htmlPane.setContents(UNAVAILABLE_HTML);
+					else
+						i_htmlPane.setContents(result);
+				}
+			});
+		}
+
+		else {
+			// the serviceUrl is null/empty.
+			i_htmlPane.setContents(UNAVAILABLE_HTML);
+		}
+
+		addItem(i_htmlPane);
+		addItem(i_buttonPane);
 	}
 
 	private HLayout createHeader() {

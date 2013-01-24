@@ -46,14 +46,14 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	private SectionStackSection i_sectionResolvedValueSetMembers;
 	private SectionStackSection i_sectionResolvedValueSetInfo;
 	
-	private String entityTransformService = null;
+	private String i_entityTransformService = null;
 
 	public String getEntityTransformService() {
-		return entityTransformService;
+		return i_entityTransformService;
 	}
 
 	public void setEntityTransformService(String entityTransformService) {
-		this.entityTransformService = entityTransformService;
+		i_entityTransformService = entityTransformService;
 	}
 
 	public ResolvedValueSetPropertiesPanel(ComboBoxItem serverCombo) {
@@ -199,7 +199,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			}
 		}
 
-		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord(), entityTransformService);
+		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord(), i_entityTransformService);
 
 	}
 
@@ -219,7 +219,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			@Override
 			public void onRecordClick(RecordClickEvent event) {
 				Record record = event.getRecord();
-				showEntityInfo(record, entityTransformService);
+				showEntityInfo(record, i_entityTransformService);
 			}
 		});
 
