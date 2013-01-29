@@ -191,6 +191,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 		String msg = null;
 		
 		String existingValue = context.getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
+		ServiceResultFormat existingFormat = context.outputFormat;
 		int prevLimit = context.resultLimit;
 		
 		try 
@@ -205,7 +206,7 @@ public class CTS2DownloadServlet extends HttpServlet {
 				context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
 			}
 
-			
+			context.outputFormat = requestedFormat;
 			context.resultLimit = context.downloadPageSize;
 			String valueSetContent = cm.getValueSetMembers(valueSetName, context);
 			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
@@ -219,7 +220,12 @@ public class CTS2DownloadServlet extends HttpServlet {
 			logger.log(Level.SEVERE, "createValueSetContent failed: " + msg);
 		}
 
-		context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
+		if (existingFormat != null)
+			context.outputFormat = existingFormat;
+		
+		if (existingValue != null)
+			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
+		
 		context.resultLimit = prevLimit;	
 		return "Failed to get content for value set '" + valueSetName + "'\n" + msg;
 	}
