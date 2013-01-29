@@ -398,29 +398,27 @@ public class Cts2ServiceImpl extends RemoteServiceServlet implements Cts2Service
 	}
 
 	@Override
-	public String getEntity(String serviceName, String url) 
-	{
+	public String getEntity(String serviceName, String url) {
 		RESTContext context = initCM(serviceName);
+
 		String existingValue = context.getUserParameterValue(CTS2Config.REQUIRES_CREDENTIALS);
-		try 
-		{
+		try {
 			if (CTS2Utils.isNull(url)) {
 				return "request url is null!!";
 			}
 
-			//initCM(serviceName);
-
 			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, "false");
-			String result =  cm.getVocabularyEntityByURI(url, context);
+			String result = cm.getVocabularyEntityByURI(url, context);
 			return result;
-		} catch (SearchException e) 
-		{
-			e.printStackTrace();
-			return e.getMessage();
+		} catch (SearchException e) {
+			logger.log(Level.SEVERE, "Error retrieving Entity: " + e);
+			return null;
+		} catch (Exception exception) {
+			logger.log(Level.SEVERE, "Error retrieving Entity: " + exception);
+			return null;
 		}
-		
-		finally
-		{
+
+		finally {
 			context.setUserParameter(CTS2Config.REQUIRES_CREDENTIALS, existingValue);
 		}
 	}

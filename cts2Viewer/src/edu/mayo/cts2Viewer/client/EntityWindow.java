@@ -87,17 +87,17 @@ public class EntityWindow extends Window {
 		return pane;
 	}
 
-	public void setWindowData(String serviceUrl, String href, String name, String description) {
+	public void setWindowData(String serviceName, String serviceUrl, String href, String name, String description) {
 		setTitle(TITLE);
 		String windowTitle = "Details for " + name + ": " + description;
 		String titleFormatted = "<b style=\"color: #000000;font-family: Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;text-decoration:none\">"
 		  + windowTitle + "</b>";
 
 		i_titleLabel.setContents(titleFormatted);
-		getEntityInformation(serviceUrl, href);
+		getEntityInformation(serviceName, serviceUrl, href);
 	}
 
-	private void getEntityInformation(String serviceUrl, final String entityUrl) {
+	private void getEntityInformation(String serviceName, String serviceUrl, final String entityUrl) {
 		removeItem(i_htmlPane);
 		removeItem(i_buttonPane);
 		i_htmlPane = createHTMLPane();
@@ -107,27 +107,29 @@ public class EntityWindow extends Window {
 			String completeUrl = serviceUrl + entityUrl + BYPASS_OPTION;
 			i_htmlPane.setContentsType(ContentsType.PAGE);
 			Cts2ServiceAsync service = GWT.create(Cts2Service.class);
-			service.getEntity(null, completeUrl, new AsyncCallback<String>() 
-			{
-					@Override
-					public void onFailure(Throwable caught) 
-					{
-						i_htmlPane.setContents(UNAVAILABLE_HTML);
-					}
+			service.getEntity(serviceName, completeUrl, new AsyncCallback<String>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					i_htmlPane.setContents(UNAVAILABLE_HTML);
+				}
 
-					@Override
-					public void onSuccess(String result) 
-					{
-						if (result == null)
-							i_htmlPane.setContents(UNAVAILABLE_HTML);
-						else
-							i_htmlPane.setContents(result);
-					}
-				});
-			}
-		
-			addItem(i_htmlPane);
-			addItem(i_buttonPane);
+				@Override
+				public void onSuccess(String result) {
+					if (result == null)
+						i_htmlPane.setContents(UNAVAILABLE_HTML);
+					else
+						i_htmlPane.setContents(result);
+				}
+			});
+		}
+
+		else {
+			// the serviceUrl is null/empty.
+			i_htmlPane.setContents(UNAVAILABLE_HTML);
+		}
+
+		addItem(i_htmlPane);
+		addItem(i_buttonPane);
 	}
 
 	private HLayout createHeader() {

@@ -28,6 +28,8 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 	private ResolvedValueSetListGrid i_resolvedValueSetListGrid;
 
+	private String i_serviceName;
+	
 	private final ComboBoxItem i_serverCombo;
 
 	// Resolved Value Set Information
@@ -44,14 +46,14 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	private SectionStackSection i_sectionResolvedValueSetMembers;
 	private SectionStackSection i_sectionResolvedValueSetInfo;
 	
-	private String entityTransformService = null;
+	private String i_entityTransformService = null;
 
 	public String getEntityTransformService() {
-		return entityTransformService;
+		return i_entityTransformService;
 	}
 
 	public void setEntityTransformService(String entityTransformService) {
-		this.entityTransformService = entityTransformService;
+		i_entityTransformService = entityTransformService;
 	}
 
 	public ResolvedValueSetPropertiesPanel(ComboBoxItem serverCombo) {
@@ -114,13 +116,15 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 	}
 
 	public void updatePanel(String serviceName, String valueSetName, String formalName, String link) {
+		
+		i_serviceName = serviceName;
+		
 		// clear the Resolved Value Set info as the call to update this
 		// information takes a few seconds.
 		clearResolvedValueSetInfo();
 		updateResolevedValueSetSectionTitle(formalName, valueSetName);
 
-		i_resolvedValueSetListGrid.getData(serviceName, valueSetName);
-
+		i_resolvedValueSetListGrid.getData(i_serviceName, valueSetName);
 	}
 
 	/**
@@ -195,7 +199,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			}
 		}
 
-		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord(), entityTransformService);
+		showEntityInfo(i_resolvedValueSetListGrid.getSelectedRecord(), i_entityTransformService);
 
 	}
 
@@ -215,7 +219,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 			@Override
 			public void onRecordClick(RecordClickEvent event) {
 				Record record = event.getRecord();
-				showEntityInfo(record, entityTransformService);
+				showEntityInfo(record, i_entityTransformService);
 			}
 		});
 
@@ -229,7 +233,7 @@ public class ResolvedValueSetPropertiesPanel extends VLayout {
 
 			EntityWindow entityWindow = EntityWindow.getInstance();
 			entityWindow.enableNavigationArrows(i_resolvedValueSetListGrid.getTotalRows() > 1);
-			entityWindow.setWindowData(serviceUrl, href, name, description);
+			entityWindow.setWindowData(i_serviceName, serviceUrl, href, name, description);
 			entityWindow.show();
 		}
 	}
