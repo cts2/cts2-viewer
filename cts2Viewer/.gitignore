@@ -3,3 +3,7 @@
 *.ipr
 *.iws
 .idea/
+/build
+/.gradle
+/deploy
+*/**/classes/**/*
