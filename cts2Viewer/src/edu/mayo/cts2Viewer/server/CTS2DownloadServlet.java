@@ -250,8 +250,10 @@ public class CTS2DownloadServlet extends HttpServlet {
 		return ServiceResultFormat.XML;
 	}
 
-	private RESTContext initCM(String serviceName) {
-		try {
+	private RESTContext initCM(String serviceName) 
+	{
+		try 
+		{
 			if (this.cm == null) 
 			{
 				this.cm = ConvenienceMethods.instance(PropertiesHelper.getInstance().getPropertiesDirectory());
@@ -265,14 +267,29 @@ public class CTS2DownloadServlet extends HttpServlet {
 			}
 
 			RESTContext context = cm.getContext(serviceName);
-			if (context != null)
+
+			if (context == null)
 			{
-				context.setOutputFormat(ServiceResultFormat.XML);
-				//context.resultLimit = RESULT_LIMIT;
+				logger.log(Level.SEVERE, "Context missing for service with name:\"" + serviceName + "\"");
+				logger.log(Level.SEVERE,  "Trying with default service name:\"" + cm.getDefaultProfileName() + "\"");
+				
+				context = cm.getContext(cm.getDefaultProfileName());
 			}
+
+			if (context == null)
+			{
+				String ctxmissingmessage = "Context missing for default service with name:\"" + cm.getDefaultProfileName() + "\"";
+				logger.log(Level.SEVERE, ctxmissingmessage);
+				throw new Exception(ctxmissingmessage);
+			}
+
+			context.setOutputFormat(ServiceResultFormat.XML);
+			//context.resultLimit = RESULT_LIMIT;
 			
 			return context;
-		} catch (Exception ex) {
+		} 
+		catch (Exception ex) 
+		{
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 		
