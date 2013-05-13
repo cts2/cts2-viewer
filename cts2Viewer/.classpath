@@ -7,5 +7,6 @@
 	<classpathentry exported="true" kind="con" path="com.springsource.sts.gradle.classpathcontainer"/>
 	<classpathentry kind="con" path="com.springsource.sts.gradle.dsld.classpathcontainer"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cts2search"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

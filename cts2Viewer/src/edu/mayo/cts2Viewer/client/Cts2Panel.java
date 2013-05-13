@@ -249,6 +249,7 @@ public class Cts2Panel extends VLayout {
 			searchForm.setItems(i_serverCombo, i_searchItem);
 		} else {
 			searchForm.setItems(i_defaultServerTextItem, i_searchItem);
+			i_serverCombo.setValue(i_defaultServerTextItem.getValue());
 		}
 
 		searchForm.setHeight(55);
@@ -510,6 +511,7 @@ public class Cts2Panel extends VLayout {
 					i_serverCombo.setValue(i_lastValidServer);
 					getServerProperties(i_lastValidServer, true);
 				}
+				
 				clearPanels();
 				clearSearch();
 				updateServiceSelection();
@@ -748,6 +750,8 @@ public class Cts2Panel extends VLayout {
 					if (Cts2Viewer.s_showAll) {
 						i_loginInfoPanel.addWidgets();
 					}
+					else
+						i_serverCombo.setValue(i_defaultServer);
 				}
 
 			});
